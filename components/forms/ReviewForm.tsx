@@ -55,7 +55,7 @@ export default function ReviewForm() {
         disabled={isSubmitting}
         className="bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-50"
       >
-        {isSubmitting ? 'Envoi...' : 'Envoyer'}
+        {isSubmitting ? 'Traitement...' : 'Ajouter le restaurant'}
       </button>
     </form>
   )

@@ -5,8 +5,12 @@
 export function isValidGoogleMapsUrl(url: string): boolean {
   try {
     const urlObj = new URL(url)
-    return urlObj.hostname.includes('google.com') && 
-           (urlObj.pathname.includes('/maps') || urlObj.pathname.includes('/place'))
+    return (
+      (urlObj.hostname === 'maps.google.com' || 
+       urlObj.hostname === 'www.google.com' ||
+       urlObj.hostname === 'google.com') &&
+      (urlObj.pathname.includes('/maps/') || urlObj.pathname.includes('/local/'))
+    )
   } catch {
     return false
   }
@@ -15,12 +19,18 @@ export function isValidGoogleMapsUrl(url: string): boolean {
 export function extractBusinessNameFromGoogleMapsUrl(url: string): string | null {
   try {
     const urlObj = new URL(url)
-    const pathParts = urlObj.pathname.split('/')
-    const placeIndex = pathParts.findIndex(part => part === 'place')
     
-    if (placeIndex !== -1 && placeIndex + 1 < pathParts.length) {
-      const encodedName = pathParts[placeIndex + 1]
-      return decodeURIComponent(encodedName).replace(/\+/g, ' ')
+    // Extract from /maps/place/ URLs
+    const placeMatch = urlObj.pathname.match(/\/maps\/place\/([^\/]+)/)
+    if (placeMatch) {
+      return decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ')
+    }
+    
+    // Extract from search query
+    const searchParams = urlObj.searchParams
+    const query = searchParams.get('q')
+    if (query) {
+      return decodeURIComponent(query).replace(/\+/g, ' ')
     }
     
     return null
@@ -32,8 +42,26 @@ export function extractBusinessNameFromGoogleMapsUrl(url: string): string | null
 export function extractPlaceIdFromGoogleMapsUrl(url: string): string | null {
   try {
     const urlObj = new URL(url)
-    const searchParams = urlObj.searchParams
-    return searchParams.get('place_id') || searchParams.get('cid')
+    
+    // Look for place_id in search params
+    const placeId = urlObj.searchParams.get('place_id')
+    if (placeId) {
+      return placeId
+    }
+    
+    // Look for ftid (sometimes used instead of place_id)
+    const ftid = urlObj.searchParams.get('ftid')
+    if (ftid) {
+      return ftid
+    }
+    
+    // Extract from URL path (format: /maps/place/name/@lat,lng,zoom/data=...)
+    const pathMatch = urlObj.pathname.match(/data=.*?1s(0x[a-f0-9]+:0x[a-f0-9]+)/)
+    if (pathMatch) {
+      return pathMatch[1]
+    }
+    
+    return null
   } catch {
     return null
   }
