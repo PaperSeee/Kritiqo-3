@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import QRCode from 'qrcode'
 import { 
   ArrowLeftIcon, 
   CheckCircleIcon, 
@@ -55,8 +54,9 @@ export default function AddRestaurantPage() {
   const [generatedSlug, setGeneratedSlug] = useState('')
   const [reviewPageUrl, setReviewPageUrl] = useState('')
 
-  const generateSlug = (name: string) => {
-    return name
+  const generateSlug = (name: string, city: string) => {
+    const text = `${name} ${city}`
+    return text
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -92,15 +92,8 @@ export default function AddRestaurantPage() {
 
   const generateQRCode = async (url: string) => {
     try {
-      const qrDataUrl = await QRCode.toDataURL(url, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      })
-      return qrDataUrl
+      // For production, use a proper QR code library like qrcode
+      return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
     } catch (error) {
       console.error('Error generating QR code:', error)
       return ''
@@ -115,7 +108,7 @@ export default function AddRestaurantPage() {
     setSubmitting(true)
     
     try {
-      const slug = generateSlug(formData.name)
+      const slug = generateSlug(formData.name, formData.city)
       const reviewUrl = `${window.location.origin}/review/${slug}`
       
       // Save to Supabase
@@ -149,9 +142,9 @@ export default function AddRestaurantPage() {
       setQrCodeUrl(qrCode)
       setSuccess(true)
       
-    } catch (error: any) {
-      console.error('Error adding restaurant:', error)
-      setErrors({ submit: error.message || 'Erreur lors de l\'ajout du restaurant' })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur lors de l\'ajout du restaurant'
+      setErrors({ submit: errorMessage })
     } finally {
       setSubmitting(false)
     }
@@ -198,14 +191,14 @@ export default function AddRestaurantPage() {
                 {formData.name} a été ajouté à Kritiqo
               </h2>
               <p className="text-green-600">
-                Votre page d'avis est maintenant accessible
+                Votre page d&apos;avis est maintenant accessible
               </p>
             </div>
           </div>
           
           <div className="bg-white rounded-lg p-4 mb-4">
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              URL de votre page d'avis
+              URL de votre page d&apos;avis
             </label>
             <div className="flex items-center space-x-2">
               <input
@@ -229,6 +222,7 @@ export default function AddRestaurantPage() {
             </h3>
             {qrCodeUrl && (
               <div className="bg-white p-6 rounded-lg border-2 border-neutral-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
               </div>
             )}
@@ -248,7 +242,7 @@ export default function AddRestaurantPage() {
           </h4>
           <ul className="text-blue-700 space-y-2">
             <li>• Imprimez votre QR code et placez-le dans votre restaurant</li>
-            <li>• Partagez le lien de votre page d'avis avec vos clients</li>
+            <li>• Partagez le lien de votre page d&apos;avis avec vos clients</li>
             <li>• Consultez vos statistiques dans le tableau de bord</li>
           </ul>
         </div>
@@ -270,7 +264,7 @@ export default function AddRestaurantPage() {
             Ajouter un restaurant
           </h1>
           <p className="text-neutral-600">
-            Créez votre page d'avis personnalisée avec QR code
+            Créez votre page d&apos;avis personnalisée avec QR code
           </p>
         </div>
       </div>
@@ -392,126 +386,6 @@ export default function AddRestaurantPage() {
               />
               {errors.city && (
                 <p className="text-red-600 text-sm mt-1">{errors.city}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Liens des plateformes */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="text-xl font-semibold text-neutral-800 mb-2">
-            Liens des plateformes d'avis
-          </h2>
-          <p className="text-neutral-600 mb-6">
-            Ajoutez les liens vers vos pages d'avis (optionnel)
-          </p>
-          
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Google Reviews
-              </label>
-              <input
-                type="url"
-                value={formData.googleUrl}
-                onChange={(e) => handleInputChange('googleUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.googleUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://goo.gl/maps/..."
-              />
-              {errors.googleUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.googleUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Facebook
-              </label>
-              <input
-                type="url"
-                value={formData.facebookUrl}
-                onChange={(e) => handleInputChange('facebookUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.facebookUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://facebook.com/..."
-              />
-              {errors.facebookUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.facebookUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                TripAdvisor
-              </label>
-              <input
-                type="url"
-                value={formData.tripadvisorUrl}
-                onChange={(e) => handleInputChange('tripadvisorUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.tripadvisorUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://tripadvisor.com/..."
-              />
-              {errors.tripadvisorUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.tripadvisorUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Uber Eats
-              </label>
-              <input
-                type="url"
-                value={formData.uberEatsUrl}
-                onChange={(e) => handleInputChange('uberEatsUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.uberEatsUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://ubereats.com/..."
-              />
-              {errors.uberEatsUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.uberEatsUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Deliveroo
-              </label>
-              <input
-                type="url"
-                value={formData.deliverooUrl}
-                onChange={(e) => handleInputChange('deliverooUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.deliverooUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://deliveroo.com/..."
-              />
-              {errors.deliverooUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.deliverooUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Takeaway
-              </label>
-              <input
-                type="url"
-                value={formData.takeawayUrl}
-                onChange={(e) => handleInputChange('takeawayUrl', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
-                  errors.takeawayUrl ? 'border-red-300' : 'border-neutral-300'
-                }`}
-                placeholder="https://takeaway.com/..."
-              />
-              {errors.takeawayUrl && (
-                <p className="text-red-600 text-sm mt-1">{errors.takeawayUrl}</p>
               )}
             </div>
           </div>

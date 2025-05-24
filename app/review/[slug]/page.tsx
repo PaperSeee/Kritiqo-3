@@ -105,7 +105,7 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-neutral-900 mb-4">Restaurant non trouvé</h1>
-          <p className="text-neutral-600">Le lien que vous avez suivi n'est pas valide.</p>
+          <p className="text-neutral-600">Le lien que vous avez suivi n&apos;est pas valide.</p>
         </div>
       </div>
     );
@@ -175,7 +175,7 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
           </div>
           <p className="text-neutral-600 mb-2">{business.city}, {business.country}</p>
           <p className="text-lg text-neutral-700">
-            Votre avis compte ! Aidez d'autres clients à découvrir ce restaurant.
+            Votre avis compte ! Aidez d&apos;autres clients à découvrir ce restaurant.
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
           <textarea
             value={review}
             onChange={(e) => handleReviewChange(e.target.value)}
-            placeholder="Partagez votre expérience... Qu'avez-vous aimé ? Le service, la nourriture, l'ambiance ?"
+            placeholder="Partagez votre expérience... Qu&apos;avez-vous aimé ? Le service, la nourriture, l&apos;ambiance ?"
             className="w-full h-32 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
             maxLength={500}
           />
@@ -299,7 +299,7 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
         {/* Footer */}
         <div className="text-center text-sm text-neutral-500">
           <p>Merci de prendre le temps de partager votre expérience !</p>
-          <p className="mt-1">Vos avis aident les restaurateurs à s'améliorer.</p>
+          <p className="mt-1">Vos avis aident les restaurateurs à s&apos;améliorer.</p>
         </div>
       </div>
     </div>

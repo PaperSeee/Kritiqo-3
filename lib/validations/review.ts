@@ -34,6 +34,8 @@ export const reviewFormSchema = z.object({
   businessName: z.string().min(1, "Le nom de l'entreprise est requis"),
   googleMapsUrl: googleMapsUrlSchema,
   description: z.string().optional(),
+  rating: z.number().min(1).max(5),
+  comment: z.string().min(1, 'Le commentaire est requis').max(500)
 })
 
 export type ReviewFormData = z.infer<typeof reviewFormSchema>

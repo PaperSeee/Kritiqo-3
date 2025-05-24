@@ -38,8 +38,9 @@ export default function SignupPage() {
     try {
       await signUp(email, password);
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message || 'Une erreur est survenue');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -132,7 +133,7 @@ export default function SignupPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="appearance-none relative block w-full px-3 py-2 pr-10 border border-neutral-300 placeholder-neutral-500 text-neutral-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 focus:z-10 sm:text-sm"
-                  placeholder="Confirmer votre mot de passe"
+                  placeholder="Confirmer le mot de passe"
                 />
                 <button
                   type="button"
@@ -161,7 +162,7 @@ export default function SignupPage() {
                   Création...
                 </div>
               ) : (
-                'Créer le compte'
+                'Créer un compte'
               )}
             </button>
           </div>
