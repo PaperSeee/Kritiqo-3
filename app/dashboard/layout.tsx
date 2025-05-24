@@ -8,6 +8,7 @@ import {
   HomeIcon,
   StarIcon,
   EnvelopeIcon,
+  BuildingStorefrontIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon
@@ -15,6 +16,7 @@ import {
 
 const navigation = [
   { name: 'Accueil', href: '/dashboard', icon: HomeIcon },
+  { name: 'Restaurants', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
   { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
 ];
@@ -48,7 +50,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="flex min-h-screen bg-neutral-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
@@ -116,10 +118,10 @@ export default function DashboardLayout({
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
         {/* Mobile header */}
-        <div className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <div className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
@@ -127,11 +129,11 @@ export default function DashboardLayout({
             <Bars3Icon className="h-6 w-6" />
           </button>
           <h1 className="text-lg font-semibold text-neutral-900">Kritiqo</h1>
-          <div className="w-10" /> {/* Spacer for centering */}
+          <div className="w-10" />
         </div>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-6">
           {children}
         </main>
       </div>

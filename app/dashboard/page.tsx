@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-6">
       {/* Welcome section */}
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
@@ -116,7 +117,23 @@ export default function DashboardPage() {
             Actions rapides
           </h2>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left">
+            <Link 
+              href="/dashboard/restaurants/add"
+              className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+            >
+              <div className="flex items-center space-x-3">
+                <BuildingStorefrontIcon className="h-5 w-5 text-neutral-600" />
+                <span className="text-sm font-medium text-neutral-900">
+                  Ajouter un restaurant
+                </span>
+              </div>
+              <span className="text-neutral-400">→</span>
+            </Link>
+            
+            <Link 
+              href="/dashboard/reviews/qr"
+              className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+            >
               <div className="flex items-center space-x-3">
                 <QrCodeIcon className="h-5 w-5 text-neutral-600" />
                 <span className="text-sm font-medium text-neutral-900">
@@ -124,9 +141,12 @@ export default function DashboardPage() {
                 </span>
               </div>
               <span className="text-neutral-400">→</span>
-            </button>
+            </Link>
             
-            <button className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left">
+            <Link 
+              href="/dashboard/emails"
+              className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+            >
               <div className="flex items-center space-x-3">
                 <EnvelopeIcon className="h-5 w-5 text-neutral-600" />
                 <span className="text-sm font-medium text-neutral-900">
@@ -134,9 +154,12 @@ export default function DashboardPage() {
                 </span>
               </div>
               <span className="text-neutral-400">→</span>
-            </button>
+            </Link>
             
-            <button className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left">
+            <Link 
+              href="/dashboard/reviews"
+              className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+            >
               <div className="flex items-center space-x-3">
                 <StarIcon className="h-5 w-5 text-neutral-600" />
                 <span className="text-sm font-medium text-neutral-900">
@@ -144,7 +167,7 @@ export default function DashboardPage() {
                 </span>
               </div>
               <span className="text-neutral-400">→</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

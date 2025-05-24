@@ -1,36 +1,50 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { CheckIcon, ClipboardIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { 
+  StarIcon, 
+  ClipboardDocumentIcon, 
+  CheckIcon,
+  ExclamationTriangleIcon,
+  HeartIcon
+} from '@heroicons/react/24/outline';
 
 interface Business {
-  id: string
-  name: string
-  city: string
-  country: string
-  google_link: string | null
-  ubereats_link: string | null
-  deliveroo_link: string | null
-  takeaway_link: string | null
+  id: string;
+  name: string;
+  slug: string;
+  city: string;
+  country: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  google_link: string;
+  ubereats_link?: string;
+  deliveroo_link?: string;
+  takeaway_link?: string;
+  created_at: string;
 }
 
 interface Platform {
-  name: string
-  url: string
-  icon: string
-  color: string
+  name: string;
+  url: string;
+  icon: string;
+  color: string;
+  isOpen: boolean;
+  description?: string;
 }
 
 export default function ReviewPage({ params }: { params: { slug: string } }) {
-  const [business, setBusiness] = useState<Business | null>(null)
-  const [review, setReview] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [copiedPlatform, setCopiedPlatform] = useState<string | null>(null)
+  const [business, setBusiness] = useState<Business | null>(null);
+  const [review, setReview] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [reviewWritten, setReviewWritten] = useState(false);
 
   useEffect(() => {
-    fetchBusiness()
-  }, [params.slug])
+    fetchBusiness();
+  }, [params.slug]);
 
   const fetchBusiness = async () => {
     try {
@@ -38,195 +52,256 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
         .from('businesses')
         .select('*')
         .eq('slug', params.slug)
-        .single()
+        .single();
 
-      if (error) throw error
-      setBusiness(data)
+      if (error) throw error;
+      setBusiness(data);
     } catch (error) {
-      console.error('Error fetching business:', error)
+      console.error('Error fetching business:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const platforms: Platform[] = business ? [
-    {
-      name: 'Google',
-      url: business.google_link || '',
-      icon: '🔍',
-      color: 'bg-red-50 border-red-200 text-red-800 hover:bg-red-100'
-    },
-    {
-      name: 'Uber Eats',
-      url: business.ubereats_link || '',
-      icon: '🚗',
-      color: 'bg-green-50 border-green-200 text-green-800 hover:bg-green-100'
-    },
-    {
-      name: 'Deliveroo',
-      url: business.deliveroo_link || '',
-      icon: '🛵',
-      color: 'bg-cyan-50 border-cyan-200 text-cyan-800 hover:bg-cyan-100'
-    },
-    {
-      name: 'Takeaway',
-      url: business.takeaway_link || '',
-      icon: '🍔',
-      color: 'bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100'
+  const copyToClipboard = async (text: string, platformName: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(platformName);
+      setTimeout(() => setCopied(null), 3000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
     }
-  ].filter(platform => platform.url) : []
+  };
 
   const handlePlatformClick = async (platform: Platform) => {
-    if (!review.trim()) {
-      alert('Veuillez d\'abord écrire votre avis')
-      return
+    if (review.trim()) {
+      await copyToClipboard(review, platform.name);
+      // Small delay to ensure copy notification is visible
+      setTimeout(() => {
+        window.open(platform.url, '_blank');
+      }, 500);
+    } else {
+      window.open(platform.url, '_blank');
     }
+  };
 
-    try {
-      // Copy review to clipboard
-      await navigator.clipboard.writeText(review)
-      setCopiedPlatform(platform.name)
-
-      // Show confirmation
-      setTimeout(() => setCopiedPlatform(null), 3000)
-
-      // Open platform in new tab
-      window.open(platform.url, '_blank')
-    } catch (error) {
-      console.error('Error copying to clipboard:', error)
-      alert('Erreur lors de la copie du message')
+  const handleReviewChange = (value: string) => {
+    setReview(value);
+    if (value.trim() && !reviewWritten) {
+      setReviewWritten(true);
     }
-  }
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900"></div>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
       </div>
-    )
+    );
   }
 
   if (!business) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-2">Entreprise non trouvée</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 mb-4">Restaurant non trouvé</h1>
           <p className="text-neutral-600">Le lien que vous avez suivi n'est pas valide.</p>
         </div>
       </div>
-    )
+    );
   }
 
+  const platforms: Platform[] = [
+    // Open platforms (no order required)
+    {
+      name: 'Google',
+      url: business.google_link,
+      icon: '🔍',
+      color: 'bg-blue-500 hover:bg-blue-600',
+      isOpen: true
+    },
+    {
+      name: 'Facebook',
+      url: `https://www.facebook.com/search/top?q=${encodeURIComponent(business.name)}`,
+      icon: '📘',
+      color: 'bg-blue-600 hover:bg-blue-700',
+      isOpen: true
+    },
+    {
+      name: 'TripAdvisor',
+      url: `https://www.tripadvisor.com/Search?q=${encodeURIComponent(business.name + ' ' + business.city)}`,
+      icon: '🦉',
+      color: 'bg-green-600 hover:bg-green-700',
+      isOpen: true
+    },
+    // Closed platforms (order required)
+    ...(business.ubereats_link ? [{
+      name: 'Uber Eats',
+      url: business.ubereats_link,
+      icon: '🍔',
+      color: 'bg-black hover:bg-neutral-800',
+      isOpen: false,
+      description: 'Commande requise'
+    }] : []),
+    ...(business.deliveroo_link ? [{
+      name: 'Deliveroo',
+      url: business.deliveroo_link,
+      icon: '🛵',
+      color: 'bg-teal-500 hover:bg-teal-600',
+      isOpen: false,
+      description: 'Commande requise'
+    }] : []),
+    ...(business.takeaway_link ? [{
+      name: 'Takeaway',
+      url: business.takeaway_link,
+      icon: '🥡',
+      color: 'bg-orange-500 hover:bg-orange-600',
+      isOpen: false,
+      description: 'Commande requise'
+    }] : [])
+  ];
+
+  const openPlatforms = platforms.filter(p => p.isOpen);
+  const closedPlatforms = platforms.filter(p => !p.isOpen);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 py-12">
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-neutral-900 to-neutral-700 p-8 text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              {business.name}
-            </h1>
-            <p className="text-neutral-300">
-              {business.city}, {business.country}
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <HeartIcon className="h-8 w-8 text-orange-500 mr-2" />
+            <h1 className="text-3xl font-bold text-neutral-900">{business.name}</h1>
+          </div>
+          <p className="text-neutral-600 mb-2">{business.city}, {business.country}</p>
+          <p className="text-lg text-neutral-700">
+            Votre avis compte ! Aidez d'autres clients à découvrir ce restaurant.
+          </p>
+        </div>
+
+        {/* Review Writing Section */}
+        <div className="bg-white rounded-xl shadow-lg border border-neutral-200 p-6 mb-8">
+          <div className="flex items-center mb-4">
+            <StarIcon className="h-6 w-6 text-yellow-500 mr-2" />
+            <h2 className="text-xl font-semibold text-neutral-800">
+              Rédigez votre avis
+            </h2>
+          </div>
+          
+          <textarea
+            value={review}
+            onChange={(e) => handleReviewChange(e.target.value)}
+            placeholder="Partagez votre expérience... Qu'avez-vous aimé ? Le service, la nourriture, l'ambiance ?"
+            className="w-full h-32 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+            maxLength={500}
+          />
+          
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-sm text-neutral-500">
+              {review.length}/500 caractères
+            </span>
+            {reviewWritten && (
+              <div className="flex items-center text-green-600 text-sm">
+                <CheckIcon className="h-4 w-4 mr-1" />
+                Avis rédigé !
+              </div>
+            )}
           </div>
 
-          {/* Content */}
-          <div className="p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold text-neutral-800 mb-3">
-                Partagez votre expérience
-              </h2>
-              <p className="text-neutral-600">
-                Rédigez votre avis ci-dessous, puis choisissez où le publier
+          {reviewWritten && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center text-green-700">
+                <CheckIcon className="h-5 w-5 mr-2" />
+                <span className="font-medium">Parfait !</span>
+              </div>
+              <p className="text-green-600 text-sm mt-1">
+                Votre avis sera automatiquement copié quand vous cliquerez sur une plateforme.
               </p>
             </div>
+          )}
+        </div>
 
-            {/* Review textarea */}
-            <div className="mb-8">
-              <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Votre avis
-              </label>
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                placeholder="Décrivez votre expérience..."
-                rows={6}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-neutral-500 focus:border-transparent resize-none"
-              />
-              <p className="text-xs text-neutral-500 mt-2">
-                {review.length} caractères
-              </p>
-            </div>
-
-            {/* Platform buttons */}
-            {platforms.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-neutral-800 text-center mb-4">
-                  Choisissez où publier votre avis
-                </h3>
-                
-                <div className="grid gap-3">
-                  {platforms.map((platform) => (
-                    <button
-                      key={platform.name}
-                      onClick={() => handlePlatformClick(platform)}
-                      disabled={!review.trim()}
-                      className={`
-                        w-full p-4 border-2 rounded-xl transition-all duration-200 flex items-center justify-between
-                        ${review.trim() 
-                          ? platform.color 
-                          : 'bg-neutral-100 border-neutral-200 text-neutral-400 cursor-not-allowed'
-                        }
-                      `}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{platform.icon}</span>
-                        <span className="font-medium">Publier sur {platform.name}</span>
-                      </div>
-                      
-                      {copiedPlatform === platform.name ? (
-                        <div className="flex items-center space-x-2 text-green-600">
-                          <CheckIcon className="h-5 w-5" />
-                          <span className="text-sm">Copié !</span>
-                        </div>
-                      ) : (
-                        <ClipboardIcon className="h-5 w-5" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                {copiedPlatform && (
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-                    <p className="text-green-800 font-medium mb-1">
-                      Message copié avec succès !
-                    </p>
-                    <p className="text-sm text-green-600">
-                      Collez-le sur {copiedPlatform} et confirmez l'envoi
-                    </p>
+        {/* Open Platforms */}
+        {openPlatforms.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+              <span className="text-green-500 mr-2">✓</span>
+              Plateformes ouvertes - Avis libre
+            </h3>
+            <div className="grid gap-3">
+              {openPlatforms.map((platform) => (
+                <button
+                  key={platform.name}
+                  onClick={() => handlePlatformClick(platform)}
+                  className={`${platform.color} text-white p-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-between`}
+                >
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">{platform.icon}</span>
+                    <span className="font-medium">Laisser un avis sur {platform.name}</span>
                   </div>
-                )}
-              </div>
-            )}
-
-            {platforms.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-neutral-500">
-                  Aucune plateforme d'avis disponible pour cette entreprise
-                </p>
-              </div>
-            )}
+                  {copied === platform.name && (
+                    <div className="flex items-center text-green-200">
+                      <CheckIcon className="h-4 w-4 mr-1" />
+                      <span className="text-sm">Copié !</span>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
+        )}
 
-          {/* Footer */}
-          <div className="bg-neutral-50 px-8 py-4 text-center">
-            <p className="text-xs text-neutral-500">
-              Propulsé par <span className="font-semibold text-neutral-700">Kritiqo</span>
-            </p>
+        {/* Closed Platforms */}
+        {closedPlatforms.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+              <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 mr-2" />
+              Plateformes de livraison - Commande requise
+            </h3>
+            <div className="grid gap-3">
+              {closedPlatforms.map((platform) => (
+                <div key={platform.name} className="relative">
+                  <button
+                    onClick={() => handlePlatformClick(platform)}
+                    className={`${platform.color} text-white p-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-between w-full`}
+                  >
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-3">{platform.icon}</span>
+                      <div className="text-left">
+                        <div className="font-medium">Laisser un avis sur {platform.name}</div>
+                        <div className="text-sm opacity-90">Vous devez avoir commandé via cette plateforme</div>
+                      </div>
+                    </div>
+                    {copied === platform.name && (
+                      <div className="flex items-center text-green-200">
+                        <CheckIcon className="h-4 w-4 mr-1" />
+                        <span className="text-sm">Copié !</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* Instructions */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h4 className="font-medium text-blue-800 mb-2">Comment ça marche ?</h4>
+          <ol className="text-blue-700 text-sm space-y-1">
+            <li>1. Rédigez votre avis ci-dessus</li>
+            <li>2. Cliquez sur la plateforme de votre choix</li>
+            <li>3. Votre avis sera copié automatiquement</li>
+            <li>4. Collez-le sur la plateforme et validez</li>
+          </ol>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-sm text-neutral-500">
+          <p>Merci de prendre le temps de partager votre expérience !</p>
+          <p className="mt-1">Vos avis aident les restaurateurs à s'améliorer.</p>
         </div>
       </div>
     </div>
-  )
+  );
 }
