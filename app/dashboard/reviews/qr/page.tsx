@@ -221,4 +221,14 @@ export default function QRPage() {
                     </div>
                   ))}
                 </div>
-                <button className="w-full bg-neutral-900 text-white py-2 rounded-lg
+                <button className="w-full bg-neutral-900 text-white py-2 rounded-lg text-sm">
+                  Envoyer l'avis
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
