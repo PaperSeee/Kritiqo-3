@@ -2,10 +2,12 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { supabase } from '@/lib/supabase'
-import type { User, AuthError } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
+import type { User, Session, AuthError } from '@supabase/supabase-js'
 
 interface AuthContextType {
   user: User | null
+  session: Session | null
   loading: boolean
   signUp: (email: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
@@ -16,12 +18,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
     }
@@ -31,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -42,20 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string): Promise<void> => {
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+    router.push('/dashboard')
   }
 
   const signIn = async (email: string, password: string): Promise<void> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
+    router.push('/dashboard')
   }
 
   const signOut = async (): Promise<void> => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    router.push('/login')
   }
 
   const value = {
     user,
+    session,
     loading,
     signUp,
     signIn,
