@@ -37,7 +37,7 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password);
-      router.push('/dashboard');
+      // Remove duplicate router.push - signUp already handles navigation
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
       setError(errorMessage);

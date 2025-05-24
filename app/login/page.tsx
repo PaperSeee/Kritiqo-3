@@ -29,6 +29,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
+      // Remove duplicate router.push - signIn already handles navigation
       router.push('/dashboard');
     } catch (error) {
       setError('Email ou mot de passe incorrect');
