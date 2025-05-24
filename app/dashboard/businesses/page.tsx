@@ -390,7 +390,7 @@ function BusinessCard({ business, onDelete, generateQRCode }: {
             {platformLinks.filter(p => p.available).map((platform) => (
               <a
                 key={platform.name}
-                href={platform.url}
+                href={platform.url ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-neutral-500 hover:text-neutral-700"
@@ -403,7 +403,7 @@ function BusinessCard({ business, onDelete, generateQRCode }: {
 
         {showQR && qrCode && (
           <div className="mt-4 p-4 bg-neutral-50 rounded-lg text-center">
-            <img src={qrCode} alt="QR Code" className="mx-auto mb-2" />
+            <img src={qrCode ?? undefined} alt="QR Code" className="mx-auto mb-2" />
             <p className="text-xs text-neutral-500">
               Scannez ce QR code pour accéder au lien d'avis
             </p>

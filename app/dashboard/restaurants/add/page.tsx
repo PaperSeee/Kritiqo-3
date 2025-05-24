@@ -222,8 +222,7 @@ export default function AddRestaurantPage() {
             </h3>
             {qrCodeUrl && (
               <div className="bg-white p-6 rounded-lg border-2 border-neutral-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
+                <img src={qrCodeUrl ?? undefined} alt="QR Code" className="w-64 h-64" />
               </div>
             )}
             <button

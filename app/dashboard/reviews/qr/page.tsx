@@ -64,7 +64,7 @@ export default function QRPage() {
             <div className="bg-neutral-100 rounded-xl p-8 mb-6">
               <div className="w-48 h-48 mx-auto bg-white rounded-lg border-2 border-neutral-200 flex items-center justify-center overflow-hidden">
                 <img 
-                  src={generateQRCode(qrSize)} 
+                  src={generateQRCode(qrSize) ?? undefined} 
                   alt="QR Code" 
                   className="w-full h-full object-contain"
                 />
@@ -221,18 +221,4 @@ export default function QRPage() {
                     </div>
                   ))}
                 </div>
-                <button className="w-full bg-neutral-900 text-white py-2 rounded-lg text-sm">
-                  Laisser un avis
-                </button>
-              </div>
-              
-              <p className="text-xs text-neutral-500">
-                Propulsé par Kritiqo
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+                <button className="w-full bg-neutral-900 text-white py-2 rounded-lg
