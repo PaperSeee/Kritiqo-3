@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import AzureADProvider from 'next-auth/providers/azure-ad'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export const authOptions: NextAuthOptions = {
@@ -13,6 +14,16 @@ export const authOptions: NextAuthOptions = {
           access_type: "offline",
           response_type: "code",
           scope: "openid email profile https://www.googleapis.com/auth/gmail.readonly"
+        }
+      }
+    }),
+    AzureADProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID!,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
+      tenantId: process.env.AZURE_AD_TENANT_ID,
+      authorization: {
+        params: {
+          scope: "openid email profile https://graph.microsoft.com/Mail.Read offline_access"
         }
       }
     })
@@ -67,14 +78,14 @@ export const authOptions: NextAuthOptions = {
           token.userId = user.id
           
           // Sauvegarder dans Supabase si c'est un nouveau compte
-          if (account.provider === 'google' && account.access_token) {
+          if ((account.provider === 'google' || account.provider === 'azure-ad') && account.access_token) {
             try {
               const { error } = await supabaseAdmin
                 .from('connected_emails')
                 .upsert({
                   user_id: user.id,
                   email: user.email,
-                  provider: 'google',
+                  provider: account.provider === 'azure-ad' ? 'azure-ad' : 'google',
                   access_token: account.access_token,
                   refresh_token: account.refresh_token,
                   updated_at: new Date().toISOString()
@@ -83,52 +94,29 @@ export const authOptions: NextAuthOptions = {
                 })
               
               if (error) {
-                console.error("❌ Erreur Supabase lors de la sauvegarde:", error)
+                console.error("❌ Erreur lors de la sauvegarde dans Supabase:", error)
               } else {
                 console.log("✅ Tokens sauvegardés dans Supabase")
               }
-            } catch (supabaseErr) {
-              if (supabaseErr instanceof Error) {
-                console.error("❌ Erreur Supabase:", supabaseErr.message, supabaseErr.name)
-              } else {
-                console.error("❌ Erreur Supabase inconnue:", JSON.stringify(supabaseErr))
-              }
+            } catch (supabaseError) {
+              console.error("❌ Erreur Supabase:", supabaseError)
             }
           }
         }
         
         return token
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error("❌ Erreur dans le callback JWT:", err.message, err.name)
-        } else {
-          console.error("❌ Erreur inconnue dans le callback JWT:", JSON.stringify(err))
-        }
+      } catch (error) {
+        console.error("❌ Erreur dans le callback JWT:", error)
         return token
       }
     },
 
     async session({ session, token }) {
-      try {
-        // Ajouter les informations du token à la session
-        if (token) {
-          session.accessToken = token.accessToken as string
-          session.provider = token.provider as string
-          session.userId = token.userId as string
-        }
-        
-        return session
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error("❌ Erreur dans le callback session:", err.message, err.name)
-        } else {
-          console.error("❌ Erreur inconnue dans le callback session:", JSON.stringify(err))
-        }
-        return session
-      }
+      session.accessToken = token.accessToken
+      session.refreshToken = token.refreshToken
+      session.provider = token.provider
+      session.userId = token.userId
+      return session
     }
-  },
-  
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development'
+  }
 }

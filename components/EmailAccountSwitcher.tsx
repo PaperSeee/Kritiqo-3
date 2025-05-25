@@ -46,7 +46,15 @@ export default function EmailAccountSwitcher({
   const handleAddAccount = async (provider: 'google' | 'azure-ad') => {
     setIsLoading(true)
     try {
-      await signIn(provider, { callbackUrl: window.location.href })
+      // Utiliser les bons provider IDs pour NextAuth
+      const providerMap = {
+        'google': 'google',
+        'azure-ad': 'azure-ad'
+      }
+      
+      await signIn(providerMap[provider], { 
+        callbackUrl: window.location.href 
+      })
     } catch (err) {
       if (err instanceof Error) {
         console.error('Erreur lors de l\'ajout du compte:', err.message, err.name)
