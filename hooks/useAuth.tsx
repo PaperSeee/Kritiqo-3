@@ -36,8 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
-      } catch (error) {
-        console.error('Error getting session:', error);
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error('Erreur lors de la récupération de la session:', err.message, err.name)
+        } else {
+          console.error('Erreur inconnue lors de la récupération de la session:', JSON.stringify(err))
+        }
       } finally {
         setLoading(false);
       }

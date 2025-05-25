@@ -1,7 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import AzureADProvider from 'next-auth/providers/azure-ad'
-import { supabaseAdmin } from './supabase-admin'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,146 +9,126 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: "https://www.googleapis.com/auth/gmail.readonly email profile openid"
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          scope: "openid email profile https://www.googleapis.com/auth/gmail.readonly"
         }
       }
-    }),
-    AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID!,
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-      tenantId: "common",
-      authorization: {
-        params: {
-          scope: "openid profile email offline_access https://graph.microsoft.com/Mail.Read"
-        }
-      }
-    }),
+    })
   ],
   
-  // Configuration des cookies pour éviter l'erreur "State cookie was missing"
-  cookies: {
-    // Cookie d'état utilisé pendant le flow OAuth
-    state: {
-      name: "next-auth.state",
-      options: {
-        httpOnly: true,
-        sameSite: "lax", // Permet au cookie de passer lors des redirections OAuth
-        path: "/",
-        secure: process.env.NODE_ENV === "production", // HTTPS en prod, HTTP en dev
-        maxAge: 900, // 15 minutes
-      },
-    },
-    // Cookie de session
-    sessionToken: {
-      name: process.env.NODE_ENV === "production" 
-        ? "__Secure-next-auth.session-token" 
-        : "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 30 * 24 * 60 * 60, // 30 jours
-      },
-    },
-    // Cookie CSRF
-    csrfToken: {
-      name: process.env.NODE_ENV === "production" 
-        ? "__Host-next-auth.csrf-token" 
-        : "next-auth.csrf-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
+  pages: {
+    error: "/error",
+    signIn: "/login"
   },
-
+  
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (!account || !user.email) return false
-
       try {
-        // Créer ou récupérer l'utilisateur
-        const { data: existingUser, error: userError } = await supabaseAdmin
-          .from('users')
-          .select('id')
-          .eq('email', user.email)
-          .single()
-
-        let userId = existingUser?.id
-
-        if (!existingUser) {
-          const { data: newUser, error: createError } = await supabaseAdmin
-            .from('users')
-            .insert({
-              email: user.email,
-              name: user.name,
-              image: user.image
-            })
-            .select('id')
-            .single()
-
-          if (createError) throw createError
-          userId = newUser.id
+        console.log("🔍 Tentative de connexion:")
+        console.log("- Email:", profile?.email)
+        console.log("- Provider:", account?.provider)
+        console.log("- Access Token disponible:", !!account?.access_token)
+        console.log("- Refresh Token disponible:", !!account?.refresh_token)
+        
+        if (!profile?.email) {
+          console.error("❌ Email manquant dans le profil")
+          return false
         }
 
-        // Sauvegarder la connexion email
-        const { error: emailError } = await supabaseAdmin
-          .from('connected_emails')
-          .upsert({
-            user_id: userId,
-            email: user.email,
-            provider: account.provider,
-            access_token: account.access_token,
-            refresh_token: account.refresh_token,
-            expires_at: account.expires_at,
-            token_type: account.token_type || 'Bearer',
-            scope: account.scope,
-            updated_at: new Date().toISOString()
-          })
+        // Pendant le développement, autoriser toutes les connexions
+        if (process.env.NODE_ENV === 'development') {
+          console.log("✅ Mode développement - connexion autorisée")
+          return true
+        }
 
-        if (emailError) throw emailError
-
+        // En production, vous pouvez ajouter des vérifications supplémentaires ici
+        console.log("✅ Connexion autorisée")
         return true
-      } catch (error) {
-        console.error('Erreur lors de la connexion:', error)
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error("❌ Erreur dans le callback signIn:", err.message, err.name)
+        } else {
+          console.error("❌ Erreur inconnue dans le callback signIn:", JSON.stringify(err))
+        }
         return false
       }
     },
-    async jwt({ token, account, user }) {
-      if (account && user) {
-        token.accessToken = account.access_token
-        token.refreshToken = account.refresh_token
-        token.provider = account.provider
-        token.expiresAt = account.expires_at
-        token.email = user.email
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user?.email) {
-        // Récupérer l'utilisateur depuis la DB
-        const { data: user } = await supabaseAdmin
-          .from('users')
-          .select('id')
-          .eq('email', session.user.email)
-          .single()
 
-        if (user) {
-          session.userId = user.id
+    async jwt({ token, account, user }) {
+      try {
+        // Première connexion - sauvegarder les tokens
+        if (account && user) {
+          console.log("💾 Sauvegarde des tokens dans JWT")
+          token.accessToken = account.access_token
+          token.refreshToken = account.refresh_token
+          token.provider = account.provider
+          token.userId = user.id
+          
+          // Sauvegarder dans Supabase si c'est un nouveau compte
+          if (account.provider === 'google' && account.access_token) {
+            try {
+              const { error } = await supabaseAdmin
+                .from('connected_emails')
+                .upsert({
+                  user_id: user.id,
+                  email: user.email,
+                  provider: 'google',
+                  access_token: account.access_token,
+                  refresh_token: account.refresh_token,
+                  updated_at: new Date().toISOString()
+                }, {
+                  onConflict: 'user_id,provider'
+                })
+              
+              if (error) {
+                console.error("❌ Erreur Supabase lors de la sauvegarde:", error)
+              } else {
+                console.log("✅ Tokens sauvegardés dans Supabase")
+              }
+            } catch (supabaseErr) {
+              if (supabaseErr instanceof Error) {
+                console.error("❌ Erreur Supabase:", supabaseErr.message, supabaseErr.name)
+              } else {
+                console.error("❌ Erreur Supabase inconnue:", JSON.stringify(supabaseErr))
+              }
+            }
+          }
         }
+        
+        return token
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error("❌ Erreur dans le callback JWT:", err.message, err.name)
+        } else {
+          console.error("❌ Erreur inconnue dans le callback JWT:", JSON.stringify(err))
+        }
+        return token
       }
-      
-      session.accessToken = token.accessToken as string
-      session.refreshToken = token.refreshToken as string
-      session.provider = token.provider as string
-      session.expiresAt = token.expiresAt as number
-      return session
     },
+
+    async session({ session, token }) {
+      try {
+        // Ajouter les informations du token à la session
+        if (token) {
+          session.accessToken = token.accessToken as string
+          session.provider = token.provider as string
+          session.userId = token.userId as string
+        }
+        
+        return session
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error("❌ Erreur dans le callback session:", err.message, err.name)
+        } else {
+          console.error("❌ Erreur inconnue dans le callback session:", JSON.stringify(err))
+        }
+        return session
+      }
+    }
   },
-  pages: {
-    error: '/error',
-  },
+  
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development'
 }

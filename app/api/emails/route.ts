@@ -143,8 +143,12 @@ export async function GET(request: NextRequest) {
         })
 
         allEmails.push(...emails)
-      } catch (error) {
-        console.error(`Erreur pour le compte ${account.email}:`, error)
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error(`Erreur pour le compte ${account.email}:`, err.message, err.name)
+        } else {
+          console.error(`Erreur inconnue pour le compte ${account.email}:`, JSON.stringify(err))
+        }
       }
     }
 
@@ -152,8 +156,12 @@ export async function GET(request: NextRequest) {
       emails: allEmails,
       connectedEmails 
     })
-  } catch (error) {
-    console.error('Erreur lors de la récupération des emails:', error)
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la récupération des emails:', err.message, err.name, err.stack)
+    } else {
+      console.error('Erreur inconnue lors de la récupération des emails:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur serveur' },
       { status: 500 }

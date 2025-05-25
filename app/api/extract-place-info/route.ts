@@ -56,11 +56,18 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(result)
-  } catch (err: any) {
-    console.error('Error extracting place info:', err)
-    return NextResponse.json({
-      error: err.message || 'Erreur serveur inconnue'
-    }, { status: 500 })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de l\'extraction des informations du lieu:', err.message, err.name, err.stack)
+      return NextResponse.json({
+        error: err.message || 'Erreur serveur inconnue'
+      }, { status: 500 })
+    } else {
+      console.error('Erreur inconnue lors de l\'extraction des informations du lieu:', JSON.stringify(err))
+      return NextResponse.json({
+        error: 'Erreur serveur inconnue'
+      }, { status: 500 })
+    }
   }
 }
 
@@ -102,9 +109,13 @@ async function getPlaceDetails(placeId: string, apiKey: string) {
       country: countryComponent?.long_name || 'Pays inconnu',
       address: place.formatted_address
     }
-  } catch (error) {
-    console.error('Error fetching place details:', error)
-    throw error
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la récupération des détails du lieu:', err.message, err.name)
+    } else {
+      console.error('Erreur inconnue lors de la récupération des détails du lieu:', JSON.stringify(err))
+    }
+    throw err
   }
 }
 
@@ -133,9 +144,13 @@ async function findPlaceFromText(businessName: string, apiKey: string) {
 
     // Get detailed place information
     return await getPlaceDetails(placeId, apiKey)
-  } catch (error) {
-    console.error('Error finding place:', error)
-    throw error
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la recherche du lieu:', err.message, err.name)
+    } else {
+      console.error('Erreur inconnue lors de la recherche du lieu:', JSON.stringify(err))
+    }
+    throw err
   }
 }
 

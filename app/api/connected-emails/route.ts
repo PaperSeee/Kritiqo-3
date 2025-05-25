@@ -7,7 +7,8 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.userId) {
+    // Vérifier que l'utilisateur est connecté
+    if (!session || !session.user || !session.userId) {
       return NextResponse.json(
         { error: 'Non autorisé' },
         { status: 401 }
@@ -23,8 +24,12 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json({ connectedEmails })
-  } catch (error) {
-    console.error('Erreur lors de la récupération des emails connectés:', error)
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la récupération des emails connectés:', err.message, err.name, err.stack)
+    } else {
+      console.error('Erreur inconnue lors de la récupération des emails connectés:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur serveur' },
       { status: 500 }
@@ -36,7 +41,8 @@ export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.userId) {
+    // Vérifier que l'utilisateur est connecté
+    if (!session || !session.user || !session.userId) {
       return NextResponse.json(
         { error: 'Non autorisé' },
         { status: 401 }
@@ -62,8 +68,12 @@ export async function DELETE(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Erreur lors de la suppression de l\'email connecté:', error)
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la suppression de l\'email connecté:', err.message, err.name, err.stack)
+    } else {
+      console.error('Erreur inconnue lors de la suppression de l\'email connecté:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur serveur' },
       { status: 500 }

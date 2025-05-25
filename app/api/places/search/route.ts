@@ -15,11 +15,27 @@ export async function GET(request: NextRequest) {
   try {
     const places = await searchPlaces(query);
     return NextResponse.json({ places });
-  } catch (error: any) {
-    console.error('Error in places search API:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to search places' },
-      { status: 500 }
-    );
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error(
+        'Erreur dans l\'API de recherche de lieux:',
+        err.message,
+        err.name,
+        err.stack
+      );
+      return NextResponse.json(
+        { error: err.message || 'Failed to search places' },
+        { status: 500 }
+      );
+    } else {
+      console.error(
+        'Erreur inconnue dans l\'API de recherche de lieux:',
+        JSON.stringify(err)
+      );
+      return NextResponse.json(
+        { error: 'Failed to search places' },
+        { status: 500 }
+      );
+    }
   }
 }

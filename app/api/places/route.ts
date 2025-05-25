@@ -46,8 +46,12 @@ export async function POST(request: NextRequest) {
       place_id: placeId
     })
 
-  } catch (error) {
-    console.error('Erreur Places API:', error)
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur Places API:', err.message, err.name, err.stack)
+    } else {
+      console.error('Erreur inconnue Places API:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des données' },
       { status: 500 }

@@ -14,17 +14,13 @@ export interface PlaceDetails {
 }
 
 export async function searchPlaces(query: string): Promise<PlaceDetails[]> {
-  if (!GOOGLE_PLACES_API_KEY) {
-    throw new Error('Google Places API key not configured');
-  }
-
   try {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${GOOGLE_PLACES_API_KEY}`
     );
 
     if (!response.ok) {
-      throw new Error('Failed to search places');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
@@ -43,9 +39,13 @@ export async function searchPlaces(query: string): Promise<PlaceDetails[]> {
       user_ratings_total: place.user_ratings_total,
       url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
     }));
-  } catch (error) {
-    console.error('Error searching places:', error);
-    throw error;
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la recherche de lieux:', err.message, err.name);
+    } else {
+      console.error('Erreur inconnue lors de la recherche de lieux:', JSON.stringify(err));
+    }
+    throw err;
   }
 }
 

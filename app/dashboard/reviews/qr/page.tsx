@@ -25,7 +25,11 @@ export default function QRPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (err instanceof Error) {
+        console.error('Erreur lors de la copie dans le presse-papiers:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la copie dans le presse-papiers:', JSON.stringify(err))
+      }
     }
   }
 

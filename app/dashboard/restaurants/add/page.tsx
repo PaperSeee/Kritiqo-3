@@ -103,9 +103,14 @@ export default function AddRestaurantPage() {
     try {
       const results = await searchPlaces(searchQuery)
       setSearchResults(results)
-    } catch (error) {
-      console.error('Search error:', error)
-      setErrors({ search: 'Erreur lors de la recherche. Veuillez réessayer.' })
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la recherche:', err.message, err.name)
+        setErrors({ search: 'Erreur lors de la recherche. Veuillez réessayer.' })
+      } else {
+        console.error('Erreur inconnue lors de la recherche:', JSON.stringify(err))
+        setErrors({ search: 'Erreur lors de la recherche. Veuillez réessayer.' })
+      }
     } finally {
       setIsSearching(false)
     }
@@ -129,8 +134,12 @@ export default function AddRestaurantPage() {
     try {
       // For production, use a proper QR code library like qrcode
       return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
-    } catch (error) {
-      console.error('Error generating QR code:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la génération du QR code:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la génération du QR code:', JSON.stringify(err))
+      }
       return ''
     }
   }
@@ -173,9 +182,14 @@ export default function AddRestaurantPage() {
       setQrCodeUrl(qrCode)
       setSuccess(true)
       
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur lors de l\'ajout du restaurant'
-      setErrors({ submit: errorMessage })
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de l\'ajout du restaurant:', err.message, err.name)
+        setErrors({ submit: err.message })
+      } else {
+        console.error('Erreur inconnue lors de l\'ajout du restaurant:', JSON.stringify(err))
+        setErrors({ submit: 'Erreur lors de l\'ajout du restaurant' })
+      }
     } finally {
       setSubmitting(false)
     }

@@ -28,8 +28,12 @@ export default function EmailAccountSwitcher({
         const data = await response.json()
         setConnectedEmails(data.connectedEmails)
       }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des emails connectés:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la récupération des emails connectés:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la récupération des emails connectés:', JSON.stringify(err))
+      }
     }
   }
 
@@ -43,8 +47,12 @@ export default function EmailAccountSwitcher({
     setIsLoading(true)
     try {
       await signIn(provider, { callbackUrl: window.location.href })
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout du compte:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de l\'ajout du compte:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de l\'ajout du compte:', JSON.stringify(err))
+      }
     } finally {
       setIsLoading(false)
     }
@@ -66,8 +74,12 @@ export default function EmailAccountSwitcher({
           onEmailChange(null)
         }
       }
-    } catch (error) {
-      console.error('Erreur lors de la suppression du compte:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la suppression du compte:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la suppression du compte:', JSON.stringify(err))
+      }
     }
   }
 

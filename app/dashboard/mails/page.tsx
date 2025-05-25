@@ -167,9 +167,14 @@ export default function MailsPage() {
       }))
 
       setAllEmails(formattedEmails)
-    } catch (error) {
-      console.error('Erreur lors de la récupération des emails:', error)
-      setEmailError(error instanceof Error ? error.message : 'Erreur inconnue')
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la récupération des emails:', err.message, err.name)
+        setEmailError(err.message)
+      } else {
+        console.error('Erreur inconnue lors de la récupération des emails:', JSON.stringify(err))
+        setEmailError('Erreur inconnue')
+      }
     } finally {
       setIsLoadingEmails(false)
     }

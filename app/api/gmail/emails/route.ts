@@ -130,8 +130,12 @@ export async function GET(request: NextRequest) {
           date,
           source: 'gmail'
         }
-      } catch (error) {
-        console.error(`❌ Erreur lors du traitement du message ${message.id}:`, error)
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error(`❌ Erreur lors du traitement du message ${message.id}:`, err.message, err.name)
+        } else {
+          console.error(`❌ Erreur inconnue lors du traitement du message ${message.id}:`, JSON.stringify(err))
+        }
         return null
       }
     })
@@ -140,12 +144,16 @@ export async function GET(request: NextRequest) {
 
     console.log(`✅ ${emails.length} emails traités avec succès`)
     return NextResponse.json({ emails })
-  } catch (error) {
-    console.error('❌ Erreur complète Gmail API:', {
-      message: error instanceof Error ? error.message : 'Erreur inconnue',
-      stack: error instanceof Error ? error.stack : undefined,
-      error
-    })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('❌ Erreur complète Gmail API:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack
+      })
+    } else {
+      console.error('❌ Erreur inconnue Gmail API:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des emails' },
       { status: 500 }

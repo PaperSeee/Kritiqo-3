@@ -26,8 +26,12 @@ export default function ReviewForm() {
     try {
       // Handle form submission
       console.log('Form data:', data)
-    } catch (error) {
-      console.error('Error submitting form:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la soumission du formulaire:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la soumission du formulaire:', JSON.stringify(err))
+      }
     } finally {
       setIsSubmitting(false)
     }

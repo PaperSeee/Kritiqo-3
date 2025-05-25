@@ -38,9 +38,14 @@ export default function SignupPage() {
     try {
       await signUp(email, password);
       // Remove duplicate router.push - signUp already handles navigation
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
-      setError(errorMessage);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de l\'inscription:', err.message, err.name)
+        setError(err.message);
+      } else {
+        console.error('Erreur inconnue lors de l\'inscription:', JSON.stringify(err))
+        setError('Une erreur est survenue');
+      }
     } finally {
       setLoading(false);
     }

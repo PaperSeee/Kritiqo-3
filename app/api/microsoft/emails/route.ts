@@ -81,12 +81,16 @@ export async function GET(request: NextRequest) {
 
     console.log(`✅ ${emails.length} emails Microsoft traités avec succès`)
     return NextResponse.json({ emails })
-  } catch (error) {
-    console.error('❌ Erreur complète Microsoft Graph API:', {
-      message: error instanceof Error ? error.message : 'Erreur inconnue',
-      stack: error instanceof Error ? error.stack : undefined,
-      error
-    })
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('❌ Erreur complète Microsoft Graph API:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack
+      })
+    } else {
+      console.error('❌ Erreur inconnue Microsoft Graph API:', JSON.stringify(err))
+    }
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des emails Microsoft' },
       { status: 500 }

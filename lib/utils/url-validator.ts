@@ -11,7 +11,12 @@ export function isValidGoogleMapsUrl(url: string): boolean {
        urlObj.hostname === 'google.com') &&
       (urlObj.pathname.includes('/maps/') || urlObj.pathname.includes('/local/'))
     )
-  } catch {
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Erreur lors de la validation de l\'URL:', err.message, err.name)
+    } else {
+      console.error('Erreur inconnue lors de la validation de l\'URL:', JSON.stringify(err))
+    }
     return false
   }
 }

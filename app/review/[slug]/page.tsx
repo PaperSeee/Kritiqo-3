@@ -56,8 +56,12 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
 
       if (error) throw error;
       setBusiness(data);
-    } catch (error) {
-      console.error('Error fetching business:', error);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la récupération du restaurant:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la récupération du restaurant:', JSON.stringify(err))
+      }
     } finally {
       setLoading(false);
     }
@@ -68,8 +72,12 @@ export default function ReviewPage({ params }: { params: { slug: string } }) {
       await navigator.clipboard.writeText(text);
       setCopied(platformName);
       setTimeout(() => setCopied(null), 3000);
-    } catch (error) {
-      console.error('Failed to copy:', error);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la copie dans le presse-papiers:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la copie dans le presse-papiers:', JSON.stringify(err))
+      }
     }
   };
 

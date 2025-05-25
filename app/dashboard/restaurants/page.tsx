@@ -63,9 +63,14 @@ export default function RestaurantsPage() {
       }))
       
       setRestaurants(transformedData)
-    } catch (error: any) {
-      console.error('Error fetching restaurants:', error)
-      setError(error.message || 'Une erreur est survenue lors du chargement des restaurants')
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la récupération des restaurants:', err.message, err.name)
+        setError(err.message || 'Une erreur est survenue lors du chargement des restaurants')
+      } else {
+        console.error('Erreur inconnue lors de la récupération des restaurants:', JSON.stringify(err))
+        setError('Une erreur est survenue lors du chargement des restaurants')
+      }
     } finally {
       setLoading(false)
     }
@@ -82,9 +87,14 @@ export default function RestaurantsPage() {
 
       if (error) throw error
       await fetchRestaurants()
-    } catch (error: any) {
-      console.error('Error deleting restaurant:', error)
-      setError(error.message || 'Erreur lors de la suppression')
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la suppression du restaurant:', err.message, err.name)
+        setError(err.message || 'Erreur lors de la suppression')
+      } else {
+        console.error('Erreur inconnue lors de la suppression du restaurant:', JSON.stringify(err))
+        setError('Erreur lors de la suppression')
+      }
     }
   }
 

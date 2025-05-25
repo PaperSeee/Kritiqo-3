@@ -47,8 +47,12 @@ export default function BusinessesPage() {
 
       if (error) throw error
       setBusinesses(data || [])
-    } catch (error) {
-      console.error('Error fetching businesses:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la récupération des entreprises:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la récupération des entreprises:', JSON.stringify(err))
+      }
     } finally {
       setLoading(false)
     }
@@ -84,9 +88,14 @@ export default function BusinessesPage() {
         deliverooLink: data.deliverooLink,
         takeawayLink: data.takeawayLink,
       }
-    } catch (error) {
-      console.error('Error extracting place info:', error)
-      throw new Error('Impossible d\'extraire les informations de l\'entreprise')
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de l\'extraction des informations du lieu:', err.message, err.name)
+        throw new Error('Impossible d\'extraire les informations de l\'entreprise')
+      } else {
+        console.error('Erreur inconnue lors de l\'extraction des informations du lieu:', JSON.stringify(err))
+        throw new Error('Impossible d\'extraire les informations de l\'entreprise')
+      }
     }
   }
 
@@ -151,9 +160,14 @@ export default function BusinessesPage() {
       setSuccess(true)
       setTimeout(() => setSuccess(false), 5000)
       await fetchBusinesses()
-    } catch (error: any) {
-      console.error('Error adding business:', error)
-      setErrors([error.message || 'Erreur lors de l\'ajout de l\'entreprise'])
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de l\'ajout de l\'entreprise:', err.message, err.name)
+        setErrors([err.message || 'Erreur lors de l\'ajout de l\'entreprise'])
+      } else {
+        console.error('Erreur inconnue lors de l\'ajout de l\'entreprise:', JSON.stringify(err))
+        setErrors(['Erreur lors de l\'ajout de l\'entreprise'])
+      }
     } finally {
       setSubmitting(false)
     }
@@ -170,8 +184,12 @@ export default function BusinessesPage() {
 
       if (error) throw error
       await fetchBusinesses()
-    } catch (error) {
-      console.error('Error deleting business:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la suppression de l\'entreprise:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la suppression de l\'entreprise:', JSON.stringify(err))
+      }
     }
   }
 
@@ -185,8 +203,12 @@ export default function BusinessesPage() {
           light: '#FFFFFF'
         }
       })
-    } catch (error) {
-      console.error('Error generating QR code:', error)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Erreur lors de la génération du QR code:', err.message, err.name)
+      } else {
+        console.error('Erreur inconnue lors de la génération du QR code:', JSON.stringify(err))
+      }
       return ''
     }
   }
