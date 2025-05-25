@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { MagnifyingGlassIcon, FunnelIcon, InboxIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect } from 'react'
+import { FunnelIcon, InboxIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 // Types d'emails simulés
@@ -77,6 +77,94 @@ const mockEmails = [
 const categories = ['Tous', 'Facture', 'RH', 'Client', 'Admin']
 const priorities = ['Tous', 'high', 'medium', 'low']
 
+// Simulated Gmail emails after connection
+const simulateGmailEmails = () => [
+  {
+    id: 'gmail_1',
+    category: 'Facture',
+    subject: 'Votre facture Google Workspace - Janvier 2024',
+    sender: 'noreply@google.com',
+    date: '2024-01-16',
+    priority: 'medium',
+    tags: ['facture', 'google'],
+    preview: 'Votre facture Google Workspace pour janvier est disponible...',
+    read: false,
+    source: 'gmail'
+  },
+  {
+    id: 'gmail_2',
+    category: 'Client',
+    subject: 'Question sur votre produit - Besoin d\'aide',
+    sender: 'nouveau.client@email.com',
+    date: '2024-01-15',
+    priority: 'high',
+    tags: ['support', 'question'],
+    preview: 'Bonjour, j\'ai acheté votre produit et j\'ai quelques questions...',
+    read: false,
+    source: 'gmail'
+  },
+  {
+    id: 'gmail_3',
+    category: 'RH',
+    subject: 'Candidature spontanée - Développeur',
+    sender: 'candidat@exemple.fr',
+    date: '2024-01-14',
+    priority: 'medium',
+    tags: ['recrutement', 'cv'],
+    preview: 'Madame, Monsieur, Je me permets de vous adresser ma candidature...',
+    read: true,
+    source: 'gmail'
+  },
+  {
+    id: 'gmail_4',
+    category: 'Admin',
+    subject: 'Notification de sécurité - Nouvelle connexion',
+    sender: 'security@gmail.com',
+    date: '2024-01-13',
+    priority: 'low',
+    tags: ['sécurité', 'notification'],
+    preview: 'Une nouvelle connexion à votre compte a été détectée...',
+    read: true,
+    source: 'gmail'
+  }
+]
+
+// Auto-categorization function
+const categorizeEmail = (subject: string, sender: string): string => {
+  const subjectLower = subject.toLowerCase()
+  const senderLower = sender.toLowerCase()
+  
+  // Facture keywords
+  if (subjectLower.includes('facture') || subjectLower.includes('invoice') || 
+      subjectLower.includes('payment') || subjectLower.includes('billing') ||
+      senderLower.includes('billing') || senderLower.includes('invoice')) {
+    return 'Facture'
+  }
+  
+  // RH keywords
+  if (subjectLower.includes('candidature') || subjectLower.includes('cv') ||
+      subjectLower.includes('recrutement') || subjectLower.includes('congés') ||
+      subjectLower.includes('rh') || senderLower.includes('rh')) {
+    return 'RH'
+  }
+  
+  // Client keywords
+  if (subjectLower.includes('question') || subjectLower.includes('support') ||
+      subjectLower.includes('aide') || subjectLower.includes('problème') ||
+      subjectLower.includes('réclamation') || subjectLower.includes('commande')) {
+    return 'Client'
+  }
+  
+  // Admin keywords
+  if (subjectLower.includes('sécurité') || subjectLower.includes('notification') ||
+      subjectLower.includes('mise à jour') || subjectLower.includes('système') ||
+      senderLower.includes('admin') || senderLower.includes('noreply')) {
+    return 'Admin'
+  }
+  
+  return 'Client' // Default category
+}
+
 function PriorityBadge({ priority }: { priority: string }) {
   const config = {
     high: { icon: ExclamationTriangleIcon, color: 'text-red-600 bg-red-100' },
@@ -110,24 +198,38 @@ function CategoryBadge({ category }: { category: string }) {
 }
 
 export default function MailsPage() {
-  const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Tous')
   const [selectedPriority, setSelectedPriority] = useState('Tous')
+  const [isGmailConnected, setIsGmailConnected] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [allEmails, setAllEmails] = useState(mockEmails)
 
-  const filteredEmails = mockEmails.filter(email => {
-    const matchesSearch = email.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         email.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         email.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  const connectGmail = async () => {
+    setIsConnecting(true)
     
+    // Simulate OAuth flow
+    setTimeout(() => {
+      const gmailEmails = simulateGmailEmails().map(email => ({
+        ...email,
+        category: categorizeEmail(email.subject, email.sender)
+      }))
+      
+      setAllEmails([...gmailEmails, ...mockEmails])
+      setIsGmailConnected(true)
+      setIsConnecting(false)
+    }, 2000)
+  }
+
+  const filteredEmails = allEmails.filter(email => {
     const matchesCategory = selectedCategory === 'Tous' || email.category === selectedCategory
     const matchesPriority = selectedPriority === 'Tous' || email.priority === selectedPriority
     
-    return matchesSearch && matchesCategory && matchesPriority
+    return matchesCategory && matchesPriority
   })
 
   const emailsByCategory = categories.slice(1).map(category => ({
     category,
-    count: mockEmails.filter(email => email.category === category).length
+    count: allEmails.filter(email => email.category === category).length
   }))
 
   return (
@@ -141,67 +243,89 @@ export default function MailsPage() {
         </p>
       </div>
 
+      {/* Gmail Connection */}
+      {!isGmailConnected && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                📩 Connecter votre boîte Gmail
+              </h3>
+              <p className="text-blue-700">
+                Synchronisez automatiquement vos emails Gmail et catégorisez-les intelligemment
+              </p>
+            </div>
+            <button
+              onClick={connectGmail}
+              disabled={isConnecting}
+              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <EnvelopeIcon className="h-5 w-5" />
+              <span>{isConnecting ? 'Connexion...' : 'Connecter Gmail'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Gmail Connected Status */}
+      {isGmailConnected && (
+        <div className="bg-green-50 rounded-xl border border-green-200 p-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-green-800 font-medium">Gmail connecté</span>
+            <span className="text-green-600 text-sm">
+              • {allEmails.filter(e => e.source === 'gmail').length} nouveaux emails synchronisés
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Statistiques par catégorie */}
-      <div className="grid gap-6 md:grid-cols-4">
-        {emailsByCategory.map(({ category, count }) => (
-          <div key={category} className="bg-white p-6 rounded-xl border border-neutral-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-neutral-800 mb-1">{category}</h3>
-                <p className="text-2xl font-bold text-neutral-900">{count}</p>
+      {isGmailConnected && (
+        <div className="grid gap-6 md:grid-cols-4">
+          {emailsByCategory.map(({ category, count }) => (
+            <div key={category} className="bg-white p-6 rounded-xl border border-neutral-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-neutral-800 mb-1">{category}</h3>
+                  <p className="text-2xl font-bold text-neutral-900">{count}</p>
+                </div>
+                <InboxIcon className="h-8 w-8 text-neutral-400" />
               </div>
-              <InboxIcon className="h-8 w-8 text-neutral-400" />
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* Filtres et recherche */}
+      {/* Filtres */}
       <div className="bg-white p-6 rounded-xl border border-neutral-200">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Recherche */}
-          <div className="flex-1">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
-              <input
-                type="text"
-                placeholder="Rechercher par sujet, expéditeur ou tag..."
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Filtres */}
-          <div className="flex gap-4">
-            <div className="flex items-center space-x-2">
-              <FunnelIcon className="h-5 w-5 text-neutral-500" />
-              <select
-                className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-
+        <div className="flex gap-4">
+          <div className="flex items-center space-x-2">
+            <FunnelIcon className="h-5 w-5 text-neutral-500" />
             <select
               className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-              value={selectedPriority}
-              onChange={(e) => setSelectedPriority(e.target.value)}
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              {priorities.map(priority => (
-                <option key={priority} value={priority}>
-                  {priority === 'Tous' ? 'Toutes priorités' : 
-                   priority === 'high' ? 'Urgent' :
-                   priority === 'medium' ? 'Normal' : 'Faible'}
-                </option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
               ))}
             </select>
           </div>
+
+          <select
+            className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+            value={selectedPriority}
+            onChange={(e) => setSelectedPriority(e.target.value)}
+          >
+            {priorities.map(priority => (
+              <option key={priority} value={priority}>
+                {priority === 'Tous' ? 'Toutes priorités' : 
+                 priority === 'high' ? 'Urgent' :
+                 priority === 'medium' ? 'Normal' : 'Faible'}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -221,6 +345,11 @@ export default function MailsPage() {
                   <div className="flex items-center space-x-3 mb-2">
                     <CategoryBadge category={email.category} />
                     <PriorityBadge priority={email.priority} />
+                    {email.source === 'gmail' && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Gmail
+                      </span>
+                    )}
                     {!email.read && (
                       <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
                     )}

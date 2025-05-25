@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { StarIcon, QrCodeIcon } from '@heroicons/react/24/solid'
+import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutlineIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 
 // Businesses simulés
@@ -113,23 +113,13 @@ export default function ReviewsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Avis & QR Code
-          </h1>
-          <p className="text-neutral-600">
-            Gérez vos avis clients et générez votre QR code de collecte
-          </p>
-        </div>
-        
-        <Link
-          href="/dashboard/reviews/qr"
-          className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
-        >
-          <QrCodeIcon className="h-5 w-5" />
-          <span>Générer mon QR d'avis</span>
-        </Link>
+      <div>
+        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+          Avis & QR Code
+        </h1>
+        <p className="text-neutral-600">
+          Gérez vos avis clients et générez votre QR code de collecte
+        </p>
       </div>
 
       {/* Filtre par restaurant */}
