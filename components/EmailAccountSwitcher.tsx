@@ -1,0 +1,189 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession, signIn } from 'next-auth/react'
+import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ConnectedEmail } from '@/lib/supabase'
+
+interface EmailAccountSwitcherProps {
+  selectedEmail: string | null
+  onEmailChange: (email: string | null) => void
+  onEmailsUpdate: () => void
+}
+
+export default function EmailAccountSwitcher({ 
+  selectedEmail, 
+  onEmailChange, 
+  onEmailsUpdate 
+}: EmailAccountSwitcherProps) {
+  const { data: session } = useSession()
+  const [connectedEmails, setConnectedEmails] = useState<ConnectedEmail[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const fetchConnectedEmails = async () => {
+    try {
+      const response = await fetch('/api/connected-emails')
+      if (response.ok) {
+        const data = await response.json()
+        setConnectedEmails(data.connectedEmails)
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des emails connectés:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (session) {
+      fetchConnectedEmails()
+    }
+  }, [session])
+
+  const handleAddAccount = async (provider: 'google' | 'azure-ad') => {
+    setIsLoading(true)
+    try {
+      await signIn(provider, { callbackUrl: window.location.href })
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du compte:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleRemoveAccount = async (emailId: string) => {
+    try {
+      const response = await fetch(`/api/connected-emails?id=${emailId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        await fetchConnectedEmails()
+        onEmailsUpdate()
+        
+        // Si l'email supprimé était sélectionné, désélectionner
+        const removedEmail = connectedEmails.find(e => e.id === emailId)
+        if (removedEmail && selectedEmail === removedEmail.email) {
+          onEmailChange(null)
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du compte:', error)
+    }
+  }
+
+  const selectedEmailData = connectedEmails.find(e => e.email === selectedEmail)
+
+  return (
+    <div className="relative">
+      <div className="flex items-center space-x-3">
+        {/* Dropdown pour sélectionner l'email */}
+        <div className="relative">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex items-center space-x-2 bg-white border border-neutral-300 rounded-lg px-4 py-2 hover:bg-neutral-50 transition-colors min-w-64"
+          >
+            <div className="flex items-center space-x-2">
+              {selectedEmailData ? (
+                <>
+                  <div className={`w-3 h-3 rounded-full ${
+                    selectedEmailData.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
+                  }`}></div>
+                  <span className="text-sm font-medium">{selectedEmailData.email}</span>
+                  <span className="text-xs text-neutral-500">
+                    ({selectedEmailData.provider === 'google' ? 'Gmail' : 'Outlook'})
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm text-neutral-600">
+                  {connectedEmails.length > 0 ? 'Tous les comptes' : 'Aucun compte connecté'}
+                </span>
+              )}
+            </div>
+            <ChevronDownIcon className="h-4 w-4 text-neutral-500" />
+          </button>
+
+          {isOpen && (
+            <div className="absolute top-full left-0 mt-1 w-full bg-white border border-neutral-200 rounded-lg shadow-lg z-10">
+              <div className="py-1">
+                {connectedEmails.length > 1 && (
+                  <button
+                    onClick={() => {
+                      onEmailChange(null)
+                      setIsOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-50 ${
+                      !selectedEmail ? 'bg-blue-50 text-blue-700' : 'text-neutral-700'
+                    }`}
+                  >
+                    Tous les comptes ({connectedEmails.length})
+                  </button>
+                )}
+                
+                {connectedEmails.map((email) => (
+                  <div key={email.id} className="flex items-center justify-between hover:bg-neutral-50">
+                    <button
+                      onClick={() => {
+                        onEmailChange(email.email)
+                        setIsOpen(false)
+                      }}
+                      className={`flex-1 text-left px-4 py-2 text-sm ${
+                        selectedEmail === email.email ? 'bg-blue-50 text-blue-700' : 'text-neutral-700'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          email.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
+                        }`}></div>
+                        <span>{email.email}</span>
+                        <span className="text-xs text-neutral-500">
+                          ({email.provider === 'google' ? 'Gmail' : 'Outlook'})
+                        </span>
+                      </div>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleRemoveAccount(email.id)
+                      }}
+                      className="px-2 py-2 text-red-500 hover:text-red-700"
+                      title="Supprimer ce compte"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Boutons d'ajout de comptes */}
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => handleAddAccount('google')}
+            disabled={isLoading}
+            className="inline-flex items-center space-x-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
+          >
+            <PlusIcon className="h-4 w-4" />
+            <span>Gmail</span>
+          </button>
+          
+          <button
+            onClick={() => handleAddAccount('azure-ad')}
+            disabled={isLoading}
+            className="inline-flex items-center space-x-1 bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 text-sm"
+          >
+            <PlusIcon className="h-4 w-4" />
+            <span>Outlook</span>
+          </button>
+        </div>
+      </div>
+
+      {connectedEmails.length > 0 && (
+        <div className="mt-2 text-xs text-neutral-500">
+          {connectedEmails.length} compte{connectedEmails.length > 1 ? 's' : ''} connecté{connectedEmails.length > 1 ? 's' : ''}
+        </div>
+      )}
+    </div>
+  )
+}
