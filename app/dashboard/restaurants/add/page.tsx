@@ -9,8 +9,10 @@ import {
   CheckCircleIcon, 
   QrCodeIcon,
   ArrowDownTrayIcon,
-  ExclamationCircleIcon 
+  ExclamationCircleIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
+import { searchPlaces, type PlaceDetails, generateQRCodeUrl } from '@/lib/google-places'
 
 interface FormData {
   name: string
@@ -53,6 +55,10 @@ export default function AddRestaurantPage() {
   const [qrCodeUrl, setQrCodeUrl] = useState('')
   const [generatedSlug, setGeneratedSlug] = useState('')
   const [reviewPageUrl, setReviewPageUrl] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<PlaceDetails[]>([])
+  const [selectedPlace, setSelectedPlace] = useState<PlaceDetails | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
 
   const generateSlug = (name: string, city: string) => {
     const text = `${name} ${city}`
@@ -90,6 +96,35 @@ export default function AddRestaurantPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return
+
+    setIsSearching(true)
+    try {
+      const results = await searchPlaces(searchQuery)
+      setSearchResults(results)
+    } catch (error) {
+      console.error('Search error:', error)
+      setErrors(['Erreur lors de la recherche. Veuillez réessayer.'])
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  const handleSelectPlace = (place: PlaceDetails) => {
+    setSelectedPlace(place)
+    setFormData(prev => ({
+      ...prev,
+      name: place.name,
+      address: place.formatted_address,
+      city: place.city,
+      country: place.country,
+      googleUrl: place.url
+    }))
+    setSearchResults([])
+    setSearchQuery('')
+  }
+
   const generateQRCode = async (url: string) => {
     try {
       // For production, use a proper QR code library like qrcode
@@ -112,7 +147,7 @@ export default function AddRestaurantPage() {
       const reviewUrl = `${window.location.origin}/review/${slug}`
       
       // Save to Supabase
-      const { error } = await supabase.from('restaurants').insert([
+      const { error } = await supabase.from('businesses').insert([
         {
           name: formData.name,
           slug,
@@ -121,21 +156,17 @@ export default function AddRestaurantPage() {
           address: formData.address,
           city: formData.city,
           country: formData.country,
-          google_url: formData.googleUrl || null,
-          facebook_url: formData.facebookUrl || null,
-          tripadvisor_url: formData.tripadvisorUrl || null,
-          ubereats_url: formData.uberEatsUrl || null,
-          deliveroo_url: formData.deliverooUrl || null,
-          takeaway_url: formData.takeawayUrl || null,
-          review_page_url: reviewUrl,
+          google_link: formData.googleUrl || null,
+          place_id: selectedPlace?.place_id || null,
+          custom_url: reviewUrl,
           user_id: user?.id,
         }
       ])
 
       if (error) throw error
 
-      // Generate QR Code
-      const qrCode = await generateQRCode(reviewUrl)
+      // Generate QR Code URL
+      const qrCode = generateQRCodeUrl(reviewUrl)
       
       setGeneratedSlug(slug)
       setReviewPageUrl(reviewUrl)
@@ -269,6 +300,68 @@ export default function AddRestaurantPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Google Places Search */}
+        <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+          <h2 className="text-xl font-semibold text-blue-800 mb-4">
+            🔍 Rechercher votre restaurant
+          </h2>
+          <p className="text-blue-600 text-sm mb-4">
+            Tapez le nom de votre restaurant pour le trouver automatiquement sur Google
+          </p>
+          
+          <div className="flex space-x-3">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
+              className="flex-1 px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Ex: Chez Mario Paris, Le Petit Bistrot Lyon..."
+            />
+            <button
+              type="button"
+              onClick={handleSearch}
+              disabled={isSearching || !searchQuery.trim()}
+              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              <MagnifyingGlassIcon className="h-4 w-4" />
+              <span>{isSearching ? 'Recherche...' : 'Rechercher'}</span>
+            </button>
+          </div>
+
+          {/* Search Results */}
+          {searchResults.length > 0 && (
+            <div className="mt-4 bg-white rounded-lg border border-blue-200 max-h-60 overflow-y-auto">
+              {searchResults.map((place) => (
+                <button
+                  key={place.place_id}
+                  type="button"
+                  onClick={() => handleSelectPlace(place)}
+                  className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100 last:border-b-0 transition-colors"
+                >
+                  <div className="font-medium text-neutral-900">{place.name}</div>
+                  <div className="text-sm text-neutral-600">{place.formatted_address}</div>
+                  {place.rating && (
+                    <div className="text-sm text-blue-600 mt-1">
+                      ⭐ {place.rating} ({place.user_ratings_total} avis)
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {selectedPlace && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                <span className="font-medium text-green-800">Restaurant sélectionné :</span>
+                <span className="text-green-700">{selectedPlace.name}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Informations générales */}
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
           <h2 className="text-xl font-semibold text-neutral-800 mb-6">
