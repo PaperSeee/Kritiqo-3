@@ -11,7 +11,8 @@ import {
   BuildingStorefrontIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Restaurants', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
   { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
+  { name: 'Support', href: '/dashboard/support', icon: QuestionMarkCircleIcon },
 ];
 
 export default function DashboardLayout({
