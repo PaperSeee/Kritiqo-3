@@ -15,6 +15,7 @@ type Email = {
   tags: string[];
   preview: string;
   read: boolean;
+  source?: string;
 }
 
 // Types d'emails simulés
@@ -238,6 +239,7 @@ export default function MailsPage() {
         tags: email.tags,
         preview: email.preview,
         read: email.read,
+        source: 'gmail'
       }))
       
       setAllEmails([...formattedGmailEmails, ...mockEmails])
