@@ -40,10 +40,10 @@ export default function LandingPage() {
               Démonstration
             </a>
             <a
-              href="#testimonials"
+              href="/contact"
               className="text-neutral-600 hover:text-neutral-900 transition-colors"
             >
-              Témoignages
+              Contact
             </a>
             <a
               href="/login"
@@ -70,10 +70,10 @@ export default function LandingPage() {
                 Démonstration
               </a>
               <a
-                href="#testimonials"
+                href="/contact"
                 className="text-neutral-600 hover:text-neutral-900"
               >
-                Témoignages
+                Contact
               </a>
               <a
                 href="/login"
