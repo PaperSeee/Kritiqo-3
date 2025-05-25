@@ -124,6 +124,10 @@ export default function MailsPage() {
   const [allEmails, setAllEmails] = useState<Email[]>([])
   const [isLoadingEmails, setIsLoadingEmails] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
+  const [connectedServices, setConnectedServices] = useState<{gmail: boolean, microsoft: boolean}>({
+    gmail: false,
+    microsoft: false
+  })
 
   const fetchGmailEmails = async () => {
     if (!session?.accessToken) return
@@ -161,6 +165,7 @@ export default function MailsPage() {
       }))
 
       setAllEmails(formattedGmailEmails)
+      setConnectedServices(prev => ({ ...prev, gmail: true }))
     } catch (error) {
       console.error('Erreur lors de la récupération des emails Gmail:', error)
       setEmailError(error instanceof Error ? error.message : 'Erreur inconnue')
@@ -169,9 +174,60 @@ export default function MailsPage() {
     }
   }
 
+  const fetchMicrosoftEmails = async () => {
+    if (!session?.accessToken || session?.provider !== 'azure-ad') return
+
+    setIsLoadingEmails(true)
+    setEmailError(null)
+    
+    try {
+      const response = await fetch('/api/microsoft/emails', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erreur lors de la récupération des emails Microsoft')
+      }
+
+      const data = await response.json()
+      
+      // Convertir les emails Microsoft au format Email
+      const formattedMicrosoftEmails: Email[] = data.emails.map((email: any) => ({
+        id: `microsoft_${email.id}`,
+        category: categorizeEmail(email.subject, email.sender),
+        subject: email.subject,
+        sender: email.sender,
+        date: email.date,
+        priority: assignPriority(email.subject),
+        tags: extractTags(email.subject, categorizeEmail(email.subject, email.sender)),
+        preview: email.preview,
+        read: false,
+        source: 'microsoft'
+      }))
+
+      setAllEmails(prev => [...prev.filter(e => e.source !== 'microsoft'), ...formattedMicrosoftEmails])
+      setConnectedServices(prev => ({ ...prev, microsoft: true }))
+    } catch (error) {
+      console.error('Erreur lors de la récupération des emails Microsoft:', error)
+      setEmailError(error instanceof Error ? error.message : 'Erreur inconnue')
+    } finally {
+      setIsLoadingEmails(false)
+    }
+  }
+
   useEffect(() => {
     if (session?.accessToken) {
-      fetchGmailEmails()
+      if (session?.provider === 'google') {
+        fetchGmailEmails()
+        setConnectedServices(prev => ({ ...prev, gmail: true }))
+      } else if (session?.provider === 'azure-ad') {
+        fetchMicrosoftEmails()
+        setConnectedServices(prev => ({ ...prev, microsoft: true }))
+      }
     }
   }, [session])
 
@@ -179,9 +235,22 @@ export default function MailsPage() {
     signIn('google')
   }
 
-  const handleGmailDisconnect = () => {
+  const handleMicrosoftConnect = () => {
+    signIn('azure-ad')
+  }
+
+  const handleDisconnect = () => {
     signOut()
     setAllEmails([])
+    setConnectedServices({ gmail: false, microsoft: false })
+  }
+
+  const refreshEmails = () => {
+    if (session?.provider === 'google') {
+      fetchGmailEmails()
+    } else if (session?.provider === 'azure-ad') {
+      fetchMicrosoftEmails()
+    }
   }
 
   const filteredEmails = allEmails.filter(email => {
@@ -203,72 +272,131 @@ export default function MailsPage() {
           Gestion des Emails
         </h1>
         <p className="text-neutral-600">
-          Organisez et gérez vos emails Gmail par catégorie automatiquement
+          Organisez et gérez vos emails Gmail et Outlook par catégorie automatiquement
         </p>
       </div>
 
-      {/* Gmail Connection Status */}
+      {/* Connection Status */}
       {status === 'loading' ? (
         <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6">
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 bg-neutral-400 rounded-full animate-pulse"></div>
-            <span className="text-neutral-600">Vérification de la connexion Gmail...</span>
+            <span className="text-neutral-600">Vérification des connexions...</span>
           </div>
         </div>
       ) : !session ? (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                📩 Connecter votre boîte Gmail
-              </h3>
-              <p className="text-blue-700">
-                Synchronisez automatiquement vos emails Gmail et catégorisez-les intelligemment
-              </p>
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  📩 Connecter votre boîte Gmail
+                </h3>
+                <p className="text-blue-700">
+                  Synchronisez automatiquement vos emails Gmail et catégorisez-les intelligemment
+                </p>
+              </div>
+              <button
+                onClick={handleGmailConnect}
+                className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <EnvelopeIcon className="h-5 w-5" />
+                <span>Connecter Gmail</span>
+              </button>
             </div>
-            <button
-              onClick={handleGmailConnect}
-              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <EnvelopeIcon className="h-5 w-5" />
-              <span>Connecter Gmail</span>
-            </button>
+          </div>
+
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-orange-900 mb-2">
+                  📧 Connecter votre boîte Outlook/Hotmail
+                </h3>
+                <p className="text-orange-700">
+                  Synchronisez vos emails Microsoft Outlook, Hotmail et Office 365
+                </p>
+              </div>
+              <button
+                onClick={handleMicrosoftConnect}
+                className="inline-flex items-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <span className="text-xl font-bold">O</span>
+                <span>Connecter Outlook</span>
+              </button>
+            </div>
           </div>
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="bg-green-50 rounded-xl border border-green-200 p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-green-800 font-medium">Gmail connecté</span>
-                <span className="text-green-600 text-sm">
-                  • {session.user?.email}
-                </span>
-                <span className="text-green-600 text-sm">
-                  • {allEmails.length} emails synchronisés
-                </span>
-                {isLoadingEmails && (
-                  <span className="text-green-600 text-sm">• Synchronisation en cours...</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={fetchGmailEmails}
-                  disabled={isLoadingEmails}
-                  className="text-sm text-green-700 hover:text-green-900 underline disabled:opacity-50"
-                >
-                  {isLoadingEmails ? 'Synchronisation...' : 'Actualiser'}
-                </button>
-                <button
-                  onClick={handleGmailDisconnect}
-                  className="text-sm text-green-700 hover:text-green-900 underline"
-                >
-                  Déconnecter
-                </button>
+          {session.provider === 'google' && (
+            <div className="bg-green-50 rounded-xl border border-green-200 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-green-800 font-medium">Gmail connecté</span>
+                  <span className="text-green-600 text-sm">
+                    • {session.user?.email}
+                  </span>
+                  <span className="text-green-600 text-sm">
+                    • {allEmails.filter(e => e.source === 'gmail').length} emails synchronisés
+                  </span>
+                  {isLoadingEmails && (
+                    <span className="text-green-600 text-sm">• Synchronisation en cours...</span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={refreshEmails}
+                    disabled={isLoadingEmails}
+                    className="text-sm text-green-700 hover:text-green-900 underline disabled:opacity-50"
+                  >
+                    {isLoadingEmails ? 'Synchronisation...' : 'Actualiser'}
+                  </button>
+                  <button
+                    onClick={handleDisconnect}
+                    className="text-sm text-green-700 hover:text-green-900 underline"
+                  >
+                    Déconnecter
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {session.provider === 'azure-ad' && (
+            <div className="bg-orange-50 rounded-xl border border-orange-200 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <span className="text-orange-800 font-medium">Outlook connecté</span>
+                  <span className="text-orange-600 text-sm">
+                    • {session.user?.email}
+                  </span>
+                  <span className="text-orange-600 text-sm">
+                    • {allEmails.filter(e => e.source === 'microsoft').length} emails synchronisés
+                  </span>
+                  {isLoadingEmails && (
+                    <span className="text-orange-600 text-sm">• Synchronisation en cours...</span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={refreshEmails}
+                    disabled={isLoadingEmails}
+                    className="text-sm text-orange-700 hover:text-orange-900 underline disabled:opacity-50"
+                  >
+                    {isLoadingEmails ? 'Synchronisation...' : 'Actualiser'}
+                  </button>
+                  <button
+                    onClick={handleDisconnect}
+                    className="text-sm text-orange-700 hover:text-orange-900 underline"
+                  >
+                    Déconnecter
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           
           {emailError && (
             <div className="bg-red-50 rounded-xl border border-red-200 p-4">
@@ -276,7 +404,7 @@ export default function MailsPage() {
                 <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
                 <span className="text-red-800 text-sm">Erreur: {emailError}</span>
                 <button
-                  onClick={fetchGmailEmails}
+                  onClick={refreshEmails}
                   className="text-sm text-red-700 hover:text-red-900 underline ml-auto"
                 >
                   Réessayer
@@ -355,8 +483,10 @@ export default function MailsPage() {
                     <div className="flex items-center space-x-3 mb-2">
                       <CategoryBadge category={email.category} />
                       <PriorityBadge priority={email.priority} />
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        Gmail
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        email.source === 'gmail' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800'
+                      }`}>
+                        {email.source === 'gmail' ? 'Gmail' : 'Outlook'}
                       </span>
                       {!email.read && (
                         <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
