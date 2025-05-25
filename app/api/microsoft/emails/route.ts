@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // Récupérer les emails depuis Microsoft Graph
     const response = await fetch(
-      'https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages?$top=100&$select=id,subject,sender,receivedDateTime,bodyPreview,isRead',
+      'https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages?$top=20&$select=id,subject,sender,receivedDateTime,bodyPreview,isRead&$orderby=receivedDateTime desc',
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       subject: message.subject || 'Sans sujet',
       sender: message.sender?.emailAddress?.address || 'Expéditeur inconnu',
       preview: message.bodyPreview || 'Aucun aperçu disponible',
-      date: new Date(message.receivedDateTime).toISOString().split('T')[0],
+      date: new Date(message.receivedDateTime).toISOString(),
       source: 'microsoft'
     }))
 

@@ -223,10 +223,8 @@ export default function MailsPage() {
     if (session?.accessToken) {
       if (session?.provider === 'google') {
         fetchGmailEmails()
-        setConnectedServices(prev => ({ ...prev, gmail: true }))
       } else if (session?.provider === 'azure-ad') {
         fetchMicrosoftEmails()
-        setConnectedServices(prev => ({ ...prev, microsoft: true }))
       }
     }
   }, [session])
@@ -310,7 +308,7 @@ export default function MailsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-orange-900 mb-2">
-                  📧 Se connecter avec Outlook / Hotmail
+                  📧 Connecter votre boîte Outlook / Hotmail
                 </h3>
                 <p className="text-orange-700">
                   Synchronisez vos emails Microsoft Outlook, Hotmail et Office 365
@@ -323,7 +321,7 @@ export default function MailsPage() {
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M7 3h10v8H7zM7 13h10v8H7z"/>
                 </svg>
-                <span>Se connecter avec Outlook</span>
+                <span>Connecter Outlook</span>
               </button>
             </div>
           </div>
@@ -540,7 +538,9 @@ export default function MailsPage() {
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
           <div className="p-12 text-center">
             <InboxIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-            <p className="text-neutral-500">Aucun email trouvé dans votre boîte Gmail</p>
+            <p className="text-neutral-500">
+              Aucun email trouvé dans votre boîte {session.provider === 'google' ? 'Gmail' : 'Outlook'}
+            </p>
           </div>
         </div>
       )}
