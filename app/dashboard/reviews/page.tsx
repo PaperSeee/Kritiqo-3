@@ -7,7 +7,7 @@ import { StarIcon as StarOutlineIcon, ChevronDownIcon } from '@heroicons/react/2
 
 // Businesses simulés
 const mockBusinesses = [
-  { id: 'all', name: 'Tous les restaurants', slug: 'all' },
+  { id: 'all', name: 'Tous les établissements', slug: 'all' },
   { id: '1', name: 'Chez Mario', slug: 'chez-mario' },
   { id: '2', name: 'Le Petit Bistrot', slug: 'le-petit-bistrot' },
   { id: '3', name: 'Sushi Zen', slug: 'sushi-zen' },
@@ -109,7 +109,7 @@ export default function ReviewsPage() {
     ? mockReviews 
     : mockReviews.filter(review => review.businessId === selectedBusiness)
 
-  const selectedBusinessName = mockBusinesses.find(b => b.id === selectedBusiness)?.name || 'Tous les restaurants'
+  const selectedBusinessName = mockBusinesses.find(b => b.id === selectedBusiness)?.name || 'Tous les établissements'
 
   return (
     <div className="space-y-8">
@@ -125,7 +125,7 @@ export default function ReviewsPage() {
       {/* Filtre par restaurant */}
       <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-800">Filtrer par restaurant</h2>
+          <h2 className="text-lg font-semibold text-neutral-800">Filtrer par établissement</h2>
           
           <div className="relative">
             <button
@@ -270,7 +270,7 @@ export default function ReviewsPage() {
             <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun avis trouvé</h3>
             <p className="text-neutral-600">
               {selectedBusiness === 'all' 
-                ? 'Aucun avis n\'a encore été laissé pour vos restaurants.'
+                ? 'Aucun avis n\'a encore été laissé pour vos établissements.'
                 : `Aucun avis n'a encore été laissé pour ${selectedBusinessName}.`
               }
             </p>

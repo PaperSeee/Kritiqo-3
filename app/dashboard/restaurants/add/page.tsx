@@ -305,10 +305,10 @@ export default function AddRestaurantPage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Ajouter un restaurant
+            Ajouter un établissement
           </h1>
           <p className="text-neutral-600">
-            Créez votre page d&apos;avis personnalisée avec QR code
+            Créez votre page d'avis personnalisée avec QR code
           </p>
         </div>
       </div>
@@ -317,10 +317,10 @@ export default function AddRestaurantPage() {
         {/* Google Places Search */}
         <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
           <h2 className="text-xl font-semibold text-blue-800 mb-4">
-            🔍 Rechercher votre restaurant
+            🔍 Rechercher votre établissement
           </h2>
           <p className="text-blue-600 text-sm mb-4">
-            Tapez le nom de votre restaurant pour le trouver automatiquement sur Google
+            Tapez le nom de votre établissement pour le trouver automatiquement sur Google
           </p>
           
           <div className="flex space-x-3">
@@ -385,13 +385,13 @@ export default function AddRestaurantPage() {
         {/* Informations générales */}
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
           <h2 className="text-xl font-semibold text-neutral-800 mb-6">
-            Informations du restaurant
+            Informations de l'établissement
           </h2>
           
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Nom du restaurant *
+                Nom de l'établissement *
               </label>
               <input
                 type="text"
@@ -526,7 +526,7 @@ export default function AddRestaurantPage() {
           >
             <QrCodeIcon className="h-5 w-5" />
             <span>
-              {submitting ? 'Création en cours...' : 'Créer le restaurant'}
+              {submitting ? 'Création en cours...' : 'Créer l\'établissement'}
             </span>
           </button>
         </div>

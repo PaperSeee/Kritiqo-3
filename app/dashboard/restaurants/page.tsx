@@ -132,7 +132,7 @@ export default function RestaurantsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Mes restaurants
+            Mes établissements
           </h1>
           <p className="text-neutral-600">
             Gérez vos établissements et leurs pages d'avis
@@ -144,7 +144,7 @@ export default function RestaurantsPage() {
           className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
         >
           <PlusIcon className="h-5 w-5" />
-          <span>Ajouter un restaurant</span>
+          <span>Ajouter un établissement</span>
         </Link>
       </div>
 
@@ -153,7 +153,7 @@ export default function RestaurantsPage() {
         <div className="bg-white p-6 rounded-xl border border-neutral-200">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-neutral-800 mb-1">Total restaurants</h3>
+              <h3 className="font-semibold text-neutral-800 mb-1">Total établissements</h3>
               <p className="text-2xl font-bold text-neutral-900">{restaurants.length}</p>
             </div>
             <BuildingStorefrontIcon className="h-8 w-8 text-neutral-400" />
@@ -185,7 +185,7 @@ export default function RestaurantsPage() {
       <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
         <div className="p-6 border-b border-neutral-200">
           <h2 className="text-xl font-semibold text-neutral-800">
-            Restaurants ({restaurants.length})
+            Établissements ({restaurants.length})
           </h2>
         </div>
 
@@ -193,17 +193,17 @@ export default function RestaurantsPage() {
           <div className="p-12 text-center">
             <BuildingStorefrontIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-              Aucun restaurant ajouté
+              Aucun établissement ajouté
             </h3>
             <p className="text-neutral-600 mb-6">
-              Commencez par ajouter votre premier restaurant pour générer sa page d'avis.
+              Commencez par ajouter votre premier établissement pour générer sa page d'avis.
             </p>
             <Link
               href="/dashboard/restaurants/add"
               className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
             >
               <PlusIcon className="h-5 w-5" />
-              <span>Ajouter mon premier restaurant</span>
+              <span>Ajouter mon premier établissement</span>
             </Link>
           </div>
         ) : (

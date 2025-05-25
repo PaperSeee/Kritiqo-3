@@ -124,7 +124,7 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-3">
                 <BuildingStorefrontIcon className="h-5 w-5 text-neutral-600" />
                 <span className="text-sm font-medium text-neutral-900">
-                  Ajouter un restaurant
+                  Ajouter un établissement
                 </span>
               </div>
               <span className="text-neutral-400">→</span>

@@ -17,7 +17,7 @@ import {
 
 const navigation = [
   { name: 'Accueil', href: '/dashboard', icon: HomeIcon },
-  { name: 'Restaurants', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
+  { name: 'Établissements', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
   { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
   { name: 'Support', href: '/dashboard/support', icon: QuestionMarkCircleIcon },

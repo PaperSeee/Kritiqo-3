@@ -279,7 +279,7 @@ export default function SupportPage() {
             <DocumentTextIcon className="h-8 w-8 text-blue-600 mb-3" />
             <h3 className="text-lg font-semibold mb-2">Guide de démarrage</h3>
             <p className="text-neutral-600 mb-4">
-              Apprenez à configurer votre compte et vos premiers restaurants.
+              Apprenez à configurer votre compte et vos premiers établissements.
             </p>
             <button className="text-blue-600 hover:text-blue-700 font-medium">
               Lire le guide →

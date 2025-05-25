@@ -39,7 +39,7 @@ export default function PrivacyPage() {
                   Données d'entreprise
                 </h3>
                 <p className="text-neutral-700 leading-relaxed">
-                  Nous collectons les informations de vos restaurants et établissements (nom, adresse, liens vers les plateformes) que vous ajoutez à votre compte.
+                  Nous collectons les informations de vos établissements (nom, adresse, liens vers les plateformes) que vous ajoutez à votre compte.
                 </p>
               </div>
               <div>
