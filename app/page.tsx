@@ -40,6 +40,12 @@ export default function LandingPage() {
               Démonstration
             </a>
             <a
+              href="/faq"
+              className="text-neutral-600 hover:text-neutral-900 transition-colors"
+            >
+              FAQ
+            </a>
+            <a
               href="/contact"
               className="text-neutral-600 hover:text-neutral-900 transition-colors"
             >
@@ -59,25 +65,36 @@ export default function LandingPage() {
             <div className="flex flex-col px-6 py-4 space-y-4">
               <a
                 href="#features"
-                className="text-neutral-600 hover:text-neutral-900"
+                className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Fonctionnalités
               </a>
               <a
                 href="#demo"
-                className="text-neutral-600 hover:text-neutral-900"
+                className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Démonstration
               </a>
               <a
+                href="/faq"
+                className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FAQ
+              </a>
+              <a
                 href="/contact"
-                className="text-neutral-600 hover:text-neutral-900"
+                className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Contact
               </a>
               <a
                 href="/login"
-                className="px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800"
+                className="px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors text-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Se connecter
               </a>
@@ -753,7 +770,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/careers"
                     className="hover:text-white transition-colors"
                   >
                     Carrières

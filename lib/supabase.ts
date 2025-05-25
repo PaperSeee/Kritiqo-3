@@ -29,3 +29,15 @@ export type ConnectedEmail = {
   created_at: string
   updated_at: string
 }
+
+// Fonction pour générer l'URL du QR code
+export function generateQRCodeUrl(url: string, size = 300): string {
+  const baseUrl = 'https://api.qrserver.com/v1/create-qr-code/'
+  const params = new URLSearchParams({
+    size: `${size}x${size}`,
+    data: url,
+    format: 'PNG',
+    margin: '10'
+  })
+  return `${baseUrl}?${params.toString()}`
+}
