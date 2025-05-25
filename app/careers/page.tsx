@@ -1,4 +1,4 @@
-"use client";
+npm install --save-dev @types/uuid"use client";
 
 import { useState } from "react";
 import { 

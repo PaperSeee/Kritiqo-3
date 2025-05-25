@@ -39,3 +39,23 @@ DROP CONSTRAINT IF EXISTS unique_email_provider;
 -- Supprimer la contrainte de clé étrangère existante
 ALTER TABLE connected_emails 
 DROP CONSTRAINT IF EXISTS fk_connected_emails_user_id;
+
+-- Table pour les CVs
+CREATE TABLE IF NOT EXISTS cvs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  file_size INTEGER NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  is_primary BOOLEAN DEFAULT FALSE,
+  upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index pour optimiser les requêtes sur les CVs
+CREATE INDEX IF NOT EXISTS idx_cvs_user_id ON cvs(user_id);
+CREATE INDEX IF NOT EXISTS idx_cvs_is_primary ON cvs(is_primary);
+CREATE INDEX IF NOT EXISTS idx_cvs_user_primary ON cvs(user_id, is_primary);
