@@ -34,9 +34,6 @@ const handler = NextAuth({
       return session
     },
   },
-  pages: {
-    signIn: '/dashboard/mails',
-  },
 })
 
 export { handler as GET, handler as POST }
