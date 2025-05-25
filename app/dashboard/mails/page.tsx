@@ -4,8 +4,21 @@ import { useState, useEffect } from 'react'
 import { FunnelIcon, InboxIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
+// Type Email uniforme
+type Email = {
+  id: number;
+  category: string;
+  subject: string;
+  sender: string;
+  date: string;
+  priority: string;
+  tags: string[];
+  preview: string;
+  read: boolean;
+}
+
 // Types d'emails simulés
-const mockEmails = [
+const mockEmails: Email[] = [
   {
     id: 1,
     category: 'Facture',
@@ -202,7 +215,7 @@ export default function MailsPage() {
   const [selectedPriority, setSelectedPriority] = useState('Tous')
   const [isGmailConnected, setIsGmailConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
-  const [allEmails, setAllEmails] = useState(mockEmails)
+  const [allEmails, setAllEmails] = useState<Email[]>(mockEmails)
 
   const connectGmail = async () => {
     setIsConnecting(true)
@@ -214,7 +227,20 @@ export default function MailsPage() {
         category: categorizeEmail(email.subject, email.sender)
       }))
       
-      setAllEmails([...gmailEmails, ...mockEmails])
+      // Formater les emails Gmail pour correspondre au type Email
+      const formattedGmailEmails: Email[] = gmailEmails.map((email, index) => ({
+        id: index + 1000,
+        category: email.category,
+        subject: email.subject,
+        sender: email.sender,
+        date: email.date,
+        priority: email.priority,
+        tags: email.tags,
+        preview: email.preview,
+        read: email.read,
+      }))
+      
+      setAllEmails([...formattedGmailEmails, ...mockEmails])
       setIsGmailConnected(true)
       setIsConnecting(false)
     }, 2000)
