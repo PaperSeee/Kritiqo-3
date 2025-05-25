@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
       tenantId: process.env.AZURE_AD_TENANT_ID!,
       authorization: {
         params: {
-          scope: "openid profile email offline_access Mail.Read"
+          scope: "openid profile email offline_access https://graph.microsoft.com/Mail.Read"
         }
       }
     }),
@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
         token.provider = account.provider
+        token.expiresAt = account.expires_at
       }
       return token
     },
@@ -37,6 +38,7 @@ export const authOptions: NextAuthOptions = {
       session.accessToken = token.accessToken as string
       session.refreshToken = token.refreshToken as string
       session.provider = token.provider as string
+      session.expiresAt = token.expiresAt as number
       return session
     },
   },

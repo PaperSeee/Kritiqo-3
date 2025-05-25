@@ -310,7 +310,7 @@ export default function MailsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-orange-900 mb-2">
-                  📧 Connecter votre boîte Outlook/Hotmail
+                  📧 Se connecter avec Outlook / Hotmail
                 </h3>
                 <p className="text-orange-700">
                   Synchronisez vos emails Microsoft Outlook, Hotmail et Office 365
@@ -320,8 +320,10 @@ export default function MailsPage() {
                 onClick={handleMicrosoftConnect}
                 className="inline-flex items-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
               >
-                <span className="text-xl font-bold">O</span>
-                <span>Connecter Outlook</span>
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 3h10v8H7zM7 13h10v8H7z"/>
+                </svg>
+                <span>Se connecter avec Outlook</span>
               </button>
             </div>
           </div>
