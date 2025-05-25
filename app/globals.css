@@ -20,3 +20,7 @@ body {
   background: var(--background);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
+
+.test-style {
+  color: red;
+}
