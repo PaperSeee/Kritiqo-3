@@ -1,6 +1,10 @@
 import Image from "next/image";
+import { useState } from "react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function LandingPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="w-full">
       {/* Sticky Header */}
@@ -9,6 +13,17 @@ export default function LandingPage() {
           <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
             Kritiqo
           </h1>
+          {/* bouton mobile */}
+          <button
+            className="md:hidden p-2 text-neutral-600 hover:text-neutral-900"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <XMarkIcon className="h-6 w-6" />
+            ) : (
+              <Bars3Icon className="h-6 w-6" />
+            )}
+          </button>
           <nav className="hidden md:flex items-center space-x-8">
             <a
               href="#features"
@@ -36,6 +51,37 @@ export default function LandingPage() {
             </a>
           </nav>
         </div>
+        {/* menu mobile */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden bg-white border-t border-neutral-200">
+            <div className="flex flex-col px-6 py-4 space-y-4">
+              <a
+                href="#features"
+                className="text-neutral-600 hover:text-neutral-900"
+              >
+                Fonctionnalités
+              </a>
+              <a
+                href="#demo"
+                className="text-neutral-600 hover:text-neutral-900"
+              >
+                Démonstration
+              </a>
+              <a
+                href="#testimonials"
+                className="text-neutral-600 hover:text-neutral-900"
+              >
+                Témoignages
+              </a>
+              <a
+                href="/login"
+                className="px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800"
+              >
+                Se connecter
+              </a>
+            </div>
+          </nav>
+        )}
       </header>
 
       {/* Hero Section */}
