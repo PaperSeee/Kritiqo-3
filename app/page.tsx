@@ -457,8 +457,22 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-neutral-800 mt-8 pt-8 text-center text-neutral-400">
+          <div className="border-t border-neutral-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center text-neutral-400">
             <p>&copy; 2024 Kritiqo. Tous droits réservés.</p>
+            <div className="flex space-x-6 mt-4 sm:mt-0">
+              <a
+                href="/privacy"
+                className="hover:text-white transition-colors text-sm"
+              >
+                Politique de confidentialité
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-white transition-colors text-sm"
+              >
+                Conditions d'utilisation
+              </a>
+            </div>
           </div>
         </div>
       </footer>

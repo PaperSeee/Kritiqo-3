@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 import { FunnelIcon, InboxIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 
 // Type Email uniforme
 type Email = {
-  id: number;
+  id: string | number;
   category: string;
   subject: string;
   sender: string;
@@ -179,6 +180,33 @@ const categorizeEmail = (subject: string, sender: string): string => {
   return 'Client' // Default category
 }
 
+const assignPriority = (subject: string): string => {
+  const subjectLower = subject.toLowerCase()
+  
+  if (subjectLower.includes('urgent') || subjectLower.includes('important') || 
+      subjectLower.includes('asap') || subjectLower.includes('immédiat')) {
+    return 'high'
+  }
+  
+  if (subjectLower.includes('facture') || subjectLower.includes('réclamation')) {
+    return 'medium'
+  }
+  
+  return 'low'
+}
+
+const extractTags = (subject: string, category: string): string[] => {
+  const tags = [category.toLowerCase()]
+  const subjectLower = subject.toLowerCase()
+  
+  if (subjectLower.includes('urgent')) tags.push('urgent')
+  if (subjectLower.includes('facture')) tags.push('facture')
+  if (subjectLower.includes('commande')) tags.push('commande')
+  if (subjectLower.includes('support')) tags.push('support')
+  
+  return tags
+}
+
 function PriorityBadge({ priority }: { priority: string }) {
   const config = {
     high: { icon: ExclamationTriangleIcon, color: 'text-red-600 bg-red-100' },
@@ -212,40 +240,61 @@ function CategoryBadge({ category }: { category: string }) {
 }
 
 export default function MailsPage() {
+  const { data: session, status } = useSession()
   const [selectedCategory, setSelectedCategory] = useState('Tous')
   const [selectedPriority, setSelectedPriority] = useState('Tous')
-  const [isGmailConnected, setIsGmailConnected] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
   const [allEmails, setAllEmails] = useState<Email[]>(mockEmails)
+  const [isLoadingEmails, setIsLoadingEmails] = useState(false)
 
-  const connectGmail = async () => {
-    setIsConnecting(true)
-    
-    // Simulate OAuth flow
-    setTimeout(() => {
-      const gmailEmails = simulateGmailEmails().map(email => ({
-        ...email,
-        category: categorizeEmail(email.subject, email.sender)
-      }))
+  const fetchGmailEmails = async () => {
+    if (!session?.accessToken) return
+
+    setIsLoadingEmails(true)
+    try {
+      const response = await fetch('/api/gmail/emails')
       
-      // Formater les emails Gmail pour correspondre au type Email
-      const formattedGmailEmails: Email[] = gmailEmails.map((email, index) => ({
-        id: index + 1000,
-        category: email.category,
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des emails')
+      }
+
+      const data = await response.json()
+      
+      // Convertir les emails Gmail au format Email
+      const formattedGmailEmails: Email[] = data.emails.map((email: any, index: number) => ({
+        id: `gmail_${email.id}`,
+        category: categorizeEmail(email.subject, email.sender),
         subject: email.subject,
         sender: email.sender,
         date: email.date,
-        priority: email.priority,
-        tags: email.tags,
+        priority: assignPriority(email.subject),
+        tags: extractTags(email.subject, categorizeEmail(email.subject, email.sender)),
         preview: email.preview,
-        read: email.read,
+        read: false,
         source: 'gmail'
       }))
-      
+
+      // Combiner avec les emails mockés
       setAllEmails([...formattedGmailEmails, ...mockEmails])
-      setIsGmailConnected(true)
-      setIsConnecting(false)
-    }, 2000)
+    } catch (error) {
+      console.error('Erreur lors de la récupération des emails Gmail:', error)
+    } finally {
+      setIsLoadingEmails(false)
+    }
+  }
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      fetchGmailEmails()
+    }
+  }, [session])
+
+  const handleGmailConnect = () => {
+    signIn('google')
+  }
+
+  const handleGmailDisconnect = () => {
+    signOut()
+    setAllEmails(mockEmails) // Reset to mock emails only
   }
 
   const filteredEmails = allEmails.filter(email => {
@@ -271,8 +320,15 @@ export default function MailsPage() {
         </p>
       </div>
 
-      {/* Gmail Connection */}
-      {!isGmailConnected && (
+      {/* Gmail Connection Status */}
+      {status === 'loading' ? (
+        <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-neutral-400 rounded-full animate-pulse"></div>
+            <span className="text-neutral-600">Vérification de la connexion Gmail...</span>
+          </div>
+        </div>
+      ) : !session ? (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -284,32 +340,42 @@ export default function MailsPage() {
               </p>
             </div>
             <button
-              onClick={connectGmail}
-              disabled={isConnecting}
-              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleGmailConnect}
+              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <EnvelopeIcon className="h-5 w-5" />
-              <span>{isConnecting ? 'Connexion...' : 'Connecter Gmail'}</span>
+              <span>Connecter Gmail</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-green-50 rounded-xl border border-green-200 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-green-800 font-medium">Gmail connecté</span>
+              <span className="text-green-600 text-sm">
+                • {session.user?.email}
+              </span>
+              <span className="text-green-600 text-sm">
+                • {allEmails.filter(e => e.source === 'gmail').length} emails synchronisés
+              </span>
+              {isLoadingEmails && (
+                <span className="text-green-600 text-sm">• Synchronisation en cours...</span>
+              )}
+            </div>
+            <button
+              onClick={handleGmailDisconnect}
+              className="text-sm text-green-700 hover:text-green-900 underline"
+            >
+              Déconnecter
             </button>
           </div>
         </div>
       )}
 
-      {/* Gmail Connected Status */}
-      {isGmailConnected && (
-        <div className="bg-green-50 rounded-xl border border-green-200 p-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-green-800 font-medium">Gmail connecté</span>
-            <span className="text-green-600 text-sm">
-              • {allEmails.filter(e => e.source === 'gmail').length} nouveaux emails synchronisés
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Statistiques par catégorie */}
-      {isGmailConnected && (
+      {session && (
         <div className="grid gap-6 md:grid-cols-4">
           {emailsByCategory.map(({ category, count }) => (
             <div key={category} className="bg-white p-6 rounded-xl border border-neutral-200">

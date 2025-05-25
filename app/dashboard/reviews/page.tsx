@@ -115,10 +115,10 @@ export default function ReviewsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-          Avis & QR Code
+          Avis Clients
         </h1>
         <p className="text-neutral-600">
-          Gérez vos avis clients et générez votre QR code de collecte
+          Gérez et répondez à vos avis clients
         </p>
       </div>
 
