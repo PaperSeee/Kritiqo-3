@@ -19,130 +19,8 @@ type Email = {
   source?: string;
 }
 
-// Types d'emails simulés
-const mockEmails: Email[] = [
-  {
-    id: 1,
-    category: 'Facture',
-    subject: 'Facture #2024-001 - Règlement en attente',
-    sender: 'comptabilite@exemple.fr',
-    date: '2024-01-15',
-    priority: 'high',
-    tags: ['facture', 'urgent'],
-    preview: 'Votre facture du 10 janvier est en attente de règlement...',
-    read: false
-  },
-  {
-    id: 2,
-    category: 'RH',
-    subject: 'Demande de congés - Marie Dupont',
-    sender: 'marie.dupont@entreprise.fr',
-    date: '2024-01-14',
-    priority: 'medium',
-    tags: ['congés', 'rh'],
-    preview: 'Je souhaiterais poser mes congés du 1er au 15 février...',
-    read: true
-  },
-  {
-    id: 3,
-    category: 'Client',
-    subject: 'Question sur votre service - Satisfaction client',
-    sender: 'client@exemple.com',
-    date: '2024-01-13',
-    priority: 'medium',
-    tags: ['support', 'question'],
-    preview: 'Bonjour, j\'aurais quelques questions concernant...',
-    read: false
-  },
-  {
-    id: 4,
-    category: 'Admin',
-    subject: 'Mise à jour système prévue ce weekend',
-    sender: 'admin@kritiqo.fr',
-    date: '2024-01-12',
-    priority: 'low',
-    tags: ['système', 'maintenance'],
-    preview: 'Une maintenance système est prévue samedi...',
-    read: true
-  },
-  {
-    id: 5,
-    category: 'Facture',
-    subject: 'Facture #2024-002 - Payée',
-    sender: 'comptabilite@exemple.fr',
-    date: '2024-01-11',
-    priority: 'low',
-    tags: ['facture', 'payée'],
-    preview: 'Nous accusons réception de votre paiement...',
-    read: true
-  },
-  {
-    id: 6,
-    category: 'Client',
-    subject: 'Réclamation - Commande #12345',
-    sender: 'client2@exemple.com',
-    date: '2024-01-10',
-    priority: 'high',
-    tags: ['réclamation', 'urgent'],
-    preview: 'Ma commande n\'est pas conforme à ce qui était prévu...',
-    read: false
-  }
-]
-
 const categories = ['Tous', 'Facture', 'RH', 'Client', 'Admin']
 const priorities = ['Tous', 'high', 'medium', 'low']
-
-// Simulated Gmail emails after connection
-const simulateGmailEmails = () => [
-  {
-    id: 'gmail_1',
-    category: 'Facture',
-    subject: 'Votre facture Google Workspace - Janvier 2024',
-    sender: 'noreply@google.com',
-    date: '2024-01-16',
-    priority: 'medium',
-    tags: ['facture', 'google'],
-    preview: 'Votre facture Google Workspace pour janvier est disponible...',
-    read: false,
-    source: 'gmail'
-  },
-  {
-    id: 'gmail_2',
-    category: 'Client',
-    subject: 'Question sur votre produit - Besoin d\'aide',
-    sender: 'nouveau.client@email.com',
-    date: '2024-01-15',
-    priority: 'high',
-    tags: ['support', 'question'],
-    preview: 'Bonjour, j\'ai acheté votre produit et j\'ai quelques questions...',
-    read: false,
-    source: 'gmail'
-  },
-  {
-    id: 'gmail_3',
-    category: 'RH',
-    subject: 'Candidature spontanée - Développeur',
-    sender: 'candidat@exemple.fr',
-    date: '2024-01-14',
-    priority: 'medium',
-    tags: ['recrutement', 'cv'],
-    preview: 'Madame, Monsieur, Je me permets de vous adresser ma candidature...',
-    read: true,
-    source: 'gmail'
-  },
-  {
-    id: 'gmail_4',
-    category: 'Admin',
-    subject: 'Notification de sécurité - Nouvelle connexion',
-    sender: 'security@gmail.com',
-    date: '2024-01-13',
-    priority: 'low',
-    tags: ['sécurité', 'notification'],
-    preview: 'Une nouvelle connexion à votre compte a été détectée...',
-    read: true,
-    source: 'gmail'
-  }
-]
 
 // Auto-categorization function
 const categorizeEmail = (subject: string, sender: string): string => {
@@ -243,24 +121,33 @@ export default function MailsPage() {
   const { data: session, status } = useSession()
   const [selectedCategory, setSelectedCategory] = useState('Tous')
   const [selectedPriority, setSelectedPriority] = useState('Tous')
-  const [allEmails, setAllEmails] = useState<Email[]>(mockEmails)
+  const [allEmails, setAllEmails] = useState<Email[]>([])
   const [isLoadingEmails, setIsLoadingEmails] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   const fetchGmailEmails = async () => {
     if (!session?.accessToken) return
 
     setIsLoadingEmails(true)
+    setEmailError(null)
+    
     try {
-      const response = await fetch('/api/gmail/emails')
+      const response = await fetch('/api/gmail/emails', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des emails')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erreur lors de la récupération des emails')
       }
 
       const data = await response.json()
       
       // Convertir les emails Gmail au format Email
-      const formattedGmailEmails: Email[] = data.emails.map((email: any, index: number) => ({
+      const formattedGmailEmails: Email[] = data.emails.map((email: any) => ({
         id: `gmail_${email.id}`,
         category: categorizeEmail(email.subject, email.sender),
         subject: email.subject,
@@ -273,10 +160,10 @@ export default function MailsPage() {
         source: 'gmail'
       }))
 
-      // Combiner avec les emails mockés
-      setAllEmails([...formattedGmailEmails, ...mockEmails])
+      setAllEmails(formattedGmailEmails)
     } catch (error) {
       console.error('Erreur lors de la récupération des emails Gmail:', error)
+      setEmailError(error instanceof Error ? error.message : 'Erreur inconnue')
     } finally {
       setIsLoadingEmails(false)
     }
@@ -294,7 +181,7 @@ export default function MailsPage() {
 
   const handleGmailDisconnect = () => {
     signOut()
-    setAllEmails(mockEmails) // Reset to mock emails only
+    setAllEmails([])
   }
 
   const filteredEmails = allEmails.filter(email => {
@@ -316,7 +203,7 @@ export default function MailsPage() {
           Gestion des Emails
         </h1>
         <p className="text-neutral-600">
-          Organisez et gérez vos emails par catégorie automatiquement
+          Organisez et gérez vos emails Gmail par catégorie automatiquement
         </p>
       </div>
 
@@ -349,33 +236,59 @@ export default function MailsPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-green-50 rounded-xl border border-green-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-green-800 font-medium">Gmail connecté</span>
-              <span className="text-green-600 text-sm">
-                • {session.user?.email}
-              </span>
-              <span className="text-green-600 text-sm">
-                • {allEmails.filter(e => e.source === 'gmail').length} emails synchronisés
-              </span>
-              {isLoadingEmails && (
-                <span className="text-green-600 text-sm">• Synchronisation en cours...</span>
-              )}
+        <div className="space-y-3">
+          <div className="bg-green-50 rounded-xl border border-green-200 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-green-800 font-medium">Gmail connecté</span>
+                <span className="text-green-600 text-sm">
+                  • {session.user?.email}
+                </span>
+                <span className="text-green-600 text-sm">
+                  • {allEmails.length} emails synchronisés
+                </span>
+                {isLoadingEmails && (
+                  <span className="text-green-600 text-sm">• Synchronisation en cours...</span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={fetchGmailEmails}
+                  disabled={isLoadingEmails}
+                  className="text-sm text-green-700 hover:text-green-900 underline disabled:opacity-50"
+                >
+                  {isLoadingEmails ? 'Synchronisation...' : 'Actualiser'}
+                </button>
+                <button
+                  onClick={handleGmailDisconnect}
+                  className="text-sm text-green-700 hover:text-green-900 underline"
+                >
+                  Déconnecter
+                </button>
+              </div>
             </div>
-            <button
-              onClick={handleGmailDisconnect}
-              className="text-sm text-green-700 hover:text-green-900 underline"
-            >
-              Déconnecter
-            </button>
           </div>
+          
+          {emailError && (
+            <div className="bg-red-50 rounded-xl border border-red-200 p-4">
+              <div className="flex items-center space-x-2">
+                <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
+                <span className="text-red-800 text-sm">Erreur: {emailError}</span>
+                <button
+                  onClick={fetchGmailEmails}
+                  className="text-sm text-red-700 hover:text-red-900 underline ml-auto"
+                >
+                  Réessayer
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Statistiques par catégorie */}
-      {session && (
+      {/* Statistiques par catégorie - Only show when connected */}
+      {session && allEmails.length > 0 && (
         <div className="grid gap-6 md:grid-cols-4">
           {emailsByCategory.map(({ category, count }) => (
             <div key={category} className="bg-white p-6 rounded-xl border border-neutral-200">
@@ -391,102 +304,114 @@ export default function MailsPage() {
         </div>
       )}
 
-      {/* Filtres */}
-      <div className="bg-white p-6 rounded-xl border border-neutral-200">
-        <div className="flex gap-4">
-          <div className="flex items-center space-x-2">
-            <FunnelIcon className="h-5 w-5 text-neutral-500" />
+      {/* Filtres - Only show when emails are available */}
+      {session && allEmails.length > 0 && (
+        <div className="bg-white p-6 rounded-xl border border-neutral-200">
+          <div className="flex gap-4">
+            <div className="flex items-center space-x-2">
+              <FunnelIcon className="h-5 w-5 text-neutral-500" />
+              <select
+                className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
             <select
               className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              value={selectedPriority}
+              onChange={(e) => setSelectedPriority(e.target.value)}
             >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {priorities.map(priority => (
+                <option key={priority} value={priority}>
+                  {priority === 'Tous' ? 'Toutes priorités' : 
+                   priority === 'high' ? 'Urgent' :
+                   priority === 'medium' ? 'Normal' : 'Faible'}
+                </option>
               ))}
             </select>
           </div>
-
-          <select
-            className="border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-            value={selectedPriority}
-            onChange={(e) => setSelectedPriority(e.target.value)}
-          >
-            {priorities.map(priority => (
-              <option key={priority} value={priority}>
-                {priority === 'Tous' ? 'Toutes priorités' : 
-                 priority === 'high' ? 'Urgent' :
-                 priority === 'medium' ? 'Normal' : 'Faible'}
-              </option>
-            ))}
-          </select>
         </div>
-      </div>
+      )}
 
-      {/* Liste des emails */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="p-6 border-b border-neutral-200">
-          <h2 className="text-xl font-semibold text-neutral-800">
-            Emails ({filteredEmails.length})
-          </h2>
-        </div>
-        
-        <div className="divide-y divide-neutral-200">
-          {filteredEmails.map((email) => (
-            <div key={email.id} className={`p-6 hover:bg-neutral-50 cursor-pointer transition-colors ${!email.read ? 'bg-blue-50/30' : ''}`}>
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <CategoryBadge category={email.category} />
-                    <PriorityBadge priority={email.priority} />
-                    {email.source === 'gmail' && (
+      {/* Liste des emails - Only show when emails are available */}
+      {session && allEmails.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
+          <div className="p-6 border-b border-neutral-200">
+            <h2 className="text-xl font-semibold text-neutral-800">
+              Emails ({filteredEmails.length})
+            </h2>
+          </div>
+          
+          <div className="divide-y divide-neutral-200">
+            {filteredEmails.map((email) => (
+              <div key={email.id} className={`p-6 hover:bg-neutral-50 cursor-pointer transition-colors ${!email.read ? 'bg-blue-50/30' : ''}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <CategoryBadge category={email.category} />
+                      <PriorityBadge priority={email.priority} />
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         Gmail
                       </span>
-                    )}
-                    {!email.read && (
-                      <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
-                    )}
+                      {!email.read && (
+                        <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
+                      )}
+                    </div>
+                    
+                    <h3 className={`text-lg font-medium text-neutral-900 mb-1 ${!email.read ? 'font-semibold' : ''}`}>
+                      {email.subject}
+                    </h3>
+                    
+                    <p className="text-sm text-neutral-600 mb-2">
+                      De: {email.sender}
+                    </p>
+                    
+                    <p className="text-neutral-700 text-sm leading-relaxed mb-3">
+                      {email.preview}
+                    </p>
+                    
+                    <div className="flex items-center space-x-2">
+                      {email.tags.map(tag => (
+                        <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-neutral-100 text-neutral-800">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   
-                  <h3 className={`text-lg font-medium text-neutral-900 mb-1 ${!email.read ? 'font-semibold' : ''}`}>
-                    {email.subject}
-                  </h3>
-                  
-                  <p className="text-sm text-neutral-600 mb-2">
-                    De: {email.sender}
-                  </p>
-                  
-                  <p className="text-neutral-700 text-sm leading-relaxed mb-3">
-                    {email.preview}
-                  </p>
-                  
-                  <div className="flex items-center space-x-2">
-                    {email.tags.map(tag => (
-                      <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-neutral-100 text-neutral-800">
-                        #{tag}
-                      </span>
-                    ))}
+                  <div className="ml-4 text-right">
+                    <p className="text-sm text-neutral-500">
+                      {new Date(email.date).toLocaleDateString('fr-FR')}
+                    </p>
                   </div>
-                </div>
-                
-                <div className="ml-4 text-right">
-                  <p className="text-sm text-neutral-500">
-                    {new Date(email.date).toLocaleDateString('fr-FR')}
-                  </p>
                 </div>
               </div>
+            ))}
+          </div>
+          
+          {filteredEmails.length === 0 && (
+            <div className="p-12 text-center">
+              <InboxIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+              <p className="text-neutral-500">Aucun email trouvé avec ces critères</p>
             </div>
-          ))}
+          )}
         </div>
-        
-        {filteredEmails.length === 0 && (
+      )}
+
+      {/* Show message when no emails and connected */}
+      {session && allEmails.length === 0 && !isLoadingEmails && (
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
           <div className="p-12 text-center">
             <InboxIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-            <p className="text-neutral-500">Aucun email trouvé avec ces critères</p>
+            <p className="text-neutral-500">Aucun email trouvé dans votre boîte Gmail</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

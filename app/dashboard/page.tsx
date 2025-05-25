@@ -144,7 +144,7 @@ export default function DashboardPage() {
             </Link>
             
             <Link 
-              href="/dashboard/emails"
+              href="/dashboard/mails"
               className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
             >
               <div className="flex items-center space-x-3">

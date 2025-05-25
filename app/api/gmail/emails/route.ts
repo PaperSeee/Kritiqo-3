@@ -1,72 +1,151 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/authOptions'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    console.log('🔍 Début de la récupération des emails Gmail')
+    
+    const session = await getServerSession(authOptions)
+    
+    // Debug complet de la session
+    console.log('📋 Session complète:', JSON.stringify(session, null, 2))
+    
+    if (!session) {
+      console.error('❌ Aucune session trouvée')
+      return NextResponse.json(
+        { error: 'Non autorisé - Session manquante' },
+        { status: 401 }
+      )
+    }
     
     if (!session?.accessToken) {
+      console.error('❌ Token d\'accès manquant dans la session')
+      console.log('📋 Propriétés de session disponibles:', Object.keys(session))
       return NextResponse.json(
-        { error: 'Non autorisé - Token d\'accès manquant' },
+        { error: 'Non autorisé - Token d\'accès manquant. Veuillez vous reconnecter.' },
         { status: 401 }
       )
     }
 
+    console.log('🚀 Appel à l\'API Gmail pour récupérer les messages')
+
     // Récupérer la liste des messages
     const messagesResponse = await fetch(
-      'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20',
+      'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=100&labelIds=INBOX',
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json',
         },
       }
     )
 
+    console.log('📨 Réponse de l\'API Gmail:', {
+      status: messagesResponse.status,
+      statusText: messagesResponse.statusText,
+      ok: messagesResponse.ok
+    })
+
     if (!messagesResponse.ok) {
-      throw new Error('Erreur lors de la récupération des messages')
+      const errorText = await messagesResponse.text()
+      console.error('❌ Gmail API Error:', {
+        status: messagesResponse.status,
+        statusText: messagesResponse.statusText,
+        errorBody: errorText
+      })
+      
+      // Si le token est invalide/expiré
+      if (messagesResponse.status === 401) {
+        return NextResponse.json(
+          { error: 'Token d\'accès expiré ou invalide. Veuillez vous reconnecter.' },
+          { status: 401 }
+        )
+      }
+      
+      return NextResponse.json(
+        { error: `Erreur Gmail API: ${messagesResponse.status} - ${messagesResponse.statusText}` },
+        { status: messagesResponse.status }
+      )
     }
 
     const messagesData = await messagesResponse.json()
     const messageIds = messagesData.messages || []
 
+    console.log(`📬 ${messageIds.length} messages trouvés`)
+
+    if (messageIds.length === 0) {
+      return NextResponse.json({ emails: [] })
+    }
+
     // Récupérer les détails de chaque message
     const emailPromises = messageIds.map(async (message: { id: string }) => {
-      const messageResponse = await fetch(
-        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
+      try {
+        const messageResponse = await fetch(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        if (!messageResponse.ok) {
+          console.error(`❌ Erreur pour le message ${message.id}:`, {
+            status: messageResponse.status,
+            statusText: messageResponse.statusText
+          })
+          return null
         }
-      )
 
-      if (!messageResponse.ok) {
+        const messageData = await messageResponse.json()
+        const headers = messageData.payload?.headers || []
+        
+        const subject = headers.find((h: any) => h.name === 'Subject')?.value || 'Sans sujet'
+        const from = headers.find((h: any) => h.name === 'From')?.value || 'Expéditeur inconnu'
+        const dateHeader = headers.find((h: any) => h.name === 'Date')?.value
+        
+        // Parse date from header or use internal date
+        let date = new Date().toISOString().split('T')[0]
+        if (dateHeader) {
+          try {
+            date = new Date(dateHeader).toISOString().split('T')[0]
+          } catch {
+            date = new Date(parseInt(messageData.internalDate)).toISOString().split('T')[0]
+          }
+        } else if (messageData.internalDate) {
+          date = new Date(parseInt(messageData.internalDate)).toISOString().split('T')[0]
+        }
+
+        // Extract email address from "Name <email@domain.com>" format
+        const senderEmail = from.match(/<([^>]+)>/) ? from.match(/<([^>]+)>/)![1] : from
+        const snippet = messageData.snippet || 'Aucun aperçu disponible'
+
+        return {
+          id: message.id,
+          subject,
+          sender: senderEmail,
+          preview: snippet,
+          date,
+          source: 'gmail'
+        }
+      } catch (error) {
+        console.error(`❌ Erreur lors du traitement du message ${message.id}:`, error)
         return null
-      }
-
-      const messageData = await messageResponse.json()
-      const headers = messageData.payload?.headers || []
-      
-      const subject = headers.find((h: any) => h.name === 'Subject')?.value || 'Sans sujet'
-      const from = headers.find((h: any) => h.name === 'From')?.value || 'Expéditeur inconnu'
-      const date = new Date(parseInt(messageData.internalDate)).toISOString().split('T')[0]
-      const snippet = messageData.snippet || ''
-
-      return {
-        id: message.id,
-        subject,
-        sender: from,
-        preview: snippet,
-        date,
-        source: 'gmail'
       }
     })
 
     const emails = (await Promise.all(emailPromises)).filter(Boolean)
 
+    console.log(`✅ ${emails.length} emails traités avec succès`)
     return NextResponse.json({ emails })
   } catch (error) {
-    console.error('Erreur Gmail API:', error)
+    console.error('❌ Erreur complète Gmail API:', {
+      message: error instanceof Error ? error.message : 'Erreur inconnue',
+      stack: error instanceof Error ? error.stack : undefined,
+      error
+    })
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des emails' },
       { status: 500 }
