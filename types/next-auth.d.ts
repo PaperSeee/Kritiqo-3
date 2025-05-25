@@ -8,11 +8,11 @@ declare module "next-auth" {
     userId?: string
   }
 
-  interface JWT {
-    accessToken?: string
-    refreshToken?: string
-    provider?: string
-    userId?: string
+  interface User {
+    id: string
+    name?: string
+    email?: string
+    image?: string
   }
 }
 

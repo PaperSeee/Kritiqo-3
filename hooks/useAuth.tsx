@@ -11,8 +11,13 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import type { User, Session } from '@supabase/supabase-js';
 
+interface AuthUser extends User {
+  name?: string;
+  displayName?: string;
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<void>;
@@ -23,7 +28,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -100,5 +105,4 @@ export function useAuth(): AuthContextType {
   return context;
 }
 
-// 👇 nécessaire pour pouvoir utiliser AuthContext.Provider ailleurs
 export { AuthContext };

@@ -9,6 +9,22 @@ export default function ProfilePage() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('personal')
 
+  // Helper function to get display name safely
+  const getDisplayName = () => {
+    if (!user) return ''
+    
+    // Check user metadata first
+    const fullName = user.user_metadata?.full_name || user.user_metadata?.name
+    if (fullName) return fullName
+    
+    // Fallback to email prefix
+    if (user.email) {
+      return user.email.split('@')[0]
+    }
+    
+    return 'Utilisateur'
+  }
+
   const tabs = [
     {
       id: 'personal',
@@ -68,7 +84,7 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="text"
-                  value={user?.user_metadata?.full_name || user?.name || ''}
+                  value={getDisplayName()}
                   readOnly
                   className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-50"
                 />
