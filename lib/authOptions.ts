@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
     AzureADProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID!,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-      tenantId: process.env.AZURE_AD_TENANT_ID!,
+      tenantId: "common",
       authorization: {
         params: {
           scope: "openid profile email offline_access https://graph.microsoft.com/Mail.Read"
