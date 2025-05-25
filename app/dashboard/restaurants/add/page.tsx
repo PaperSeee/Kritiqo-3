@@ -105,7 +105,7 @@ export default function AddRestaurantPage() {
       setSearchResults(results)
     } catch (error) {
       console.error('Search error:', error)
-      setErrors(['Erreur lors de la recherche. Veuillez réessayer.'])
+      setErrors({ search: 'Erreur lors de la recherche. Veuillez réessayer.' })
     } finally {
       setIsSearching(false)
     }
@@ -348,6 +348,12 @@ export default function AddRestaurantPage() {
                   )}
                 </button>
               ))}
+            </div>
+          )}
+
+          {errors.search && (
+            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-sm text-red-600">{errors.search}</p>
             </div>
           )}
 
