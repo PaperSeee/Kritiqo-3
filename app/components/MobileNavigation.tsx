@@ -34,13 +34,13 @@ export default function MobileNavigation() {
           {/* Menu */}
           <nav className="md:hidden fixed top-[73px] right-0 z-50 w-64 h-screen bg-white border-l border-neutral-200 shadow-lg">
             <div className="flex flex-col px-6 py-6 space-y-6">
-              <a
-                href="#features"
+              <Link
+                href="/features"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Fonctionnalités
-              </a>
+              </Link>
               <a
                 href="#benefits"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"
@@ -48,13 +48,13 @@ export default function MobileNavigation() {
               >
                 Avantages
               </a>
-              <a
-                href="#faq"
+              <Link
+                href="/faq"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
-              </a>
+              </Link>
               <Link
                 href="/contact"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"

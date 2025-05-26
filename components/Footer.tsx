@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-neutral-100 py-12 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="grid gap-8 md:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-5">
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
@@ -20,7 +20,15 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-neutral-900 mb-4">Produit</h3>
             <ul className="space-y-2 text-sm text-neutral-600">
-              <li><a href="/#features" className="hover:text-neutral-900 transition-colors">Fonctionnalités</a></li>
+              <li><Link href="/features" className="hover:text-neutral-900 transition-colors">Fonctionnalités</Link></li>
+              <li><Link href="/pricing" className="hover:text-neutral-900 transition-colors">Tarifs</Link></li>
+              <li><a href="/#features" className="hover:text-neutral-900 transition-colors">Aperçu</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-neutral-900 mb-4">Plateforme</h3>
+            <ul className="space-y-2 text-sm text-neutral-600">
               <li><Link href="/faq" className="hover:text-neutral-900 transition-colors">FAQ</Link></li>
               <li><Link href="/dashboard" className="hover:text-neutral-900 transition-colors">Connexion</Link></li>
             </ul>
