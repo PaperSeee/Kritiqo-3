@@ -164,6 +164,11 @@ async function callGptWithRetry(subject: string, body: string, maxRetries = 3): 
 }
 
 export async function POST(request: NextRequest) {
+  let id: string = '';
+  let subject: string = '';
+  let sender: string = '';
+  let body: string = '';
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -175,7 +180,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Étape 1: Récupérer les champs requis
-    const { id, subject, body, sender }: TriageRequest = await request.json();
+    const requestData: TriageRequest = await request.json();
+    id = requestData.id;
+    subject = requestData.subject;
+    body = requestData.body;
+    sender = requestData.sender;
 
     if (!id || !subject || !body || !sender) {
       return NextResponse.json(
@@ -302,27 +311,30 @@ export async function POST(request: NextRequest) {
 
     // If OpenAI is not available, provide basic fallback
     if (!process.env.OPENAI_API_KEY) {
-      console.log(`⚠️ OpenAI non disponible, classification basique pour ${id}`);
+      const emailId = id || 'email non identifié';
+      console.log(`⚠️ OpenAI non disponible, classification basique pour ${emailId}`);
       
       // Still save to Supabase for tracking
-      const emailData = {
-        id,
-        user_id: session.userId,
-        subject,
-        sender,
-        body,
-        gpt_categorie: fallbackResponse.categorie,
-        gpt_priorite: fallbackResponse.priorite,
-        gpt_action: fallbackResponse.action,
-        gpt_suggestion: null,
-        analyzed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+      if (id && session?.userId) {
+        const emailData = {
+          id,
+          user_id: session.userId,
+          subject,
+          sender,
+          body,
+          gpt_categorie: fallbackResponse.categorie,
+          gpt_priorite: fallbackResponse.priorite,
+          gpt_action: fallbackResponse.action,
+          gpt_suggestion: null,
+          analyzed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-      try {
-        await supabaseAdmin.from('emails').upsert(emailData, { onConflict: 'id' });
-      } catch (err) {
-        console.error('❌ Erreur Supabase (fallback):', err);
+        try {
+          await supabaseAdmin.from('emails').upsert(emailData, { onConflict: 'id' });
+        } catch (err) {
+          console.error('❌ Erreur Supabase (fallback):', err);
+        }
       }
 
       return NextResponse.json(fallbackResponse);
