@@ -181,7 +181,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-medium text-neutral-900 mb-1">Email</h4>
-                    <p className="text-neutral-600">contact@kritiqo.fr</p>
+                    <p className="text-neutral-600">contact@kritiqo.com</p>
                     <p className="text-sm text-neutral-500">
                       Réponse sous 24h en moyenne
                     </p>

@@ -107,8 +107,8 @@ export default function ProfilePage() {
               <p className="text-sm text-blue-700">
                 <strong>Note:</strong> Pour modifier vos informations personnelles, 
                 veuillez nous contacter à{' '}
-                <a href="mailto:support@kritiqo.fr" className="underline">
-                  support@kritiqo.fr
+                <a href="mailto:support@kritiqo.com" className="underline">
+                  support@kritiqo.com
                 </a>
               </p>
             </div>

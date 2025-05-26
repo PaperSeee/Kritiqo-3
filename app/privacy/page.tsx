@@ -137,7 +137,7 @@ export default function PrivacyPage() {
             </p>
             <div className="bg-neutral-50 p-4 rounded-lg mt-4">
               <p className="font-medium text-neutral-900">Email :</p>
-              <p className="text-neutral-700">privacy@kritiqo.fr</p>
+              <p className="text-neutral-700">contact@kritiqo.com</p>
             </div>
           </section>
         </div>

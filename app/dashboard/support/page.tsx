@@ -330,7 +330,7 @@ export default function SupportPage() {
               Notre équipe vous répond sous 24h en moyenne.
             </p>
             <div className="space-y-2">
-              <p className="text-sm font-medium text-neutral-700">support@kritiqo.fr</p>
+              <p className="text-sm font-medium text-neutral-700">support@kritiqo.com</p>
               <p className="text-sm text-neutral-600">Réponse sous 24h</p>
             </div>
             <button className="mt-4 bg-neutral-900 text-white px-4 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
