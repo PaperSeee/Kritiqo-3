@@ -1,11 +1,30 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon, BuildingStorefrontIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Check for success parameter
+  const success = searchParams.get('success');
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true);
+      // Auto-hide success message after 10 seconds
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const stats = [
     {
@@ -36,6 +55,31 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Success message */}
+      {showSuccess && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <CheckCircleIcon className="h-6 w-6 text-green-500 mr-3" />
+            <div>
+              <h3 className="text-lg font-medium text-green-800">
+                🎉 Félicitations ! Votre abonnement est actif
+              </h3>
+              <p className="text-green-600 mt-1">
+                Vous pouvez maintenant profiter de toutes les fonctionnalités de Kritiqo. 
+                Commencez par ajouter votre premier établissement !
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="ml-auto text-green-400 hover:text-green-600"
+            >
+              <span className="sr-only">Fermer</span>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Welcome section */}
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">

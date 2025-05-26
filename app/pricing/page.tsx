@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useAuth } from '@/hooks/useAuth';
+import { useSearchParams } from 'next/navigation';
+import { handleCheckout } from '@/lib/stripe';
 import { 
   CheckIcon,
   XMarkIcon,
@@ -15,152 +17,175 @@ import {
   ChartBarIcon,
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-const plans = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    subtitle: 'Pour débuter',
-    price: '9',
-    originalPrice: '19',
-    period: '/mois',
-    description: 'Parfait pour un restaurant ou commerce avec un seul point de vente',
-    popular: false,
-    cta: 'Commencer l\'essai gratuit',
-    launchOffer: true,
-    features: [
-      '1 établissement',
-      'QR codes illimités',
-      'Centralisation Google + Facebook',
-      'Réponses aux avis',
-      'Analytics de base',
-      'Support par email',
-      'Tri emails (100/mois)',
-      'Interface mobile'
-    ],
-    limits: [
-      'Pas de marque blanche',
-      'Rapports limités',
-      'Pas d\'API'
-    ]
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    subtitle: 'Le plus populaire',
-    price: '79',
-    originalPrice: '99',
-    period: '/mois',
-    description: 'Idéal pour les chaînes et entreprises multi-sites',
-    popular: true,
-    cta: 'Choisir Pro',
-    features: [
-      '5 établissements',
-      'QR codes illimités + personnalisation',
-      'Toutes plateformes (Google, Facebook, TripAdvisor, etc.)',
-      'Réponses automatiques par IA',
-      'Analytics avancés + alertes',
-      'Support prioritaire',
-      'Tri emails illimité + IA avancée',
-      'App mobile dédiée',
-      'Rapports automatiques',
-      'Intégrations Zapier',
-      'Formation personnalisée'
-    ],
-    limits: [
-      'Marque blanche en option (+20€/mois)'
-    ]
-  },
-  {
-    id: 'enterprise',
-    name: 'Entreprise',
-    subtitle: 'Solution sur mesure',
-    price: 'Sur devis',
-    originalPrice: null,
-    period: '',
-    description: 'Pour les grandes entreprises avec des besoins spécifiques',
-    popular: false,
-    cta: 'Nous contacter',
-    features: [
-      'Établissements illimités',
-      'Marque blanche incluse',
-      'API complète',
-      'Intégrations personnalisées',
-      'Analytics enterprise + BI',
-      'Support dédié 24/7',
-      'IA sur mesure',
-      'Formation équipe complète',
-      'SLA garantie',
-      'Hébergement dédié',
-      'Conformité SOC2/ISO27001'
-    ],
-    limits: []
-  }
-];
-
-const features = [
-  {
-    category: 'Gestion des avis',
-    items: [
-      { name: 'Nombre d\'établissements', starter: '1', pro: '5', enterprise: 'Illimité' },
-      { name: 'QR codes générés', starter: 'Illimité', pro: 'Illimité', enterprise: 'Illimité' },
-      { name: 'Personnalisation QR codes', starter: false, pro: true, enterprise: true },
-      { name: 'Plateformes connectées', starter: '2', pro: 'Toutes', enterprise: 'Toutes + API' },
-      { name: 'Réponses automatiques IA', starter: false, pro: true, enterprise: true },
-      { name: 'Analytics', starter: 'Base', pro: 'Avancé', enterprise: 'Enterprise' }
-    ]
-  },
-  {
-    category: 'Tri d\'emails',
-    items: [
-      { name: 'Emails traités/mois', starter: '100', pro: 'Illimité', enterprise: 'Illimité' },
-      { name: 'IA avancée', starter: false, pro: true, enterprise: true },
-      { name: 'Filtres personnalisés', starter: '3', pro: 'Illimité', enterprise: 'Illimité' },
-      { name: 'Intégrations email', starter: 'Gmail', pro: 'Toutes', enterprise: 'API custom' }
-    ]
-  },
-  {
-    category: 'Support & Formation',
-    items: [
-      { name: 'Support', starter: 'Email', pro: 'Prioritaire', enterprise: '24/7 dédié' },
-      { name: 'Formation', starter: 'Documentation', pro: 'Personnalisée', enterprise: 'Équipe complète' },
-      { name: 'SLA', starter: false, pro: false, enterprise: '99.9%' }
-    ]
-  }
-];
-
-const faqs = [
-  {
-    question: 'Puis-je changer de plan à tout moment ?',
-    answer: 'Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement et la facturation est ajustée au prorata.'
-  },
-  {
-    question: 'Y a-t-il des frais de configuration ?',
-    answer: 'Non, aucun frais de configuration. Nous vous aidons même à configurer votre compte gratuitement pendant l\'essai.'
-  },
-  {
-    question: 'Que se passe-t-il si je dépasse les limites de mon plan ?',
-    answer: 'Nous vous prévenons avant d\'atteindre les limites. Vous pouvez alors upgrader votre plan ou nous discutons d\'une solution personnalisée.'
-  },
-  {
-    question: 'Proposez-vous des réductions pour les associations ?',
-    answer: 'Oui, nous offrons 50% de réduction sur tous nos plans pour les associations et organismes à but non lucratif. Contactez-nous pour en bénéficier.'
-  },
-  {
-    question: 'Comment fonctionne la garantie satisfait ou remboursé ?',
-    answer: 'Nous offrons une garantie de 30 jours. Si vous n\'êtes pas satisfait, nous vous remboursons intégralement, sans question.'
-  },
-  {
-    question: 'Les données sont-elles incluses dans le prix ?',
-    answer: 'Oui, il n\'y a aucun coût supplémentaire pour le stockage des données. Tout est inclus dans votre abonnement mensuel.'
-  }
-];
-
 export default function PricingPage() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const canceled = searchParams.get('canceled');
+
+  useEffect(() => {
+    if (canceled) {
+      // Show cancelation message
+      console.log('Payment was canceled');
+    }
+  }, [canceled]);
+
+  const prices = {
+    starter: {
+      monthly: 'price_1RSzAKEHLYeVzQDZFcOdgFnU', // Starter monthly price ID
+      yearly: 'price_1RSzCXEHLYeVzQDZW3UEq823',   // Starter yearly price ID
+    },
+    pro: {
+      monthly: 'price_1RSzAWEHLYeVzQDZrjYuLBqE',     // Pro monthly price ID
+      yearly: 'price_1RSzCAEHLYeVzQDZfj8AW37O',       // Pro yearly price ID
+    },
+  };
+
+  const plans = [
+    {
+      id: 'starter',
+      name: 'Starter',
+      subtitle: 'Pour débuter',
+      price: '9',
+      originalPrice: '19',
+      period: '/mois',
+      description: 'Parfait pour un restaurant ou commerce avec un seul point de vente',
+      popular: false,
+      cta: 'Commencer l\'essai gratuit',
+      launchOffer: true,
+      features: [
+        '1 établissement',
+        'QR codes illimités',
+        'Centralisation Google + Facebook',
+        'Réponses aux avis',
+        'Analytics de base',
+        'Support par email',
+        'Tri emails (100/mois)',
+        'Interface mobile'
+      ],
+      limits: [
+        'Pas de marque blanche',
+        'Rapports limités',
+        'Pas d\'API'
+      ]
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      subtitle: 'Le plus populaire',
+      price: '79',
+      originalPrice: '99',
+      period: '/mois',
+      description: 'Idéal pour les chaînes et entreprises multi-sites',
+      popular: true,
+      cta: 'Choisir Pro',
+      features: [
+        '5 établissements',
+        'QR codes illimités + personnalisation',
+        'Toutes plateformes (Google, Facebook, TripAdvisor, etc.)',
+        'Réponses automatiques par IA',
+        'Analytics avancés + alertes',
+        'Support prioritaire',
+        'Tri emails illimité + IA avancée',
+        'App mobile dédiée',
+        'Rapports automatiques',
+        'Intégrations Zapier',
+        'Formation personnalisée'
+      ],
+      limits: [
+        'Marque blanche en option (+20€/mois)'
+      ]
+    },
+    {
+      id: 'enterprise',
+      name: 'Entreprise',
+      subtitle: 'Solution sur mesure',
+      price: 'Sur devis',
+      originalPrice: null,
+      period: '',
+      description: 'Pour les grandes entreprises avec des besoins spécifiques',
+      popular: false,
+      cta: 'Nous contacter',
+      features: [
+        'Établissements illimités',
+        'Marque blanche incluse',
+        'API complète',
+        'Intégrations personnalisées',
+        'Analytics enterprise + BI',
+        'Support dédié 24/7',
+        'IA sur mesure',
+        'Formation équipe complète',
+        'SLA garantie',
+        'Hébergement dédié',
+        'Conformité SOC2/ISO27001'
+      ],
+      limits: []
+    }
+  ];
+
+  const features = [
+    {
+      category: 'Gestion des avis',
+      items: [
+        { name: 'Nombre d\'établissements', starter: '1', pro: '5', enterprise: 'Illimité' },
+        { name: 'QR codes générés', starter: 'Illimité', pro: 'Illimité', enterprise: 'Illimité' },
+        { name: 'Personnalisation QR codes', starter: false, pro: true, enterprise: true },
+        { name: 'Plateformes connectées', starter: '2', pro: 'Toutes', enterprise: 'Toutes + API' },
+        { name: 'Réponses automatiques IA', starter: false, pro: true, enterprise: true },
+        { name: 'Analytics', starter: 'Base', pro: 'Avancé', enterprise: 'Enterprise' }
+      ]
+    },
+    {
+      category: 'Tri d\'emails',
+      items: [
+        { name: 'Emails traités/mois', starter: '100', pro: 'Illimité', enterprise: 'Illimité' },
+        { name: 'IA avancée', starter: false, pro: true, enterprise: true },
+        { name: 'Filtres personnalisés', starter: '3', pro: 'Illimité', enterprise: 'Illimité' },
+        { name: 'Intégrations email', starter: 'Gmail', pro: 'Toutes', enterprise: 'API custom' }
+      ]
+    },
+    {
+      category: 'Support & Formation',
+      items: [
+        { name: 'Support', starter: 'Email', pro: 'Prioritaire', enterprise: '24/7 dédié' },
+        { name: 'Formation', starter: 'Documentation', pro: 'Personnalisée', enterprise: 'Équipe complète' },
+        { name: 'SLA', starter: false, pro: false, enterprise: '99.9%' }
+      ]
+    }
+  ];
+
+  const faqs = [
+    {
+      question: 'Puis-je changer de plan à tout moment ?',
+      answer: 'Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement et la facturation est ajustée au prorata.'
+    },
+    {
+      question: 'Y a-t-il des frais de configuration ?',
+      answer: 'Non, aucun frais de configuration. Nous vous aidons même à configurer votre compte gratuitement pendant l\'essai.'
+    },
+    {
+      question: 'Que se passe-t-il si je dépasse les limites de mon plan ?',
+      answer: 'Nous vous prévenons avant d\'atteindre les limites. Vous pouvez alors upgrader votre plan ou nous discutons d\'une solution personnalisée.'
+    },
+    {
+      question: 'Proposez-vous des réductions pour les associations ?',
+      answer: 'Oui, nous offrons 50% de réduction sur tous nos plans pour les associations et organismes à but non lucratif. Contactez-nous pour en bénéficier.'
+    },
+    {
+      question: 'Comment fonctionne la garantie satisfait ou remboursé ?',
+      answer: 'Nous offrons une garantie de 30 jours. Si vous n\'êtes pas satisfait, nous vous remboursons intégralement, sans question.'
+    },
+    {
+      question: 'Les données sont-elles incluses dans le prix ?',
+      answer: 'Oui, il n\'y a aucun coût supplémentaire pour le stockage des données. Tout est inclus dans votre abonnement mensuel.'
+    }
+  ];
 
   const getPrice = (basePrice: string) => {
     if (basePrice === 'Sur devis') return basePrice;
@@ -169,6 +194,30 @@ export default function PricingPage() {
       return Math.round(price * 0.8).toString(); // 20% discount for yearly
     }
     return basePrice;
+  };
+
+  const handlePlanSelection = async (planId: string) => {
+    if (planId === 'enterprise') {
+      // Redirect to contact for enterprise
+      window.location.href = '/contact';
+      return;
+    }
+
+    setIsLoading(planId);
+    
+    try {
+      const priceId = prices[planId as 'starter' | 'pro'][billingPeriod];
+      const userEmail = user?.email;
+      
+      console.log('Attempting checkout with:', { priceId, userEmail, planId, billingPeriod });
+      
+      await handleCheckout(priceId, userEmail);
+    } catch (error) {
+      console.error('Error handling checkout:', error);
+      alert('Erreur lors de la création de la session de paiement. Veuillez réessayer.');
+    } finally {
+      setIsLoading(null);
+    }
   };
 
   return (
@@ -304,16 +353,24 @@ export default function PricingPage() {
                         {plan.description}
                       </p>
 
-                      <Link
-                        href={plan.id === 'enterprise' ? '/contact' : '/signup'}
-                        className={`block w-full py-3 px-6 rounded-lg font-medium transition-colors ${
+                      <button
+                        onClick={() => handlePlanSelection(plan.id)}
+                        disabled={isLoading === plan.id}
+                        className={`block w-full py-3 px-6 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                           plan.popular
                             ? 'bg-green-600 text-white hover:bg-green-700'
                             : 'bg-neutral-900 text-white hover:bg-neutral-800'
                         }`}
                       >
-                        {plan.cta}
-                      </Link>
+                        {isLoading === plan.id ? (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Chargement...
+                          </div>
+                        ) : (
+                          plan.cta
+                        )}
+                      </button>
                     </div>
 
                     <div className="space-y-4 mb-6">
