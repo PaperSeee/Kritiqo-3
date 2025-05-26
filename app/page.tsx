@@ -1,422 +1,472 @@
-import Image from "next/image";
-import type { Metadata } from 'next'
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { 
-  StarIcon, 
   QrCodeIcon, 
-  ChartBarIcon, 
-  DevicePhoneMobileIcon,
+  StarIcon, 
+  BuildingStorefrontIcon,
+  EnvelopeIcon,
+  ChartBarIcon,
   CheckCircleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  DevicePhoneMobileIcon,
+  ComputerDesktopIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline'
 import MobileNavigation from './components/MobileNavigation'
 
 export const metadata: Metadata = {
-  title: 'Kritiqo - Collectez plus d\'avis clients avec des QR codes',
-  description: 'Augmentez vos avis clients de 300% avec Kritiqo. QR codes personnalisés, pages d\'avis optimisées, gestion centralisée. Essai gratuit 14 jours pour restaurants et commerces.',
-  keywords: [
-    'collecter avis clients',
-    'QR code avis restaurant',
-    'augmenter avis Google',
-    'gestion réputation restaurant',
-    'plateforme avis clients',
-    'feedback client automatique'
-  ],
+  title: 'Kritiqo - Centralisez et gérez tous vos avis clients en un seul endroit',
+  description: 'Collectez, organisez et répondez à tous vos avis clients (Google, Facebook, TripAdvisor) depuis une plateforme unique. Générez des QR codes personnalisés pour booster vos avis positifs.',
+  keywords: 'avis clients, gestion avis, QR code avis, Google Reviews, Facebook avis, centralisation avis, restaurant avis, commerce avis',
   openGraph: {
-    title: 'Kritiqo - Collectez 300% d\'avis clients en plus',
-    description: 'La solution #1 pour collecter et gérer vos avis clients. QR codes, pages personnalisées, tableau de bord complet.',
+    title: 'Kritiqo - Centralisez tous vos avis clients',
+    description: 'La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne',
     url: 'https://kritiqo.com',
+    siteName: 'Kritiqo',
+    type: 'website',
   },
-  alternates: {
-    canonical: 'https://kritiqo.com',
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kritiqo - Centralisez tous vos avis clients',
+    description: 'La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne',
   },
+  robots: {
+    index: true,
+    follow: true,
+  }
 }
 
 const features = [
   {
     icon: QrCodeIcon,
     title: 'QR Codes Personnalisés',
-    description: 'Générez des QR codes uniques pour chaque établissement et collectez des avis en quelques secondes.',
-    benefits: ['Installation facile', 'Design personnalisable', 'Statistiques en temps réel']
+    description: 'Générez des QR codes uniques pour chaque établissement. Vos clients scannent et laissent un avis en 30 secondes.',
+    highlight: 'Génération instantanée'
   },
   {
     icon: StarIcon,
-    title: 'Pages d\'Avis Optimisées',
-    description: 'Créez des pages d\'avis attractives qui encouragent vos clients à laisser des commentaires positifs.',
-    benefits: ['Interface intuitive', 'Mobile-friendly', 'Intégration multi-plateformes']
+    title: 'Centralisation des Avis',
+    description: 'Regroupez tous vos avis Google, Facebook, TripAdvisor dans un tableau de bord unique. Fini le jonglage entre plateformes.',
+    highlight: 'Toutes plateformes'
+  },
+  {
+    icon: EnvelopeIcon,
+    title: 'Tri Intelligent des Emails',
+    description: 'Notre IA organise automatiquement vos emails par catégories : factures, RH, clients, admin. Gagnez 2h par jour.',
+    highlight: 'IA intégrée'
   },
   {
     icon: ChartBarIcon,
-    title: 'Tableau de Bord Analytique',
-    description: 'Suivez vos performances, analysez vos avis et optimisez votre stratégie de réputation.',
-    benefits: ['Rapports détaillés', 'Alertes automatiques', 'Export des données']
+    title: 'Analytics Avancés',
+    description: 'Suivez l\'évolution de votre réputation, identifiez les tendances et optimisez votre stratégie client.',
+    highlight: 'Insights en temps réel'
   }
 ]
 
-const testimonials = [
+const benefits = [
   {
-    name: 'Marie Dubois',
-    business: 'Restaurant Le Petit Bistrot',
-    content: 'Depuis que j\'utilise Kritiqo, j\'ai triplé le nombre d\'avis sur Google. Les QR codes sont très pratiques !',
-    rating: 5,
-    location: 'Paris'
+    icon: ClockIcon,
+    title: 'Gagnez 3h par semaine',
+    description: 'Automatisez la collecte et l\'organisation de vos avis clients'
   },
   {
-    name: 'Pierre Martin',
-    business: 'Café Central',
-    content: 'Interface très simple, mes clients laissent facilement des avis. Je recommande Kritiqo à tous les restaurateurs.',
-    rating: 5,
-    location: 'Lyon'
+    icon: BuildingStorefrontIcon,
+    title: 'Multi-établissements',
+    description: 'Gérez tous vos points de vente depuis une seule interface'
   },
   {
-    name: 'Sophie Bernard',
-    business: 'Boulangerie des Halles',
-    content: 'Excellent outil pour gérer notre e-réputation. Le support client est également top !',
-    rating: 5,
-    location: 'Marseille'
+    icon: DevicePhoneMobileIcon,
+    title: 'Mobile-first',
+    description: 'Interface optimisée pour smartphone et tablette'
+  },
+  {
+    icon: ComputerDesktopIcon,
+    title: 'Intégration simple',
+    description: 'Configuration en 5 minutes, sans installation'
   }
 ]
 
 const faqItems = [
   {
-    question: 'Comment Kritiqo augmente-t-il mes avis clients ?',
-    answer: 'Kritiqo facilite le processus de collecte d\'avis avec des QR codes simples à scanner et des pages optimisées qui encouragent les retours positifs.'
+    question: 'Comment fonctionne la collecte d\'avis via QR code ?',
+    answer: 'Vous générez un QR code unique pour votre établissement. Vos clients le scannent avec leur smartphone et accèdent directement à une page optimisée pour laisser un avis sur Google, Facebook ou d\'autres plateformes.'
   },
   {
-    question: 'Kritiqo fonctionne-t-il avec Google Avis ?',
-    answer: 'Oui, Kritiqo s\'intègre parfaitement avec Google Avis, Facebook, TripAdvisor et d\'autres plateformes d\'avis populaires.'
+    question: 'Quelles plateformes d\'avis sont supportées ?',
+    answer: 'Kritiqo centralise les avis de Google My Business, Facebook, TripAdvisor, et d\'autres plateformes populaires. Nous ajoutons régulièrement de nouvelles intégrations selon les besoins de nos utilisateurs.'
   },
   {
-    question: 'Combien coûte Kritiqo ?',
-    answer: 'Kritiqo propose plusieurs formules adaptées à tous les budgets, avec un essai gratuit de 14 jours sans engagement.'
+    question: 'Le tri automatique des emails est-il sécurisé ?',
+    answer: 'Absolument. Nous utilisons l\'authentification OAuth sécurisée et ne lisons que les métadonnées nécessaires au tri (expéditeur, objet). Vos emails restent privés et nous respectons le RGPD.'
   },
   {
-    question: 'L\'installation est-elle compliquée ?',
-    answer: 'Non ! Il suffit de coller votre lien Google Maps et nous créons automatiquement votre page d\'avis et votre QR code.'
+    question: 'Puis-je gérer plusieurs restaurants ou magasins ?',
+    answer: 'Oui ! Kritiqo est conçu pour les entreprises multi-sites. Vous pouvez ajouter autant d\'établissements que nécessaire et les gérer depuis un tableau de bord unique.'
+  },
+  {
+    question: 'Y a-t-il une période d\'essai ?',
+    answer: 'Oui, nous offrons 14 jours d\'essai gratuit avec accès à toutes les fonctionnalités. Aucune carte bancaire requise pour commencer.'
+  },
+  {
+    question: 'Comment puis-je répondre aux avis clients ?',
+    answer: 'Kritiqo vous permet de répondre directement aux avis depuis la plateforme. Vous recevez des notifications pour les nouveaux avis et pouvez répondre rapidement pour maintenir une bonne relation client.'
   }
 ]
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Sticky Header */}
-      <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-neutral-200 z-50">
-        <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-            Kritiqo
-          </h1>
-          <MobileNavigation />
-          <nav className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
-              className="text-neutral-600 hover:text-neutral-900 transition-colors"
-            >
-              Fonctionnalités
-            </a>
-            <a
-              href="#demo"
-              className="text-neutral-600 hover:text-neutral-900 transition-colors"
-            >
-              Démonstration
-            </a>
-            <a
-              href="/faq"
-              className="text-neutral-600 hover:text-neutral-900 transition-colors"
-            >
-              FAQ
-            </a>
-            <a
-              href="/contact"
-              className="text-neutral-600 hover:text-neutral-900 transition-colors"
-            >
-              Contact
-            </a>
-            <a
-              href="/login"
-              className="px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
-            >
-              Se connecter
-            </a>
-          </nav>
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">K</span>
+              </div>
+              <span className="text-xl font-bold text-neutral-900">Kritiqo</span>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-neutral-600 hover:text-neutral-900 transition-colors">
+                Fonctionnalités
+              </a>
+              <a href="#benefits" className="text-neutral-600 hover:text-neutral-900 transition-colors">
+                Avantages
+              </a>
+              <a href="#faq" className="text-neutral-600 hover:text-neutral-900 transition-colors">
+                FAQ
+              </a>
+              <a href="/contact" className="text-neutral-600 hover:text-neutral-900 transition-colors">
+                Contact
+              </a>
+              <Link 
+                href="/login"
+                className="bg-neutral-900 text-white px-4 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+              >
+                Se connecter
+              </Link>
+            </nav>
+
+            <MobileNavigation />
+          </div>
         </div>
       </header>
 
-      {/* Hero Section - Optimisé SEO */}
-      <section className="bg-gradient-to-br from-neutral-50 to-neutral-100 py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-neutral-900 mb-6">
-              Collectez <span className="text-blue-600">300% d'avis</span> clients en plus
+      <main>
+        {/* Hero Section */}
+        <section className="py-20 px-6 text-center bg-gradient-to-b from-neutral-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
+              Centralisez tous vos
+              <span className="block text-green-600">avis clients</span>
+              en un seul endroit
             </h1>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto mb-8">
-              Kritiqo aide les restaurants et commerces à <strong>collecter plus d'avis clients</strong> avec des 
-              <strong> QR codes personnalisés</strong> et des <strong>pages d'avis optimisées</strong>. 
-              Augmentez votre réputation en ligne dès aujourd'hui.
+            
+            <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Collectez, organisez et répondez à vos avis Google, Facebook et TripAdvisor depuis une plateforme unique. 
+              Générez des QR codes pour booster vos avis positifs.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link
                 href="/signup"
-                className="bg-neutral-900 text-white px-8 py-4 rounded-lg hover:bg-neutral-800 transition-colors text-lg font-semibold"
+                className="bg-neutral-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-neutral-800 transition-colors flex items-center space-x-2"
               >
-                Essai gratuit 14 jours
+                <span>Essai gratuit 14 jours</span>
+                <ArrowRightIcon className="h-5 w-5" />
+              </Link>
+              <a
+                href="#demo"
+                className="border border-neutral-300 text-neutral-700 px-8 py-4 rounded-lg text-lg font-medium hover:bg-neutral-50 transition-colors"
+              >
+                Voir la démonstration
+              </a>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-8 text-sm text-neutral-500">
+              <span className="flex items-center gap-2">
+                <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                Sans engagement
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                Configuration en 5 min
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                Support inclus
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="py-20 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+                Tout ce dont vous avez besoin pour gérer vos avis
+              </h2>
+              <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
+                Une plateforme complète qui simplifie la gestion de votre réputation en ligne
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+              {features.map((feature, index) => (
+                <div key={index} className="bg-neutral-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <feature.icon className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-xl font-semibold text-neutral-900">
+                          {feature.title}
+                        </h3>
+                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                          {feature.highlight}
+                        </span>
+                      </div>
+                      <p className="text-neutral-600 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section id="benefits" className="py-20 px-6 bg-neutral-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+                Pourquoi choisir Kritiqo ?
+              </h2>
+              <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
+                Conçu spécialement pour les restaurants, commerces et entreprises de services
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-16">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="text-center p-6">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <benefit.icon className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-neutral-600">
+                    {benefit.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats */}
+            <div className="bg-white rounded-xl p-8 shadow-sm">
+              <div className="grid gap-8 md:grid-cols-3 text-center">
+                <div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">+150%</div>
+                  <p className="text-neutral-600">d'avis collectés en moyenne</p>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">3h</div>
+                  <p className="text-neutral-600">économisées par semaine</p>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">5 min</div>
+                  <p className="text-neutral-600">pour configurer votre compte</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="py-20 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+                Comment ça marche ?
+              </h2>
+              <p className="text-xl text-neutral-600">
+                Trois étapes simples pour démarrer
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                  1
+                </div>
+                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                  Ajoutez vos établissements
+                </h3>
+                <p className="text-neutral-600">
+                  Connectez vos restaurants ou magasins en quelques clics. 
+                  Collez simplement vos liens Google Maps.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                  2
+                </div>
+                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                  Générez vos QR codes
+                </h3>
+                <p className="text-neutral-600">
+                  Créez des QR codes personnalisés pour chaque point de vente. 
+                  Imprimez-les et placez-les stratégiquement.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                  3
+                </div>
+                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                  Collectez et gérez
+                </h3>
+                <p className="text-neutral-600">
+                  Suivez vos avis en temps réel, répondez rapidement et 
+                  boostez votre réputation en ligne.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="py-20 px-6 bg-neutral-50">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+                Questions fréquentes
+              </h2>
+              <p className="text-xl text-neutral-600">
+                Tout ce que vous devez savoir sur Kritiqo
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqItems.map((faq, index) => (
+                <details key={index} className="bg-white rounded-lg p-6 shadow-sm">
+                  <summary className="font-semibold text-neutral-900 cursor-pointer mb-3 text-lg">
+                    {faq.question}
+                  </summary>
+                  <p className="text-neutral-600 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <p className="text-neutral-600 mb-4">
+                Vous avez d'autres questions ?
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+              >
+                Contactez notre équipe
+                <ArrowRightIcon className="h-4 w-4 ml-1" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 px-6 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Prêt à transformer votre gestion d'avis ?
+            </h2>
+            <p className="text-xl text-neutral-300 mb-8 max-w-2xl mx-auto">
+              Rejoignez les centaines d'entreprises qui font confiance à Kritiqo 
+              pour améliorer leur réputation en ligne.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/signup"
+                className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-green-700 transition-colors"
+              >
+                Commencer l'essai gratuit
               </Link>
               <Link
                 href="/contact"
-                className="border border-neutral-300 text-neutral-700 px-8 py-4 rounded-lg hover:bg-neutral-50 transition-colors text-lg"
+                className="border border-neutral-400 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-white/10 transition-colors"
               >
-                Voir une démo
+                Parler à un expert
               </Link>
             </div>
-            
-            {/* Trust indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-neutral-500">
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                Essai gratuit sans CB
-              </span>
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                Installation en 2 minutes
-              </span>
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                Support client français
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-neutral-900 mb-4">
-              Pourquoi choisir Kritiqo pour vos avis clients ?
-            </h2>
-            <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-              La solution complète pour transformer vos clients satisfaits en ambassadeurs en ligne
+            <p className="text-sm text-neutral-400 mt-6">
+              Essai gratuit 14 jours • Sans engagement • Support inclus
             </p>
           </div>
-          
-          <div className="grid gap-12 lg:grid-cols-3">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <feature.icon className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-2xl font-semibold text-neutral-900 mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-600 mb-6">
-                  {feature.description}
-                </p>
-                <ul className="space-y-2">
-                  {feature.benefits.map((benefit, i) => (
-                    <li key={i} className="flex items-center justify-center gap-2 text-sm text-neutral-500">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-neutral-900 mb-4">
-              Ils ont choisi Kritiqo pour leurs avis clients
-            </h2>
-            <p className="text-xl text-neutral-600">
-              Découvrez comment nos clients augmentent leur réputation en ligne
-            </p>
-          </div>
-          
-          <div className="grid gap-8 md:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl shadow-sm border border-neutral-200">
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIcon key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-neutral-700 mb-6 italic">
-                  "{testimonial.content}"
-                </p>
-                <div>
-                  <p className="font-semibold text-neutral-900">{testimonial.name}</p>
-                  <p className="text-sm text-neutral-600">{testimonial.business}</p>
-                  <p className="text-sm text-neutral-500">{testimonial.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-neutral-900 mb-4">
-              Questions fréquentes sur Kritiqo
-            </h2>
-            <p className="text-xl text-neutral-600">
-              Tout ce que vous devez savoir sur notre plateforme de gestion d'avis
-            </p>
-          </div>
-          
-          <div className="space-y-8">
-            {faqItems.map((item, index) => (
-              <div key={index} className="border border-neutral-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-3">
-                  {item.question}
-                </h3>
-                <p className="text-neutral-600">
-                  {item.answer}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-neutral-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            Prêt à augmenter vos avis clients ?
-          </h2>
-          <p className="text-xl text-neutral-300 mb-8">
-            Rejoignez les centaines de commerces qui utilisent Kritiqo pour améliorer leur réputation en ligne
-          </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 bg-white text-neutral-900 px-8 py-4 rounded-lg hover:bg-neutral-100 transition-colors text-lg font-semibold"
-          >
-            Commencer maintenant
-            <ArrowRightIcon className="h-5 w-5" />
-          </Link>
-          <p className="text-sm text-neutral-400 mt-4">
-            Essai gratuit 14 jours • Sans engagement • Support inclus
-          </p>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-neutral-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-6">
+      <footer className="bg-neutral-100 py-12 px-6">
+        <div className="max-w-6xl mx-auto">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
-              <h4 className="text-xl font-bold mb-4">Kritiqo</h4>
-              <p className="text-neutral-400">
-                La solution tout-en-un pour gérer vos avis et emails clients.
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">K</span>
+                </div>
+                <span className="text-xl font-bold text-neutral-900">Kritiqo</span>
+              </div>
+              <p className="text-neutral-600 text-sm">
+                La plateforme tout-en-un pour centraliser et gérer vos avis clients.
               </p>
             </div>
+
             <div>
-              <h5 className="font-semibold mb-3">Produit</h5>
-              <ul className="space-y-2 text-neutral-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Fonctionnalités
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Tarifs
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Démonstration
-                  </a>
-                </li>
+              <h3 className="font-semibold text-neutral-900 mb-4">Produit</h3>
+              <ul className="space-y-2 text-sm text-neutral-600">
+                <li><a href="#features" className="hover:text-neutral-900 transition-colors">Fonctionnalités</a></li>
+                <li><a href="/faq" className="hover:text-neutral-900 transition-colors">FAQ</a></li>
+                <li><Link href="/dashboard" className="hover:text-neutral-900 transition-colors">Connexion</Link></li>
               </ul>
             </div>
+
             <div>
-              <h5 className="font-semibold mb-3">Support</h5>
-              <ul className="space-y-2 text-neutral-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Centre d'aide
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Formation
-                  </a>
-                </li>
+              <h3 className="font-semibold text-neutral-900 mb-4">Entreprise</h3>
+              <ul className="space-y-2 text-sm text-neutral-600">
+                <li><Link href="/contact" className="hover:text-neutral-900 transition-colors">Contact</Link></li>
+                <li><Link href="/careers" className="hover:text-neutral-900 transition-colors">Carrières</Link></li>
               </ul>
             </div>
+
             <div>
-              <h5 className="font-semibold mb-3">Entreprise</h5>
-              <ul className="space-y-2 text-neutral-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    À propos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors"
-                  >
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/careers"
-                    className="hover:text-white transition-colors"
-                  >
-                    Carrières
-                  </a>
-                </li>
+              <h3 className="font-semibold text-neutral-900 mb-4">Légal</h3>
+              <ul className="space-y-2 text-sm text-neutral-600">
+                <li><Link href="/privacy" className="hover:text-neutral-900 transition-colors">Confidentialité</Link></li>
+                <li><a href="/terms" className="hover:text-neutral-900 transition-colors">CGU</a></li>
+                <li><a href="/mentions" className="hover:text-neutral-900 transition-colors">Mentions légales</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-neutral-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center text-neutral-400">
-            <p>&copy; 2024 Kritiqo. Tous droits réservés.</p>
-            <div className="flex space-x-6 mt-4 sm:mt-0">
-              <a
-                href="/privacy"
-                className="hover:text-white transition-colors text-sm"
-              >
-                Politique de confidentialité
-              </a>
-              <a
-                href="/terms"
-                className="hover:text-white transition-colors text-sm"
-              >
-                Conditions d'utilisation
+
+          <div className="border-t border-neutral-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-neutral-600">
+              © 2024 Kritiqo. Tous droits réservés.
+            </p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <a href="mailto:contact@kritiqo.com" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                contact@kritiqo.com
               </a>
             </div>
           </div>
