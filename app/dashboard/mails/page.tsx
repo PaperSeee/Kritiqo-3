@@ -279,6 +279,11 @@ export default function MailsPage() {
     fetchEmails(true);
   };
 
+  const handleRetryClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fetchEmails(true);
+  };
+
   const getCategoryStats = (category: string) => {
     if (category === 'Tous') return visibleEmails.length;
     
@@ -368,7 +373,7 @@ export default function MailsPage() {
             <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
             <span className="text-red-800 text-sm">Erreur: {emailError}</span>
             <button
-              onClick={fetchEmails}
+              onClick={handleRetryClick}
               className="text-sm text-red-700 hover:text-red-900 underline ml-auto"
             >
               Réessayer
