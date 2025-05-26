@@ -168,9 +168,10 @@ export async function POST(request: NextRequest) {
   let subject: string = '';
   let sender: string = '';
   let body: string = '';
+  let session: any = null; // Add session declaration here
   
   try {
-    const session = await getServerSession(authOptions);
+    session = await getServerSession(authOptions); // Remove const here
     
     if (!session?.userId) {
       return NextResponse.json(
