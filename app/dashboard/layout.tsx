@@ -68,7 +68,12 @@ export default function DashboardLayout({
       `}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-200">
-          <h1 className="text-xl font-bold text-neutral-900">Kritiqo</h1>
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">K</span>
+            </div>
+            <span className="text-xl font-bold text-neutral-900">Kritiqo</span>
+          </div>
           <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden p-2 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-200 rounded-lg transition-colors"
@@ -130,7 +135,12 @@ export default function DashboardLayout({
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
-          <h1 className="text-lg font-semibold text-neutral-900">Kritiqo</h1>
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">K</span>
+            </div>
+            <span className="text-lg font-bold text-neutral-900">Kritiqo</span>
+          </div>
           <div className="w-10" />
         </div>
 
