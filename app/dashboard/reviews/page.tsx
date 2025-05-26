@@ -1,88 +1,40 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutlineIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 
-// Businesses simulés
-const mockBusinesses = [
-  { id: 'all', name: 'Tous les établissements', slug: 'all' },
-  { id: '1', name: 'Chez Mario', slug: 'chez-mario' },
-  { id: '2', name: 'Le Petit Bistrot', slug: 'le-petit-bistrot' },
-  { id: '3', name: 'Sushi Zen', slug: 'sushi-zen' },
-  { id: '4', name: 'Pizza Corner', slug: 'pizza-corner' }
-]
+// Interface pour les entreprises
+interface Business {
+  id: string
+  name: string
+  slug: string
+  city: string
+  country: string
+  place_id: string
+  google_link: string
+  ubereats_link: string | null
+  deliveroo_link: string | null
+  takeaway_link: string | null
+  custom_url: string
+  created_at: string
+}
 
-// Avis simulés avec businessId
-const mockReviews = [
-  {
-    id: 1,
-    businessId: '1',
-    businessName: 'Chez Mario',
-    platform: 'Google',
-    customerName: 'Sophie Martin',
-    rating: 5,
-    comment: 'Service excellent ! Je recommande vivement cette entreprise.',
-    date: '2024-01-15',
-    responded: false
-  },
-  {
-    id: 2,
-    businessId: '2',
-    businessName: 'Le Petit Bistrot',
-    platform: 'Facebook',
-    customerName: 'Pierre Dubois',
-    rating: 4,
-    comment: 'Très bon service, livraison rapide. Quelques petits points à améliorer.',
-    date: '2024-01-12',
-    responded: true
-  },
-  {
-    id: 3,
-    businessId: '1',
-    businessName: 'Chez Mario',
-    platform: 'Google',
-    customerName: 'Marie Leroy',
-    rating: 5,
-    comment: 'Parfait ! Équipe professionnelle et à l\'écoute.',
-    date: '2024-01-10',
-    responded: false
-  },
-  {
-    id: 4,
-    businessId: '3',
-    businessName: 'Sushi Zen',
-    platform: 'Facebook',
-    customerName: 'Jean Bernard',
-    rating: 3,
-    comment: 'Service correct mais délais un peu longs.',
-    date: '2024-01-08',
-    responded: true
-  },
-  {
-    id: 5,
-    businessId: '2',
-    businessName: 'Le Petit Bistrot',
-    platform: 'Google',
-    customerName: 'Claire Dubois',
-    rating: 5,
-    comment: 'Ambiance chaleureuse et cuisine délicieuse !',
-    date: '2024-01-07',
-    responded: false
-  },
-  {
-    id: 6,
-    businessId: '4',
-    businessName: 'Pizza Corner',
-    platform: 'Google',
-    customerName: 'Marc Lefebvre',
-    rating: 4,
-    comment: 'Bonnes pizzas, livraison rapide.',
-    date: '2024-01-05',
-    responded: true
-  }
-]
+// Interface pour les avis
+interface Review {
+  id: number
+  businessId: string
+  businessName: string
+  platform: string
+  customerName: string
+  rating: number
+  comment: string
+  date: string
+  responded: boolean
+}
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -101,15 +53,54 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPage() {
+  const { user } = useAuth()
+  const [businesses, setBusinesses] = useState<Business[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedBusiness, setSelectedBusiness] = useState('all')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
+  // État pour les avis (vide pour l'instant, sera connecté à une API plus tard)
+  const [reviews] = useState<Review[]>([])
+
+  useEffect(() => {
+    if (user) {
+      fetchBusinesses()
+    }
+  }, [user])
+
+  const fetchBusinesses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setBusinesses(data || [])
+    } catch (err) {
+      console.error('Error fetching businesses:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Créer la liste des options de filtre avec les vraies entreprises
+  const businessOptions = [
+    { id: 'all', name: 'Tous les établissements', slug: 'all' },
+    ...businesses.map(business => ({
+      id: business.id,
+      name: business.name,
+      slug: business.slug || business.name.toLowerCase().replace(/\s+/g, '-')
+    }))
+  ]
 
   // Filtrer les avis selon le restaurant sélectionné
   const filteredReviews = selectedBusiness === 'all' 
-    ? mockReviews 
-    : mockReviews.filter(review => review.businessId === selectedBusiness)
+    ? reviews 
+    : reviews.filter(review => review.businessId === selectedBusiness)
 
-  const selectedBusinessName = mockBusinesses.find(b => b.id === selectedBusiness)?.name || 'Tous les établissements'
+  const selectedBusinessName = businessOptions.find(b => b.id === selectedBusiness)?.name || 'Tous les établissements'
 
   return (
     <div className="space-y-8">
@@ -131,6 +122,7 @@ export default function ReviewsPage() {
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center space-x-2 bg-neutral-50 border border-neutral-300 rounded-lg px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition-colors"
+              disabled={businesses.length === 0}
             >
               <span>{selectedBusinessName}</span>
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -138,7 +130,7 @@ export default function ReviewsPage() {
             
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white border border-neutral-200 rounded-lg shadow-lg z-10">
-                {mockBusinesses.map((business) => (
+                {businessOptions.map((business) => (
                   <button
                     key={business.id}
                     onClick={() => {
@@ -152,7 +144,7 @@ export default function ReviewsPage() {
                     {business.name}
                     {selectedBusiness !== 'all' && business.id !== 'all' && (
                       <span className="text-sm text-neutral-500 ml-2">
-                        ({mockReviews.filter(r => r.businessId === business.id).length} avis)
+                        ({reviews.filter(r => r.businessId === business.id).length} avis)
                       </span>
                     )}
                   </button>
@@ -161,6 +153,17 @@ export default function ReviewsPage() {
             )}
           </div>
         </div>
+        
+        {businesses.length === 0 && (
+          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-amber-800 text-sm">
+              Aucun établissement enregistré. 
+              <Link href="/dashboard/businesses" className="font-medium underline ml-1">
+                Ajouter un établissement
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Statistiques */}
@@ -209,13 +212,29 @@ export default function ReviewsPage() {
                 </span>
               )}
             </h2>
-            {filteredReviews.length === 0 && (
+            {filteredReviews.length === 0 && businesses.length > 0 && (
               <span className="text-sm text-neutral-500">Aucun avis trouvé</span>
             )}
           </div>
         </div>
         
-        {filteredReviews.length > 0 ? (
+        {businesses.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="text-neutral-400 mb-4">
+              <StarOutlineIcon className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun établissement enregistré</h3>
+            <p className="text-neutral-600 mb-4">
+              Vous devez d'abord enregistrer vos établissements pour pouvoir gérer les avis.
+            </p>
+            <Link 
+              href="/dashboard/businesses"
+              className="inline-flex items-center px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+            >
+              Ajouter un établissement
+            </Link>
+          </div>
+        ) : filteredReviews.length > 0 ? (
           <div className="divide-y divide-neutral-200">
             {filteredReviews.map((review) => (
               <div key={review.id} className="p-6">
