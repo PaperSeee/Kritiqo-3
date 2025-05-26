@@ -138,7 +138,7 @@ export default function MailsPage() {
       setAllEmails(emailsWithTriage);
       
       // Traiter le triage seulement pour les emails qui n'ont pas encore été analysés
-      const emailsToAnalyze = emailsWithTriage.filter(email => email.triageLoading);
+      const emailsToAnalyze = emailsWithTriage.filter((email: Email) => email.triageLoading);
       
       console.log(`📊 ${emailsToAnalyze.length} emails à analyser avec l'IA`);
       
