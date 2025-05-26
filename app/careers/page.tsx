@@ -10,6 +10,8 @@ import {
   PaperAirplaneIcon
 } from "@heroicons/react/24/outline";
 import CVUploadForm from "@/components/forms/CVUploadForm";
+import Header from '../../components/Header'
+import Footer from '../../components/Footer'
 
 const companyValues = [
   {
@@ -73,6 +75,8 @@ export default function CareersPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
+      
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-16">
@@ -86,15 +90,15 @@ export default function CareersPage() {
           <div className="flex justify-center gap-8 text-sm text-neutral-500">
             <span className="flex items-center gap-2">
               <UsersIcon className="h-4 w-4" />
-              25+ employés
+              1 fondateur
             </span>
             <span className="flex items-center gap-2">
               <MapPinIcon className="h-4 w-4" />
-              Paris, Lyon, Remote
+              Alost, Belgique, Remote
             </span>
             <span className="flex items-center gap-2">
               <RocketLaunchIcon className="h-4 w-4" />
-              Startup en croissance
+              Projet en lancement
             </span>
           </div>
         </div>
@@ -429,17 +433,9 @@ export default function CareersPage() {
             Nous contacter
           </a>
         </div>
-
-        {/* Back to home */}
-        <div className="text-center mt-12">
-          <a
-            href="/"
-            className="inline-flex items-center text-neutral-600 hover:text-neutral-900 transition-colors"
-          >
-            ← Retour à l'accueil
-          </a>
-        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

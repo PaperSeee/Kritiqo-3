@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 interface FAQItem {
   id: number;
@@ -123,6 +125,8 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
+      
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -265,6 +269,8 @@ export default function FAQPage() {
           </a>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }

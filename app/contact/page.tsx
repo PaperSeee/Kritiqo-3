@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import Header from '../../components/Header'
+import Footer from '../../components/Footer'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -41,6 +43,8 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
+      
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-16">
@@ -301,17 +305,9 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-
-        {/* Back to home */}
-        <div className="text-center mt-16">
-          <a
-            href="/"
-            className="inline-flex items-center text-neutral-600 hover:text-neutral-900 transition-colors"
-          >
-            ← Retour à l'accueil
-          </a>
-        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
