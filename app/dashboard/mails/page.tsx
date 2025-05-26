@@ -146,7 +146,7 @@ export default function MailsPage() {
       for (let i = 0; i < emailsToAnalyze.length; i += 5) {
         const batch = emailsToAnalyze.slice(i, i + 5);
         
-        await Promise.all(batch.map(async (email, batchIndex) => {
+        await Promise.all(batch.map(async (email: Email, batchIndex: number) => {
           const globalIndex = emails.findIndex(e => e.id === email.id);
           if (globalIndex === -1) return;
           
