@@ -59,3 +59,30 @@ CREATE TABLE IF NOT EXISTS cvs (
 CREATE INDEX IF NOT EXISTS idx_cvs_user_id ON cvs(user_id);
 CREATE INDEX IF NOT EXISTS idx_cvs_is_primary ON cvs(is_primary);
 CREATE INDEX IF NOT EXISTS idx_cvs_user_primary ON cvs(user_id, is_primary);
+
+-- Table pour les emails et leur triage IA
+CREATE TABLE IF NOT EXISTS emails (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  sender TEXT NOT NULL,
+  body TEXT,
+  preview TEXT,
+  date TIMESTAMP WITH TIME ZONE NOT NULL,
+  source TEXT NOT NULL, -- 'gmail' ou 'microsoft'
+  account_email TEXT,
+  account_provider TEXT,
+  gpt_categorie TEXT,
+  gpt_priorite TEXT,
+  gpt_action TEXT,
+  gpt_suggestion TEXT,
+  analyzed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index pour optimiser les requêtes sur les emails
+CREATE INDEX IF NOT EXISTS idx_emails_user_id ON emails(user_id);
+CREATE INDEX IF NOT EXISTS idx_emails_date ON emails(date);
+CREATE INDEX IF NOT EXISTS idx_emails_analyzed ON emails(analyzed_at);
+CREATE INDEX IF NOT EXISTS idx_emails_user_analyzed ON emails(user_id, analyzed_at);

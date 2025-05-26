@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { ConnectedEmail } from '@/lib/supabase'
+import DisconnectOutlookButton from './DisconnectOutlookButton'
 
 interface EmailAccountSwitcherProps {
   selectedEmail: string | null
@@ -81,6 +82,10 @@ export default function EmailAccountSwitcher({
         if (removedEmail && selectedEmail === removedEmail.email) {
           onEmailChange(null)
         }
+      } else {
+        const error = await response.json()
+        console.error('❌ Erreur lors de la suppression:', error)
+        alert(`Erreur: ${error.error || 'Impossible de supprimer le compte'}`)
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -88,7 +93,13 @@ export default function EmailAccountSwitcher({
       } else {
         console.error('Erreur inconnue lors de la suppression du compte:', JSON.stringify(err))
       }
+      alert('Erreur réseau lors de la suppression')
     }
+  }
+
+  const handleAccountDisconnected = () => {
+    fetchConnectedEmails()
+    onEmailsUpdate()
   }
 
   const selectedEmailData = connectedEmails.find(e => e.email === selectedEmail)
@@ -200,9 +211,35 @@ export default function EmailAccountSwitcher({
       </div>
 
       {connectedEmails.length > 0 && (
-        <div className="mt-2 text-xs text-neutral-500">
-          {connectedEmails.length} compte{connectedEmails.length > 1 ? 's' : ''} connecté{connectedEmails.length > 1 ? 's' : ''}
-        </div>
+        <>
+          <div className="mt-2 text-xs text-neutral-500">
+            {connectedEmails.length} compte{connectedEmails.length > 1 ? 's' : ''} connecté{connectedEmails.length > 1 ? 's' : ''}
+          </div>
+          
+          {/* Liste des comptes connectés avec boutons de déconnexion */}
+          <div className="mt-4 space-y-2">
+            <h4 className="text-sm font-medium text-neutral-700">Comptes connectés:</h4>
+            {connectedEmails.map((email) => (
+              <div key={email.id} className="flex items-center justify-between bg-neutral-50 rounded-lg p-3">
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    email.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
+                  }`}></div>
+                  <span className="text-sm font-medium">{email.email}</span>
+                  <span className="text-xs text-neutral-500">
+                    ({email.provider === 'google' ? 'Gmail' : 'Outlook'})
+                  </span>
+                </div>
+                <DisconnectOutlookButton
+                  emailId={email.id}
+                  email={email.email}
+                  provider={email.provider}
+                  onDisconnected={handleAccountDisconnected}
+                />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

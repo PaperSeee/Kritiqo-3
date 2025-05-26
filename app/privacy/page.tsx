@@ -44,10 +44,12 @@ export default function PrivacyPage() {
               </div>
               <div>
                 <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  Intégration Gmail (OAuth)
+                  Intégration Gmail & Outlook avec IA
                 </h3>
                 <p className="text-neutral-700 leading-relaxed">
-                  Avec votre autorisation explicite, nous accédons à vos emails Gmail pour les organiser automatiquement par catégories. Nous ne lisons pas le contenu de vos emails privés et n'accédons qu'aux métadonnées nécessaires au tri.
+                  Avec votre autorisation explicite, nous accédons à vos emails Gmail et Outlook pour les analyser automatiquement via notre IA (GPT-4). 
+                  L'IA lit uniquement le sujet et le contenu nécessaire pour le tri et génère des suggestions de réponses. 
+                  Vos emails ne sont jamais stockés et l'analyse se fait en temps réel de manière sécurisée.
                 </p>
               </div>
             </div>
@@ -59,6 +61,8 @@ export default function PrivacyPage() {
             </h2>
             <ul className="space-y-2 text-neutral-700">
               <li>• Fournir et améliorer nos services de gestion d'avis</li>
+              <li>• Analyser intelligemment vos emails via IA pour catégorisation et suggestions</li>
+              <li>• Générer automatiquement des réponses personnalisées pour vos emails</li>
               <li>• Organiser automatiquement vos emails par catégories</li>
               <li>• Générer des QR codes et pages d'avis personnalisées</li>
               <li>• Vous envoyer des notifications importantes sur votre compte</li>

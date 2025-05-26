@@ -3,7 +3,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon, BuildingStorefrontIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { QrCodeIcon, StarIcon, EnvelopeIcon, ChartBarIcon, BuildingStorefrontIcon, CheckCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -189,15 +189,21 @@ export default function DashboardPage() {
             
             <Link 
               href="/dashboard/mails"
-              className="w-full flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 rounded-lg transition-colors text-left border border-purple-200"
             >
               <div className="flex items-center space-x-3">
-                <EnvelopeIcon className="h-5 w-5 text-neutral-600" />
-                <span className="text-sm font-medium text-neutral-900">
-                  Envoyer un email
-                </span>
+                <div className="relative">
+                  <EnvelopeIcon className="h-5 w-5 text-purple-600" />
+                  <SparklesIcon className="h-3 w-3 text-purple-500 absolute -top-1 -right-1" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-purple-900">
+                    Gestion Emails IA
+                  </span>
+                  <p className="text-xs text-purple-700">Tri intelligent automatique</p>
+                </div>
               </div>
-              <span className="text-neutral-400">→</span>
+              <span className="text-purple-400">→</span>
             </Link>
             
             <Link 

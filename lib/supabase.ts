@@ -30,6 +30,17 @@ export type ConnectedEmail = {
   updated_at: string
 }
 
+export type EmailTriage = {
+  id: string
+  email_id: string
+  user_id: string
+  catégorie: 'Avis client' | 'Commande' | 'Juridique' | 'Facture' | 'RH' | 'Commercial' | 'Notification automatique' | 'Publicité' | 'Spam' | 'Autre'
+  priorité: 'Urgent' | 'Moyen' | 'Faible'
+  action: 'Répondre' | 'Répondre avec excuse' | 'Transférer à la comptabilité' | 'Transférer au support' | 'Examiner manuellement' | 'Ignorer'
+  suggestion: string | null
+  created_at: string
+}
+
 // Fonction pour générer l'URL du QR code
 export function generateQRCodeUrl(url: string, size = 300): string {
   const baseUrl = 'https://api.qrserver.com/v1/create-qr-code/'

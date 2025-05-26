@@ -141,12 +141,13 @@ export default function PricingPage() {
       ]
     },
     {
-      category: 'Tri d\'emails',
+      category: 'Tri d\'emails intelligent',
       items: [
-        { name: 'Emails traités/mois', starter: '100', pro: 'Illimité', enterprise: 'Illimité' },
-        { name: 'IA avancée', starter: false, pro: true, enterprise: true },
-        { name: 'Filtres personnalisés', starter: '3', pro: 'Illimité', enterprise: 'Illimité' },
-        { name: 'Intégrations email', starter: 'Gmail', pro: 'Toutes', enterprise: 'API custom' }
+        { name: 'Emails triés par IA/mois', starter: '100', pro: 'Illimité', enterprise: 'Illimité' },
+        { name: 'Analyse GPT-4 avancée', starter: false, pro: true, enterprise: true },
+        { name: 'Suggestions de réponses IA', starter: false, pro: true, enterprise: true },
+        { name: 'Catégorisation automatique', starter: true, pro: true, enterprise: true },
+        { name: 'Intégrations email', starter: 'Gmail', pro: 'Gmail + Outlook', enterprise: 'API custom + tous' }
       ]
     },
     {

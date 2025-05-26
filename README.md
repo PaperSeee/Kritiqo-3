@@ -14,7 +14,12 @@
 - **Pages d'Avis Optimisées** - Collectez plus d'avis avec des interfaces intuitives
 - **Gestion Multi-Plateformes** - Intégration Google, Facebook, TripAdvisor
 - **Tableau de Bord Analytics** - Suivez vos performances en temps réel
-- **Gestion d'Emails** - Centralisez vos communications clients
+- **📧 Tri Intelligent d'Emails par IA** - GPT-4o analyse automatiquement vos emails avec :
+  - Catégorisation automatique (Avis client, Facture, Commande, etc.)
+  - Niveau de priorité (Urgent, Moyen, Faible)
+  - Actions recommandées personnalisées
+  - Suggestions de réponses intelligentes
+  - Filtrage automatique des spams et publicités
 
 ### Pour les Développeurs
 - Architecture Next.js 13+ avec App Router
@@ -22,10 +27,13 @@
 - Supabase pour la base de données et l'authentification
 - Tailwind CSS pour le design responsive
 - NextAuth.js pour l'authentification OAuth
+- **Intégration OpenAI GPT-4o** pour le tri intelligent des emails
+- **API Gmail & Outlook** pour la synchronisation multi-comptes
 
 ## 📊 Statistiques SEO
 
 - **+300%** d'avis clients collectés en moyenne
+- **80%** de temps économisé sur la gestion des emails
 - **2 minutes** pour installer et configurer
 - **Support 24/7** en français
 - **RGPD compliant** pour la protection des données
@@ -42,6 +50,8 @@ npm install
 
 # Configurer les variables d'environnement
 cp .env.example .env.local
+# Ajouter votre clé OpenAI API :
+# OPENAI_API_KEY=sk-...
 
 # Lancer le serveur de développement
 npm run dev

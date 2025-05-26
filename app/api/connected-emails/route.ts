@@ -49,15 +49,28 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
+    // Essayer de récupérer l'ID depuis l'URL (méthode existante)
     const { searchParams } = new URL(request.url)
-    const emailId = searchParams.get('id')
+    let emailId = searchParams.get('id')
+
+    // Si pas d'ID dans l'URL, essayer dans le body de la requête
+    if (!emailId) {
+      try {
+        const body = await request.json()
+        emailId = body.id
+      } catch (parseError) {
+        console.warn('⚠️ Impossible de parser le body de la requête DELETE')
+      }
+    }
 
     if (!emailId) {
       return NextResponse.json(
-        { error: 'ID email manquant' },
+        { error: 'ID email manquant (dans URL ou body)' },
         { status: 400 }
       )
     }
+
+    console.log(`🗑️ Suppression du compte connecté ${emailId} pour l'utilisateur ${session.userId}`)
 
     const { error } = await supabaseAdmin
       .from('connected_emails')
@@ -65,17 +78,21 @@ export async function DELETE(request: NextRequest) {
       .eq('id', emailId)
       .eq('user_id', session.userId)
 
-    if (error) throw error
+    if (error) {
+      console.error('❌ Erreur Supabase lors de la suppression:', error)
+      throw error
+    }
 
+    console.log(`✅ Compte connecté ${emailId} supprimé avec succès`)
     return NextResponse.json({ success: true })
   } catch (err) {
     if (err instanceof Error) {
-      console.error('Erreur lors de la suppression de l\'email connecté:', err.message, err.name, err.stack)
+      console.error('❌ Erreur lors de la suppression de l\'email connecté:', err.message, err.name, err.stack)
     } else {
-      console.error('Erreur inconnue lors de la suppression de l\'email connecté:', JSON.stringify(err))
+      console.error('❌ Erreur inconnue lors de la suppression de l\'email connecté:', JSON.stringify(err))
     }
     return NextResponse.json(
-      { error: 'Erreur serveur' },
+      { error: 'Erreur serveur lors de la suppression' },
       { status: 500 }
     )
   }

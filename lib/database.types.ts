@@ -106,6 +106,65 @@ export interface Database {
           updated_at?: string
         }
       }
+      emails: {
+        Row: {
+          id: string
+          user_id: string
+          subject: string
+          sender: string
+          body: string | null
+          preview: string | null
+          date: string
+          source: string
+          account_email: string | null
+          account_provider: string | null
+          gpt_categorie: string | null
+          gpt_priorite: string | null
+          gpt_action: string | null
+          gpt_suggestion: string | null
+          analyzed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          user_id: string
+          subject: string
+          sender: string
+          body?: string | null
+          preview?: string | null
+          date: string
+          source: string
+          account_email?: string | null
+          account_provider?: string | null
+          gpt_categorie?: string | null
+          gpt_priorite?: string | null
+          gpt_action?: string | null
+          gpt_suggestion?: string | null
+          analyzed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subject?: string
+          sender?: string
+          body?: string | null
+          preview?: string | null
+          date?: string
+          source?: string
+          account_email?: string | null
+          account_provider?: string | null
+          gpt_categorie?: string | null
+          gpt_priorite?: string | null
+          gpt_action?: string | null
+          gpt_suggestion?: string | null
+          analyzed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

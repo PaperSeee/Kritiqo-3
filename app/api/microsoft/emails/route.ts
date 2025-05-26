@@ -26,16 +26,16 @@ export async function GET(request: NextRequest) {
 
     console.log('🚀 Appel à l\'API Microsoft Graph pour récupérer les messages')
 
-    // Récupérer les emails depuis Microsoft Graph
-    const response = await fetch(
-      'https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages?$top=100&$select=id,subject,sender,receivedDateTime,bodyPreview,isRead&$orderby=receivedDateTime desc',
-      {
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    // Utiliser le endpoint amélioré avec gestion d'erreurs spécifiques
+    const endpoint = 'https://graph.microsoft.com/v1.0/me/messages?$top=100&$select=id,subject,sender,receivedDateTime,bodyPreview,isRead&$orderby=receivedDateTime desc';
+    
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
 
     console.log('📨 Réponse de l\'API Microsoft Graph:', {
       status: response.status,
@@ -43,6 +43,23 @@ export async function GET(request: NextRequest) {
       ok: response.ok
     })
 
+    // Gestion d'erreurs spécifiques Microsoft Graph
+    if (response.status === 401) {
+      console.error('❌ Unauthorized: le token Microsoft est invalide ou expiré')
+      return NextResponse.json(
+        { error: 'Token d\'accès Microsoft expiré ou invalide. Veuillez vous reconnecter.' },
+        { status: 401 }
+      )
+    }
+    
+    if (response.status === 403) {
+      console.error('❌ Forbidden: le compte ne possède pas de boîte Outlook ou les permissions sont insuffisantes')
+      return NextResponse.json(
+        { error: 'Permissions insuffisantes. Le compte ne possède pas de boîte Outlook ou les droits d\'accès sont insuffisants.' },
+        { status: 403 }
+      )
+    }
+    
     if (!response.ok) {
       const errorText = await response.text()
       console.error('❌ Microsoft Graph API Error:', {
@@ -50,13 +67,6 @@ export async function GET(request: NextRequest) {
         statusText: response.statusText,
         errorBody: errorText
       })
-      
-      if (response.status === 401) {
-        return NextResponse.json(
-          { error: 'Token d\'accès expiré ou invalide. Veuillez vous reconnecter.' },
-          { status: 401 }
-        )
-      }
       
       return NextResponse.json(
         { error: `Erreur Microsoft Graph API: ${response.status} - ${response.statusText}` },
@@ -67,7 +77,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
     const messages = data.value || []
 
-    console.log(`📬 ${messages.length} messages trouvés`)
+    console.log(`✅ ${messages.length} messages Microsoft traités avec succès`)
 
     // Formater les emails
     const emails = messages.map((message: any) => ({
@@ -79,7 +89,6 @@ export async function GET(request: NextRequest) {
       source: 'microsoft'
     }))
 
-    console.log(`✅ ${emails.length} emails Microsoft traités avec succès`)
     return NextResponse.json({ emails })
   } catch (err) {
     if (err instanceof Error) {

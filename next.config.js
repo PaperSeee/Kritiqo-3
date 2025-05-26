@@ -16,6 +16,7 @@ const nextConfig = {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   images: {
     domains: ['api.qrserver.com'],
