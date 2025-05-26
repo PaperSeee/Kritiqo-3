@@ -41,13 +41,13 @@ export default function MobileNavigation() {
               >
                 Fonctionnalités
               </Link>
-              <a
-                href="#benefits"
+              <Link
+                href="/pricing"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Avantages
-              </a>
+                Tarifs
+              </Link>
               <Link
                 href="/faq"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors py-2"
@@ -62,13 +62,20 @@ export default function MobileNavigation() {
               >
                 Contact
               </Link>
-              <div className="pt-4 border-t border-neutral-200">
+              <div className="pt-4 border-t border-neutral-200 space-y-3">
                 <Link
                   href="/login"
-                  className="block w-full px-4 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors text-center font-medium"
+                  className="block text-neutral-600 hover:text-neutral-900 transition-colors py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Se connecter
+                </Link>
+                <Link
+                  href="/signup"
+                  className="block w-full px-4 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors text-center font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Essai gratuit
                 </Link>
               </div>
             </div>
