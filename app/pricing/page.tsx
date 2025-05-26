@@ -8,7 +8,6 @@ import {
   CheckIcon,
   XMarkIcon,
   StarIcon,
-  CrownIcon,
   SparklesIcon,
   ArrowRightIcon,
   QuestionMarkCircleIcon,
