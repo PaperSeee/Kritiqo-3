@@ -4,8 +4,13 @@ import { authOptions } from '@/lib/authOptions';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import OpenAI from 'openai';
 
+// Validate OpenAI API key
+if (!process.env.OPENAI_API_KEY) {
+  console.error('❌ OPENAI_API_KEY environment variable is missing');
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'dummy-key', // Use dummy key to prevent initialization errors
 });
 
 interface TriageRequest {
@@ -81,8 +86,19 @@ function cleanGptResponse(responseText: string): string {
     .trim();
 }
 
-// Étape 7: GPT avec retry sur rate limiting
+// Étape 7: GPT with retry and API key validation
 async function callGptWithRetry(subject: string, body: string, maxRetries = 3): Promise<TriageResponse> {
+  // Check if OpenAI API key is available
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn('⚠️ OPENAI_API_KEY not available, using fallback classification');
+    return {
+      categorie: 'Autre',
+      priorite: 'Moyen',
+      action: 'Examiner manuellement',
+      suggestion: null
+    };
+  }
+
   const cleanBody = cleanEmailBody(body);
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -283,6 +299,34 @@ export async function POST(request: NextRequest) {
       suggestion: null,
       fromCache: false
     };
+
+    // If OpenAI is not available, provide basic fallback
+    if (!process.env.OPENAI_API_KEY) {
+      console.log(`⚠️ OpenAI non disponible, classification basique pour ${id}`);
+      
+      // Still save to Supabase for tracking
+      const emailData = {
+        id,
+        user_id: session.userId,
+        subject,
+        sender,
+        body,
+        gpt_categorie: fallbackResponse.categorie,
+        gpt_priorite: fallbackResponse.priorite,
+        gpt_action: fallbackResponse.action,
+        gpt_suggestion: null,
+        analyzed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        await supabaseAdmin.from('emails').upsert(emailData, { onConflict: 'id' });
+      } catch (err) {
+        console.error('❌ Erreur Supabase (fallback):', err);
+      }
+
+      return NextResponse.json(fallbackResponse);
+    }
 
     return NextResponse.json(fallbackResponse, { status: 200 });
   }

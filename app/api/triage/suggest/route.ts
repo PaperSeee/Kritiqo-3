@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+// Validate OpenAI API key
+if (!process.env.OPENAI_API_KEY) {
+  console.error('❌ OPENAI_API_KEY environment variable is missing');
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'dummy-key', // Use dummy key to prevent initialization errors
 });
 
 interface SuggestRequest {
@@ -39,6 +44,14 @@ function cleanGptResponse(responseText: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if OpenAI API key is available before processing
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'Service d\'IA temporairement indisponible. Veuillez configurer OPENAI_API_KEY.' },
+        { status: 503 }
+      );
+    }
+
     const { subject, body }: SuggestRequest = await request.json();
 
     // Vérification des champs requis

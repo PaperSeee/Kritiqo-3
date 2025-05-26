@@ -50,12 +50,32 @@ npm install
 
 # Configurer les variables d'environnement
 cp .env.example .env.local
-# Ajouter votre clé OpenAI API :
-# OPENAI_API_KEY=sk-...
+
+# ⚠️ IMPORTANT: Ajouter votre clé OpenAI API dans .env.local :
+# OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxx
+# 
+# Obtenir une clé API OpenAI :
+# 1. Aller sur https://platform.openai.com/api-keys
+# 2. Créer un nouveau projet si nécessaire
+# 3. Générer une nouvelle clé API
+# 4. Copier la clé dans .env.local
 
 # Lancer le serveur de développement
 npm run dev
 ```
+
+### 🔑 Configuration OpenAI Requise
+
+Pour utiliser le **tri intelligent d'emails par IA**, vous devez configurer une clé API OpenAI :
+
+1. **Créer un compte OpenAI** : [platform.openai.com](https://platform.openai.com)
+2. **Générer une clé API** : Aller dans API Keys > Create new secret key
+3. **Ajouter la clé** dans votre fichier `.env.local` :
+   ```
+   OPENAI_API_KEY=sk-proj-votre-cle-ici
+   ```
+
+**💡 Note** : Sans clé OpenAI, l'application fonctionne mais le tri IA sera désactivé (classification manuelle requise).
 
 Ouvrez [http://localhost:3000](http://localhost:3000) pour voir l'application.
 
