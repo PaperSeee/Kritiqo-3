@@ -77,7 +77,7 @@ export const authOptions: NextAuthOptions = {
           token.refreshToken = account.refresh_token
           token.provider = account.provider
           token.userId = user.id
-          token.expiresAt = account.expires_at ? account.expires_at * 1000 : Date.now() + (account.expires_in || 3600) * 1000
+          token.expiresAt = account.expires_at ? Number(account.expires_at) * 1000 : Date.now() + (Number(account.expires_in) || 3600) * 1000
           
           // ✅ Vérification des scopes Microsoft Graph (debugging)
           if (account.provider === 'azure-ad' && account.access_token) {
@@ -107,8 +107,8 @@ export const authOptions: NextAuthOptions = {
             try {
               // Calculer expires_at si disponible
               const expiresAt = account.expires_at 
-                ? account.expires_at 
-                : Math.floor(Date.now() / 1000) + (account.expires_in || 3600);
+                ? Number(account.expires_at)
+                : Math.floor(Date.now() / 1000) + (Number(account.expires_in) || 3600);
 
               const { error } = await supabaseAdmin
                 .from('connected_emails')
@@ -162,7 +162,7 @@ export const authOptions: NextAuthOptions = {
               if (refreshed.access_token) {
                 console.log("✅ Token Microsoft refreshed avec succès")
                 token.accessToken = refreshed.access_token;
-                token.expiresAt = Date.now() + refreshed.expires_in * 1000;
+                token.expiresAt = Date.now() + Number(refreshed.expires_in) * 1000;
                 token.refreshToken = refreshed.refresh_token ?? token.refreshToken;
                 
                 // Mettre à jour dans Supabase
