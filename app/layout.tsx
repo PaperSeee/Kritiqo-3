@@ -2,35 +2,66 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
-import { Providers } from "./providers";
-import { BusinessProvider } from "@/contexts/BusinessContext";
+import { Providers } from "@/app/providers";
 
 const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Kritiqo - Gestion d'avis clients pour restaurants et commerces",
-    template: "%s | Kritiqo",
-  },
+  title: "Kritiqo - Centralisez et gérez tous vos avis clients",
   description:
-    "Kritiqo vous aide à collecter et gérer vos avis clients avec des QR codes, pages d'avis personnalisées et outils de gestion d'emails. Augmentez votre réputation en ligne.",
-  keywords: [
-    "avis clients",
-    "gestion avis",
-    "QR code restaurant",
-    "réputation en ligne",
-    "collecte avis",
-    "gestion restaurant",
-    "avis Google",
-    "feedback client",
-    "e-réputation",
-    "commerce local",
-  ],
+    "La plateforme tout-en-un pour collecter, centraliser et gérer vos avis clients. QR codes personnalisés, tri intelligent des emails par IA, analytics avancés.",
+  keywords:
+    "avis clients, gestion avis, QR code avis, Google Reviews, centralisation avis, tri emails IA",
   authors: [{ name: "Kritiqo" }],
   creator: "Kritiqo",
   publisher: "Kritiqo",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      {
+        url: "/android-chrome-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/android-chrome-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    title: "Kritiqo - Centralisez tous vos avis clients",
+    description:
+      "La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne",
+    url: "https://kritiqo.com",
+    siteName: "Kritiqo",
+    type: "website",
+    locale: "fr_FR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kritiqo - Centralisez tous vos avis clients",
+    description:
+      "La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne",
+    creator: "@kritiqo_app",
+  },
   robots: {
     index: true,
     follow: true,
@@ -42,55 +73,28 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    url: "https://kritiqo.com",
-    siteName: "Kritiqo",
-    title: "Kritiqo - Gestion d'avis clients pour restaurants et commerces",
-    description:
-      "Collectez et gérez vos avis clients facilement avec Kritiqo. QR codes, pages personnalisées, gestion d'emails - tout pour améliorer votre réputation en ligne.",
-    images: [
-      {
-        url: "https://kritiqo.com/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Kritiqo - Plateforme de gestion d'avis clients",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kritiqo - Gestion d'avis clients pour restaurants",
-    description:
-      "Collectez plus d'avis clients avec nos QR codes et pages personnalisées. Essai gratuit 14 jours.",
-    images: ["https://kritiqo.com/twitter-image.jpg"],
-    creator: "@kritiqo_app",
-  },
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
-    yahoo: "your-yahoo-verification-code",
+    google: "google-site-verification-code", // À remplacer par votre code Google
   },
-  alternates: {
-    canonical: "https://kritiqo.com",
-  },
-  category: "business",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={inter.variable}>
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#171717" />
+      </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <BusinessProvider>
-            <Providers>{children}</Providers>
-          </BusinessProvider>
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>{children}</AuthProvider>
+        </Providers>
       </body>
     </html>
   );
