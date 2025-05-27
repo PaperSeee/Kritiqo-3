@@ -175,3 +175,7 @@ export async function refreshAzureToken(userId: string, refreshToken: string): P
     return null;
   }
 }
+
+export async function getGmailAccessToken(userId: string): Promise<string | null> {
+  return getValidAccessToken(userId, 'google');
+}
