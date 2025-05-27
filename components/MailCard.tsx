@@ -15,23 +15,15 @@ import {
 import AIResponseModal from './AIResponseModal';
 import { getCategorieColor, getPrioriteColor, type TriageResult } from '@/lib/types/triage';
 
-interface TriageData {
-  categorie: string;
-  priorite: 'Urgent' | 'Moyen' | 'Faible';
-  action: string;
-  suggestion: string | null;
-  fromCache?: boolean;
-}
-
 interface MailCardProps {
   id: string;
   subject: string;
   from: string;
   date: string;
   preview: string;
-  fullBody?: string; // Add full body content for AI suggestions
+  fullBody?: string;
   source?: string;
-  triage?: TriageData;
+  triage?: TriageResult;
   loading?: boolean;
   error?: boolean;
 }
@@ -69,38 +61,8 @@ export default function MailCard({
       case 'Notification automatique': return '🔔';
       case 'Publicité': return '📢';
       case 'Spam': return '🛑';
+      case 'Spam/Pub': return '🚫';
       default: return '📧';
-    }
-  };
-
-  // Couleurs de priorité
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case 'Urgent':
-        return 'bg-red-100 text-red-800 border-red-300';
-      case 'Moyen':
-        return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'Faible':
-        return 'bg-green-100 text-green-800 border-green-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
-    }
-  };
-
-  // Couleurs de catégorie
-  const getCategoryBadge = (category: string) => {
-    switch (category) {
-      case 'Avis client': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'Commande': return 'bg-purple-100 text-purple-800 border-purple-300';
-      case 'Facture': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'Juridique': return 'bg-red-100 text-red-800 border-red-300';
-      case 'RH': return 'bg-indigo-100 text-indigo-800 border-indigo-300';
-      case 'Commercial': return 'bg-green-100 text-green-800 border-green-300';
-      case 'Notification automatique': return 'bg-cyan-100 text-cyan-800 border-cyan-300';
-      case 'Publicité': return 'bg-gray-100 text-gray-600 border-gray-300';
-      case 'Spam': return 'bg-red-50 text-red-600 border-red-200';
-      case 'Spam/Pub': return 'bg-orange-50 text-orange-600 border-orange-200'; // Nouvelle couleur
-      default: return 'bg-neutral-100 text-neutral-800 border-neutral-300';
     }
   };
 
@@ -126,7 +88,8 @@ export default function MailCard({
     return triage?.action !== 'Ignorer' && 
            triage?.categorie !== 'Publicité' && 
            triage?.categorie !== 'Spam' &&
-           triage?.categorie !== 'Spam/Pub';  };
+           triage?.categorie !== 'Spam/Pub';
+  };
 
   const handleAiReply = () => {
     setShowAIModal(true);
@@ -196,10 +159,10 @@ export default function MailCard({
                   </>
                 ) : triage ? (
                   <>
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.categorie as any)}`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.categorie)}`}>
                       {triage.categorie}
                     </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorite as any)}`}>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorite)}`}>
                       {triage.priorite}
                     </div>
                     <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
@@ -222,22 +185,6 @@ export default function MailCard({
             <p className="text-sm text-neutral-600 leading-relaxed mb-4 line-clamp-2">
               {preview}
             </p>
-
-            {/* Action recommandée */}
-            {triage && !loading && (
-              <div className="flex items-center space-x-3 mb-4">
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.categorie as any)}`}>
-                  {triage.categorie}
-                </div>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorite as any)}`}>
-                  {triage.priorite}
-                </div>
-                <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
-                  {getActionIcon(triage.action)}
-                  <span>{triage.action}</span>
-                </div>
-              </div>
-            )}
 
             {/* Boutons d'action */}
             <div className="flex items-center justify-between">
