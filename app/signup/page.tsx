@@ -68,7 +68,7 @@ export default function SignupPage() {
             Créer un compte
           </h2>
           <p className="mt-2 text-sm text-neutral-600">
-            Rejoignez Kritiqo et commencez à collecter des avis
+            Centralisez vos avis + Triez vos emails par IA + Maximisez avec les QR codes
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default function SignupPage() {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-                Email
+                Email professionnel
               </label>
               <input
                 id="email"

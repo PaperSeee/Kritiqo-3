@@ -5,6 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { getValidAccessToken } from '@/lib/token-manager'
 import { decodeJwt } from 'jose'
 import { getMicrosoftEmails } from '@/lib/microsoft-emails'
+import { classifyEmailAutomatically } from '@/lib/types/triage'
 
 // Cache pour éviter les logs redondants
 const errorLogCache = new Map<string, number>();
@@ -128,7 +129,9 @@ async function fetchGmailEmails(userId: string, accountEmail: string) {
           preview: messageData.snippet || 'Aucun aperçu disponible',
           body: bodyText,
           date,
-          source: 'gmail'
+          source: 'gmail',
+          // Nouvelle classification automatique
+          autoCategory: classifyEmailAutomatically(senderEmail, subject, bodyText)
         };
       } catch (err) {
         // Log uniquement la première erreur pour ce message
@@ -173,6 +176,12 @@ async function fetchMicrosoftEmails(userId: string, accountEmail: string) {
     emails.forEach((email: any) => {
       email.accountEmail = accountEmail;
       email.accountProvider = 'azure-ad';
+      // Nouvelle classification automatique
+      email.autoCategory = classifyEmailAutomatically(
+        email.sender || email.from, 
+        email.subject, 
+        email.body || email.preview
+      );
     });
 
     console.log(`✅ ${emails.length} emails Outlook récupérés pour ${accountEmail}`);

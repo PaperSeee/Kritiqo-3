@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import EmailAccountSwitcher from '@/components/EmailAccountSwitcher';
 import MailCard from '@/components/MailCard';
+import { type TriageResult } from '@/lib/types/triage';
 
 // Type Email uniforme avec triage
 type Email = {
@@ -25,24 +26,20 @@ type Email = {
   source?: string;
   accountEmail?: string;
   accountProvider?: string;
-  triage?: {
-    catégorie: string;
-    priorité: 'Urgent' | 'Moyen' | 'Faible';
-    action: string;
-    suggestion: string | null;
-  };
+  autoCategory?: string;  // Nouvelle propriété pour classification automatique
+  triage?: TriageResult;
   triageLoading?: boolean;
   triageError?: boolean;
 }
 
 const CATEGORIES = [
   'Tous',
-  'Avis client',
+  'Avis client', // Priorisé en premier
   'Facture', 
   'Commande',
-  'Juridique',
   'Commercial',
   'RH',
+  'Juridique',
   'Notifications'
 ];
 
@@ -54,7 +51,8 @@ export default function MailsPage() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [selectedCategorie, setSelectedCategorie] = useState('Tous');
   const [showHidden, setShowHidden] = useState(false);
-  
+  const [showSpamPub, setShowSpamPub] = useState(false);
+
   // Nouveaux états pour la gestion du cache
   const [hasFetchedGmail, setHasFetchedGmail] = useState(false);
   const [lastFetchTime, setLastFetchTime] = useState<number | null>(null);
@@ -109,7 +107,14 @@ export default function MailsPage() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la récupération des emails');
+        let errorMessage = errorData.error || 'Erreur lors de la récupération des emails';
+        
+        // Messages d'erreur spécifiques pour les scopes
+        if (response.status === 403 && errorMessage.includes('insufficient authentication scopes')) {
+          errorMessage = 'Permissions Gmail insuffisantes. Veuillez vous reconnecter en acceptant toutes les permissions.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -236,25 +241,37 @@ export default function MailsPage() {
   }, [selectedEmail]);
 
   // Séparer les emails visibles et cachés
-  const { visibleEmails, hiddenEmails } = useMemo(() => {
-    const visible: Email[] = [];
-    const hidden: Email[] = [];
+  const { visibleEmails, spamPubEmails, regularEmails } = useMemo(() => {
+    const spamPub: Email[] = [];
+    const regular: Email[] = [];
     
     allEmails.forEach(email => {
-      if (email.triage?.catégorie === 'Publicité' || email.triage?.catégorie === 'Spam') {
-        hidden.push(email);
-      } else {
-        visible.push(email);
+      // Classification automatique d'abord
+      if (email.autoCategory === 'Spam/Pub') {
+        spamPub.push(email);
+      } 
+      // Puis classification IA
+      else if (email.triage?.catégorie === 'Publicité' || email.triage?.catégorie === 'Spam') {
+        spamPub.push(email);
+      } 
+      else {
+        regular.push(email);
       }
     });
     
-    return { visibleEmails: visible, hiddenEmails: hidden };
-  }, [allEmails]);
+    return { 
+      visibleEmails: showSpamPub ? allEmails : regular,
+      spamPubEmails: spamPub, 
+      regularEmails: regular 
+    };
+  }, [allEmails, showSpamPub]);
 
-  // Filtrer par catégorie
+  // Filtrer par catégorie (seulement sur les emails réguliers)
   const filteredEmails = useMemo(() => {
+    const emailsToFilter = showSpamPub ? allEmails : regularEmails;
+    
     if (selectedCategorie === 'Tous') {
-      return visibleEmails;
+      return emailsToFilter;
     }
     
     // Mapper les catégories d'affichage aux catégories IA
@@ -264,10 +281,10 @@ export default function MailsPage() {
     
     const targetCategory = categoryMap[selectedCategorie] || selectedCategorie;
     
-    return visibleEmails.filter(email => 
+    return emailsToFilter.filter(email => 
       email.triage?.catégorie === targetCategory
     );
-  }, [visibleEmails, selectedCategorie]);
+  }, [allEmails, regularEmails, selectedCategorie, showSpamPub]);
 
   const handleEmailChange = (email: string | null) => {
     setSelectedEmail(email);
@@ -285,14 +302,16 @@ export default function MailsPage() {
   };
 
   const getCategoryStats = (category: string) => {
-    if (category === 'Tous') return visibleEmails.length;
+    const emailsToCount = showSpamPub ? allEmails : regularEmails;
+    
+    if (category === 'Tous') return emailsToCount.length;
     
     const categoryMap: Record<string, string> = {
       'Notifications': 'Notification automatique'
     };
     
     const targetCategory = categoryMap[category] || category;
-    return visibleEmails.filter(email => email.triage?.catégorie === targetCategory).length;
+    return emailsToCount.filter(email => email.triage?.catégorie === targetCategory).length;
   };
 
   return (
@@ -430,22 +449,45 @@ export default function MailsPage() {
         </div>
       )}
 
-      {/* Hidden Emails Toggle */}
-      {hiddenEmails.length > 0 && (
-        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <button
-            onClick={() => setShowHidden(!showHidden)}
-            className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            {showHidden ? (
-              <EyeSlashIcon className="h-5 w-5" />
-            ) : (
-              <EyeIcon className="h-5 w-5" />
-            )}
-            <span className="font-medium">
-              {showHidden ? 'Masquer' : 'Voir'} les mails publicitaires ({hiddenEmails.length})
-            </span>
-          </button>
+      {/* Spam/Pub Toggle */}
+      {spamPubEmails.length > 0 && (
+        <div className="bg-orange-50 p-4 rounded-xl border border-orange-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                <span className="font-medium text-orange-800">
+                  {spamPubEmails.length} emails publicitaires/spam détectés automatiquement
+                </span>
+              </div>
+              <span className="text-xs bg-orange-200 text-orange-700 px-2 py-1 rounded-full">
+                Filtré sans IA
+              </span>
+            </div>
+            <button
+              onClick={() => setShowSpamPub(!showSpamPub)}
+              className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                showSpamPub
+                  ? 'bg-orange-600 text-white hover:bg-orange-700'
+                  : 'bg-white text-orange-700 border border-orange-300 hover:bg-orange-50'
+              }`}
+            >
+              {showSpamPub ? (
+                <>
+                  <EyeSlashIcon className="h-4 w-4" />
+                  <span>Masquer les spams</span>
+                </>
+              ) : (
+                <>
+                  <EyeIcon className="h-4 w-4" />
+                  <span>Afficher les spams</span>
+                </>
+              )}
+            </button>
+          </div>
+          <p className="text-sm text-orange-700 mt-2">
+            Ces emails ont été automatiquement identifiés comme spam ou publicité grâce à nos filtres intelligents.
+          </p>
         </div>
       )}
 
@@ -459,7 +501,7 @@ export default function MailsPage() {
         </div>
       )}
 
-      {/* Statistiques */}
+      {/* Statistiques mises à jour */}
       {session && allEmails.length > 0 && !isLoadingEmails && (
         <div className="grid gap-6 md:grid-cols-4">
           <div className="bg-white p-6 rounded-xl border border-neutral-200">
@@ -475,8 +517,8 @@ export default function MailsPage() {
           <div className="bg-green-50 p-6 rounded-xl border border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-green-800 mb-1">Emails Visibles</h3>
-                <p className="text-2xl font-bold text-green-600">{visibleEmails.length}</p>
+                <h3 className="font-semibold text-green-800 mb-1">Emails Utiles</h3>
+                <p className="text-2xl font-bold text-green-600">{regularEmails.length}</p>
               </div>
               <EyeIcon className="h-8 w-8 text-green-400" />
             </div>
@@ -486,7 +528,7 @@ export default function MailsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-orange-800 mb-1">Spam/Pub Filtrés</h3>
-                <p className="text-2xl font-bold text-orange-600">{hiddenEmails.length}</p>
+                <p className="text-2xl font-bold text-orange-600">{spamPubEmails.length}</p>
               </div>
               <EyeSlashIcon className="h-8 w-8 text-orange-400" />
             </div>
@@ -496,7 +538,7 @@ export default function MailsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-purple-800 mb-1">Temps Économisé</h3>
-                <p className="text-2xl font-bold text-purple-600">{Math.round(allEmails.length * 2.5)}min</p>
+                <p className="text-2xl font-bold text-purple-600">{Math.round(spamPubEmails.length * 1.5 + regularEmails.length * 0.5)}min</p>
               </div>
               <SparklesIcon className="h-8 w-8 text-purple-400" />
             </div>
@@ -509,42 +551,26 @@ export default function MailsPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-neutral-800">
-              {selectedCategorie === 'Tous' ? 'Tous les emails' : `Emails - ${selectedCategorie}`} ({filteredEmails.length})
+              {showSpamPub 
+                ? `Tous les emails (${filteredEmails.length})` 
+                : selectedCategorie === 'Tous' 
+                  ? `Emails utiles (${filteredEmails.length})` 
+                  : `Emails - ${selectedCategorie} (${filteredEmails.length})`
+              }
             </h2>
+            {showSpamPub && (
+              <span className="text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
+                Inclut les emails spam/publicité
+              </span>
+            )}
           </div>
           
           <div className="grid gap-6">
             {filteredEmails.map((email) => (
-              <MailCard
+              <div 
                 key={email.id}
-                id={String(email.id)}
-                subject={email.subject}
-                from={email.sender}
-                date={email.date}
-                preview={email.preview}
-                source={email.source}
-                triage={email.triage}
-                loading={email.triageLoading}
-                error={email.triageError}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Emails cachés (spam/publicité) */}
-      {showHidden && hiddenEmails.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center space-x-2">
-            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-            <h2 className="text-xl font-semibold text-gray-700">
-              Emails Publicitaires et Spam ({hiddenEmails.length})
-            </h2>
-          </div>
-          
-          <div className="grid gap-4">
-            {hiddenEmails.map((email) => (
-              <div key={email.id} className="opacity-60">
+                className={email.autoCategory === 'Spam/Pub' ? 'opacity-60' : ''}
+              >
                 <MailCard
                   id={String(email.id)}
                   subject={email.subject}
@@ -552,8 +578,13 @@ export default function MailsPage() {
                   date={email.date}
                   preview={email.preview}
                   source={email.source}
-                  triage={email.triage}
-                  loading={email.triageLoading}
+                  triage={email.autoCategory === 'Spam/Pub' ? {
+                    catégorie: 'Spam/Pub',
+                    priorité: 'Faible',
+                    action: 'Ignorer',
+                    suggestion: null
+                  } : email.triage}
+                  loading={email.autoCategory === 'Spam/Pub' ? false : email.triageLoading}
                   error={email.triageError}
                 />
               </div>

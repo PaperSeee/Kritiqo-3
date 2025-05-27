@@ -1,13 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface TriageResult {
-  catégorie: 'Avis client' | 'Commande' | 'Juridique' | 'Facture' | 'RH' | 'Commercial' | 'Notification automatique' | 'Publicité' | 'Spam' | 'Autre';
-  priorité: 'Urgent' | 'Moyen' | 'Faible';
-  action: 'Répondre' | 'Répondre avec excuse' | 'Transférer à la comptabilité' | 'Transférer au support' | 'Examiner manuellement' | 'Ignorer';
-  suggestion: string | null;
-}
+import { TriageResult } from '@/lib/types/triage';
 
 interface EmailTriageDisplayProps {
   subject: string;

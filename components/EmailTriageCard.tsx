@@ -2,14 +2,7 @@
 
 import { useState } from 'react';
 import { ClipboardDocumentIcon, SparklesIcon } from '@heroicons/react/24/outline';
-
-interface TriageResult {
-  categorie: string;
-  priorite: 'Urgent' | 'Moyen' | 'Faible';
-  action: string;
-  suggestion?: string | null;
-  fromCache?: boolean;
-}
+import { TriageResult } from '@/lib/types/triage';
 
 interface EmailTriageCardProps {
   email: {

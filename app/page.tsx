@@ -124,14 +124,16 @@ export default function HomePage() {
         <section className="py-20 px-6 text-center bg-gradient-to-b from-neutral-50 to-white">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-              Centralisez tous vos
+              Centralisez vos
               <span className="block text-green-600">avis clients</span>
-              en un seul endroit
+              <span className="block text-lg md:text-2xl font-normal text-neutral-600 mt-2">
+                + triez vos emails par IA
+              </span>
             </h1>
             
             <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Collectez, organisez et répondez à vos avis Google, Facebook et TripAdvisor depuis une plateforme unique. 
-              Générez des QR codes pour booster vos avis positifs.
+              Collectez et gérez vos avis Google, Facebook, TripAdvisor depuis une plateforme unique. 
+              <span className="font-medium text-neutral-800"> Notre IA organise automatiquement vos emails par catégories.</span>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">

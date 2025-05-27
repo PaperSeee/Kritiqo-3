@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { TriageAction, TriageCategorie, TriagePriorite } from './types/triage'
 
 // Configuration Supabase pour le côté CLIENT
 // Utilise la clé anonyme publique (sécurisée pour le navigateur)
@@ -34,21 +35,36 @@ export type EmailTriage = {
   id: string
   email_id: string
   user_id: string
-  catégorie: 'Avis client' | 'Commande' | 'Juridique' | 'Facture' | 'RH' | 'Commercial' | 'Notification automatique' | 'Publicité' | 'Spam' | 'Autre'
-  priorité: 'Urgent' | 'Moyen' | 'Faible'
-  action: 'Répondre' | 'Répondre avec excuse' | 'Transférer à la comptabilité' | 'Transférer au support' | 'Examiner manuellement' | 'Ignorer'
+  catégorie: TriageCategorie
+  priorité: TriagePriorite
+  action: TriageAction
   suggestion: string | null
   created_at: string
 }
 
-// Fonction pour générer l'URL du QR code
+// Fonctions pour générer les QR codes pour maximiser les avis
 export function generateQRCodeUrl(url: string, size = 300): string {
   const baseUrl = 'https://api.qrserver.com/v1/create-qr-code/'
   const params = new URLSearchParams({
     size: `${size}x${size}`,
     data: url,
     format: 'PNG',
-    margin: '10'
+    margin: '10',
+    bgcolor: 'ffffff',
+    color: '000000'
   })
   return `${baseUrl}?${params.toString()}`
+}
+
+// Générer URL de review optimisée pour maximiser les avis
+export function generateOptimizedReviewUrl(businessSlug: string): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kritiqo.com'
+  return `${baseUrl}/review/${businessSlug}?utm_source=qr&utm_medium=physical&utm_campaign=review_collection`
+}
+
+// Fonction pour générer QR code avec tracking pour analytics
+export function generateTrackedQRCode(businessSlug: string, location = 'general', size = 300): string {
+  const reviewUrl = generateOptimizedReviewUrl(businessSlug)
+  const trackedUrl = `${reviewUrl}&location=${location}&timestamp=${Date.now()}`
+  return generateQRCodeUrl(trackedUrl, size)
 }

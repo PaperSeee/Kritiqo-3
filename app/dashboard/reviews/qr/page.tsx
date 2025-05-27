@@ -181,14 +181,20 @@ export default function QRPage() {
 
           <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
             <h4 className="font-semibold text-blue-800 mb-2">
-              💡 Conseils d'utilisation
+              🚀 Maximisez vos avis avec ces conseils
             </h4>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Placez le QR code à l'accueil de votre établissement</li>
-              <li>• Ajoutez-le sur vos factures et reçus</li>
-              <li>• Partagez-le sur vos réseaux sociaux</li>
-              <li>• Intégrez-le dans vos signatures email</li>
+              <li>• <strong>Tables :</strong> QR codes sur chaque table (petite taille)</li>
+              <li>• <strong>Caisse :</strong> QR code visible pendant le paiement</li>
+              <li>• <strong>Emballages :</strong> Sur vos sacs de livraison</li>
+              <li>• <strong>Reçus :</strong> Imprimez le QR sur vos tickets</li>
+              <li>• <strong>Réseaux sociaux :</strong> Partagez le lien directement</li>
+              <li>• <strong>Signatures email :</strong> Ajoutez le QR automatiquement</li>
+              <li>• <strong>Vitrine :</strong> QR code grande taille bien visible</li>
             </ul>
+            <div className="mt-3 p-2 bg-blue-100 rounded text-xs text-blue-800">
+              💡 <strong>Astuce Pro :</strong> Placez un QR code là où vos clients attendent (file d'attente, table, etc.)
+            </div>
           </div>
         </div>
       </div>

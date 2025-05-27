@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import OpenAI from 'openai';
+import { TriageCategorie, TriagePriorite, TriageAction, type TriageResult } from '@/lib/types/triage';
 
 // Validate OpenAI API key
 if (!process.env.OPENAI_API_KEY) {
@@ -20,11 +21,7 @@ interface TriageRequest {
   sender: string;
 }
 
-interface TriageResponse {
-  categorie: 'Avis client' | 'Commande' | 'Juridique' | 'Facture' | 'RH' | 'Commercial' | 'Notification automatique' | 'Publicité' | 'Spam' | 'Autre';
-  priorite: 'Urgent' | 'Moyen' | 'Faible';
-  action: 'Répondre' | 'Répondre avec excuse' | 'Transférer à la comptabilité' | 'Transférer au support' | 'Examiner manuellement' | 'Ignorer';
-  suggestion: null;
+interface TriageResponse extends TriageResult {
   fromCache?: boolean;
 }
 
@@ -44,7 +41,7 @@ function cleanEmailBody(body: string): string {
   return cleaned;
 }
 
-// Étape 2 & 3: Préfiltrage intelligent
+// Étape 2 & 3: Préfiltrage intelligent avec focus sur avis clients
 function prefilterEmail(sender: string, subject: string, body: string): TriageResponse | null {
   const lowerSender = sender.toLowerCase();
   const lowerSubject = subject.toLowerCase();
@@ -53,9 +50,24 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
   // Étape 2: Filtre noreply
   if (lowerSender.startsWith('noreply@')) {
     return {
-      categorie: 'Autre',
-      priorite: 'Faible',
+      catégorie: 'Autre',
+      priorité: 'Faible',
       action: 'Ignorer',
+      suggestion: null
+    };
+  }
+
+  // Nouveau: Détection avis clients (priorité haute)
+  const avisKeywords = ['avis', 'review', 'commentaire', 'expérience', 'service', 'restaurant', 'plat', 'recommande'];
+  const hasAvisContent = avisKeywords.some(keyword => 
+    lowerSubject.includes(keyword) || lowerBody.includes(keyword)
+  );
+
+  if (hasAvisContent && !lowerSender.includes('noreply')) {
+    return {
+      catégorie: 'Avis client',
+      priorité: 'Urgent',
+      action: 'Répondre',
       suggestion: null
     };
   }
@@ -68,8 +80,8 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
 
   if (hasPromoContent) {
     return {
-      categorie: 'Publicité',
-      priorite: 'Faible',
+      catégorie: 'Publicité',
+      priorité: 'Faible',
       action: 'Ignorer',
       suggestion: null
     };

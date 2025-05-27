@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
+import { getValidAccessToken } from '@/lib/token-manager'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,10 +9,7 @@ export async function GET(request: NextRequest) {
     
     const session = await getServerSession(authOptions)
     
-    // Debug complet de la session
-    console.log('📋 Session complète:', JSON.stringify(session, null, 2))
-    
-    if (!session) {
+    if (!session?.userId) {
       console.error('❌ Aucune session trouvée')
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
@@ -19,11 +17,13 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    if (!session?.accessToken) {
-      console.error('❌ Token d\'accès manquant dans la session')
-      console.log('📋 Propriétés de session disponibles:', Object.keys(session))
+    // Utiliser getValidAccessToken pour obtenir un token Gmail valide
+    const accessToken = await getValidAccessToken(session.userId, 'google')
+    
+    if (!accessToken) {
+      console.error('❌ Token Gmail invalide ou expiré')
       return NextResponse.json(
-        { error: 'Non autorisé - Token d\'accès manquant. Veuillez vous reconnecter.' },
+        { error: 'Token Gmail invalide ou expiré. Veuillez vous reconnecter avec les permissions Gmail.' },
         { status: 401 }
       )
     }
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=100&labelIds=INBOX',
       {
         headers: {
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
       }
@@ -63,6 +63,13 @@ export async function GET(request: NextRequest) {
         )
       }
       
+      if (messagesResponse.status === 403) {
+        return NextResponse.json(
+          { error: 'Permissions insuffisantes. Veuillez vous reconnecter avec les permissions Gmail.' },
+          { status: 403 }
+        )
+      }
+      
       return NextResponse.json(
         { error: `Erreur Gmail API: ${messagesResponse.status} - ${messagesResponse.statusText}` },
         { status: messagesResponse.status }
@@ -85,7 +92,7 @@ export async function GET(request: NextRequest) {
           `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date`,
           {
             headers: {
-              Authorization: `Bearer ${session.accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
           }

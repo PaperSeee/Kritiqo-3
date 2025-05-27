@@ -13,6 +13,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import AIResponseModal from './AIResponseModal';
+import { getCategorieColor, getPrioriteColor, type TriageResult } from '@/lib/types/triage';
 
 interface TriageData {
   catégorie: string;
@@ -97,6 +98,7 @@ export default function MailCard({
       case 'Notification automatique': return 'bg-cyan-100 text-cyan-800 border-cyan-300';
       case 'Publicité': return 'bg-gray-100 text-gray-600 border-gray-300';
       case 'Spam': return 'bg-red-50 text-red-600 border-red-200';
+      case 'Spam/Pub': return 'bg-orange-50 text-orange-600 border-orange-200'; // Nouvelle couleur
       default: return 'bg-neutral-100 text-neutral-800 border-neutral-300';
     }
   };
@@ -122,7 +124,8 @@ export default function MailCard({
   const shouldShowAiButton = () => {
     return triage?.action !== 'Ignorer' && 
            triage?.catégorie !== 'Publicité' && 
-           triage?.catégorie !== 'Spam';
+           triage?.catégorie !== 'Spam' &&
+           triage?.catégorie !== 'Spam/Pub'; // Exclure aussi Spam/Pub
   };
 
   const handleAiReply = () => {
@@ -132,10 +135,19 @@ export default function MailCard({
   return (
     <>
       <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg border border-neutral-200 p-6 transition-all duration-300 hover:border-neutral-300">
-        {/* Badge "Analysé automatiquement" en haut à droite */}
+        {/* Badge automatique pour Spam/Pub */}
         <div className="absolute top-4 right-4 flex items-center space-x-1 text-xs text-neutral-500">
-          <Sparkles className="h-3 w-3 text-yellow-500" />
-          <span className="hidden sm:inline">Analysé automatiquement</span>
+          {triage?.catégorie === 'Spam/Pub' ? (
+            <>
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <span className="hidden sm:inline text-orange-600">Filtré automatiquement</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-3 w-3 text-yellow-500" />
+              <span className="hidden sm:inline">Analysé automatiquement</span>
+            </>
+          )}
         </div>
 
         {/* Header avec icône de catégorie et priorité */}
@@ -184,12 +196,16 @@ export default function MailCard({
                   </>
                 ) : triage ? (
                   <>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getCategoryBadge(triage.catégorie)}`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.catégorie)}`}>
                       {triage.catégorie}
-                    </span>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(triage.priorité)}`}>
+                    </div>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorité)}`}>
                       {triage.priorité}
-                    </span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
+                      {getActionIcon(triage.action)}
+                      <span>{triage.action}</span>
+                    </div>
                   </>
                 ) : null}
 
@@ -209,8 +225,13 @@ export default function MailCard({
 
             {/* Action recommandée */}
             {triage && !loading && (
-              <div className="flex items-center space-x-2 mb-4">
-                <span className="text-sm text-neutral-500">Action:</span>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.catégorie)}`}>
+                  {triage.catégorie}
+                </div>
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorité)}`}>
+                  {triage.priorité}
+                </div>
                 <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
                   {getActionIcon(triage.action)}
                   <span>{triage.action}</span>
@@ -221,14 +242,16 @@ export default function MailCard({
             {/* Boutons d'action */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                {/* Bouton Répondre avec l'IA */}
+                {/* Bouton Répondre avec l'IA - Optimisé pour les avis clients */}
                 {shouldShowAiButton() && !loading && (
                   <button
                     onClick={handleAiReply}
                     className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     <Sparkles className="h-4 w-4" />
-                    <span>Répondre avec l'IA</span>
+                    <span>
+                      {triage?.catégorie === 'Avis client' ? 'Répondre à l\'avis' : 'Répondre avec IA'}
+                    </span>
                   </button>
                 )}
 
