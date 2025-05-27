@@ -50,8 +50,8 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
   // Étape 2: Filtre noreply
   if (lowerSender.startsWith('noreply@')) {
     return {
-      catégorie: 'Autre',
-      priorité: 'Faible',
+      categorie: 'Autre',
+      priorite: 'Faible',
       action: 'Ignorer',
       suggestion: null
     };

@@ -176,8 +176,8 @@ export default function MailsPage() {
                 index === globalIndex ? {
                   ...e,
                   triage: {
-                    catégorie: triageResult.catégorie,
-                    priorité: triageResult.priorité,
+                    categorie: triageResult.categorie,
+                    priorite: triageResult.priorite,
                     action: triageResult.action,
                     suggestion: triageResult.suggestion
                   },
@@ -196,8 +196,8 @@ export default function MailsPage() {
                 triageLoading: false,
                 triageError: true,
                 triage: {
-                  catégorie: 'Autre',
-                  priorité: 'Moyen' as const,
+                  categorie: 'Autre',
+                  priorite: 'Moyen' as const,
                   action: 'Examiner manuellement',
                   suggestion: null
                 }
@@ -282,7 +282,7 @@ export default function MailsPage() {
     const targetCategory = categoryMap[selectedCategorie] || selectedCategorie;
     
     return emailsToFilter.filter(email => 
-      email.triage?.catégorie === targetCategory
+      email.triage?.categorie === targetCategory
     );
   }, [allEmails, regularEmails, selectedCategorie, showSpamPub]);
 
@@ -311,7 +311,7 @@ export default function MailsPage() {
     };
     
     const targetCategory = categoryMap[category] || category;
-    return emailsToCount.filter(email => email.triage?.catégorie === targetCategory).length;
+    return emailsToCount.filter(email => email.triage?.categorie === targetCategory).length;
   };
 
   return (
@@ -579,8 +579,8 @@ export default function MailsPage() {
                   preview={email.preview}
                   source={email.source}
                   triage={email.autoCategory === 'Spam/Pub' ? {
-                    catégorie: 'Spam/Pub',
-                    priorité: 'Faible',
+                    categorie: 'Spam/Pub',
+                    priorite: 'Faible',
                     action: 'Ignorer',
                     suggestion: null
                   } : email.triage}
