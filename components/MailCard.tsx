@@ -124,9 +124,9 @@ export default function MailCard({
 
   const shouldShowAiButton = () => {
     return triage?.action !== 'Ignorer' && 
-           triage?.categorie !== 'Publicité' && 
-           triage?.categorie !== 'Spam' &&
-           triage?.categorie !== 'Spam/Pub';  };
+           triage?.catégorie !== 'Publicité' && 
+           triage?.catégorie !== 'Spam' &&
+           triage?.catégorie !== 'Spam/Pub';  };
 
   const handleAiReply = () => {
     setShowAIModal(true);
