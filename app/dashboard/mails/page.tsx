@@ -579,11 +579,16 @@ export default function MailsPage() {
                   preview={email.preview}
                   source={email.source}
                   triage={email.autoCategory === 'Spam/Pub' ? {
-                    categorie: 'Spam/Pub',
-                    priorite: 'Faible',
+                    catégorie: 'Spam/Pub',
+                    priorité: 'Faible',
                     action: 'Ignorer',
                     suggestion: null
-                  } : email.triage}
+                  } : email.triage ? {
+                    catégorie: email.triage.categorie,
+                    priorité: email.triage.priorite,
+                    action: email.triage.action,
+                    suggestion: email.triage.suggestion
+                  } : undefined}
                   loading={email.autoCategory === 'Spam/Pub' ? false : email.triageLoading}
                   error={email.triageError}
                 />

@@ -8,6 +8,7 @@ export type TriageCategorie =
   | 'Commercial'
   | 'Publicité'
   | 'Spam'
+  | 'Spam/Pub'
   | 'Autre';
 
 export type TriagePriorite = 'Urgent' | 'Moyen' | 'Faible';
