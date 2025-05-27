@@ -16,8 +16,8 @@ import AIResponseModal from './AIResponseModal';
 import { getCategorieColor, getPrioriteColor, type TriageResult } from '@/lib/types/triage';
 
 interface TriageData {
-  catégorie: string;
-  priorité: 'Urgent' | 'Moyen' | 'Faible';
+  categorie: string;
+  priorite: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
   fromCache?: boolean;
@@ -124,9 +124,9 @@ export default function MailCard({
 
   const shouldShowAiButton = () => {
     return triage?.action !== 'Ignorer' && 
-           triage?.catégorie !== 'Publicité' && 
-           triage?.catégorie !== 'Spam' &&
-           triage?.catégorie !== 'Spam/Pub';  };
+           triage?.categorie !== 'Publicité' && 
+           triage?.categorie !== 'Spam' &&
+           triage?.categorie !== 'Spam/Pub';  };
 
   const handleAiReply = () => {
     setShowAIModal(true);
@@ -137,7 +137,7 @@ export default function MailCard({
       <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg border border-neutral-200 p-6 transition-all duration-300 hover:border-neutral-300">
         {/* Badge automatique pour Spam/Pub */}
         <div className="absolute top-4 right-4 flex items-center space-x-1 text-xs text-neutral-500">
-          {triage?.catégorie === 'Spam/Pub' ? (
+          {triage?.categorie === 'Spam/Pub' ? (
             <>
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
               <span className="hidden sm:inline text-orange-600">Filtré automatiquement</span>
@@ -158,7 +158,7 @@ export default function MailCard({
               {loading ? (
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-neutral-600"></div>
               ) : (
-                getCategoryIcon(triage?.catégorie || 'Autre')
+                getCategoryIcon(triage?.categorie || 'Autre')
               )}
             </div>
           </div>
@@ -196,11 +196,11 @@ export default function MailCard({
                   </>
                 ) : triage ? (
                   <>
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.catégorie)}`}>
-                      {triage.catégorie}
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.categorie as any)}`}>
+                      {triage.categorie}
                     </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorité)}`}>
-                      {triage.priorité}
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorite as any)}`}>
+                      {triage.priorite}
                     </div>
                     <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
                       {getActionIcon(triage.action)}
@@ -226,11 +226,11 @@ export default function MailCard({
             {/* Action recommandée */}
             {triage && !loading && (
               <div className="flex items-center space-x-3 mb-4">
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.catégorie)}`}>
-                  {triage.catégorie}
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCategorieColor(triage.categorie as any)}`}>
+                  {triage.categorie}
                 </div>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorité)}`}>
-                  {triage.priorité}
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getPrioriteColor(triage.priorite as any)}`}>
+                  {triage.priorite}
                 </div>
                 <div className="flex items-center space-x-1 text-sm font-medium text-neutral-700">
                   {getActionIcon(triage.action)}
@@ -250,7 +250,7 @@ export default function MailCard({
                   >
                     <Sparkles className="h-4 w-4" />
                     <span>
-                      {triage?.catégorie === 'Avis client' ? 'Répondre à l\'avis' : 'Répondre avec IA'}
+                      {triage?.categorie === 'Avis client' ? 'Répondre à l\'avis' : 'Répondre avec IA'}
                     </span>
                   </button>
                 )}
