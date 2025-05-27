@@ -16,7 +16,7 @@ import AIResponseModal from './AIResponseModal';
 import { getCategorieColor, getPrioriteColor, type TriageResult } from '@/lib/types/triage';
 
 interface TriageData {
-  categorie: string;
+  catégorie: string;
   priorité: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
