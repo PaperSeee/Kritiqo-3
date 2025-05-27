@@ -5,7 +5,7 @@ import { SparklesIcon, EnvelopeIcon, ClockIcon, ExclamationTriangleIcon } from '
 
 interface TriageResult {
   categorie: string;
-  priorité: 'Urgent' | 'Moyen' | 'Faible';
+  priorite: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
   fromCache?: boolean;
@@ -51,7 +51,7 @@ export default function EmailCard({ id, subject, from, date, body, source }: Ema
         setError(true);
         setTriage({
           categorie: 'Autre',
-          priorité: 'Moyen',
+          priorite: 'Moyen',
           action: 'Examiner manuellement',
           suggestion: null
         });
@@ -182,8 +182,8 @@ export default function EmailCard({ id, subject, from, date, body, source }: Ema
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryColor(triage.categorie)}`}>
                   {triage.categorie}
                 </span>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(triage.priorité)}`}>
-                  {triage.priorité}
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(triage.priorite)}`}>
+                  {triage.priorite}
                 </span>
                 {error && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">

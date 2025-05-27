@@ -44,7 +44,7 @@ export function useTriage() {
             .insert({
               email_id: emailId,
               categorie: result.categorie,
-              priorité: result.priorité,
+              priorite: result.priorite,
               action: result.action,
               suggestion: result.suggestion,
               created_at: new Date().toISOString(),
@@ -61,8 +61,8 @@ export function useTriage() {
       console.error('Triage error:', err);
       
       return {
-        catégorie: 'Autre',
-        priorité: 'Moyen',
+        categorie: 'Autre',
+        priorite: 'Moyen',
         action: 'Examiner manuellement',
         suggestion: null
       };
