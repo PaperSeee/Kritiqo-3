@@ -35,7 +35,7 @@ export type EmailTriage = {
   id: string
   email_id: string
   user_id: string
-  catégorie: TriageCategorie
+  categorie: TriageCategorie
   priorité: TriagePriorite
   action: TriageAction
   suggestion: string | null

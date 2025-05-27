@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SparklesIcon, EnvelopeIcon, ClockIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface TriageResult {
-  catégorie: string;
+  categorie: string;
   priorité: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
@@ -49,7 +49,7 @@ export default function EmailCard({ id, subject, from, date, body, source }: Ema
         console.error('Triage error:', err);
         setError(true);
         setTriage({
-          catégorie: 'Autre',
+          categorie: 'Autre',
           priorité: 'Moyen',
           action: 'Examiner manuellement',
           suggestion: null
@@ -178,8 +178,8 @@ export default function EmailCard({ id, subject, from, date, body, source }: Ema
           <div className="flex flex-wrap gap-2">
             {triage && (
               <>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryColor(triage.catégorie)}`}>
-                  {triage.catégorie}
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryColor(triage.categorie)}`}>
+                  {triage.categorie}
                 </span>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(triage.priorité)}`}>
                   {triage.priorité}

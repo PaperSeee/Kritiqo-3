@@ -53,7 +53,7 @@ const features = [
   {
     icon: EnvelopeIcon,
     title: 'Tri Intelligent des Emails',
-    description: 'Notre IA organise automatiquement vos emails par catégories : factures, RH, clients, admin. Gagnez 2h par jour.',
+    description: 'Notre IA organise automatiquement vos emails par categories : factures, RH, clients, admin. Gagnez 2h par jour.',
     highlight: 'IA intégrée'
   },
   {
@@ -133,7 +133,7 @@ export default function HomePage() {
             
             <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
               Collectez et gérez vos avis Google, Facebook, TripAdvisor depuis une plateforme unique. 
-              <span className="font-medium text-neutral-800"> Notre IA organise automatiquement vos emails par catégories.</span>
+              <span className="font-medium text-neutral-800"> Notre IA organise automatiquement vos emails par categories.</span>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">

@@ -16,7 +16,7 @@ import AIResponseModal from './AIResponseModal';
 import { getCategorieColor, getPrioriteColor, type TriageResult } from '@/lib/types/triage';
 
 interface TriageData {
-  catégorie: string;
+  categorie: string;
   priorité: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
@@ -123,10 +123,9 @@ export default function MailCard({
 
   const shouldShowAiButton = () => {
     return triage?.action !== 'Ignorer' && 
-           triage?.catégorie !== 'Publicité' && 
-           triage?.catégorie !== 'Spam' &&
-           triage?.catégorie !== 'Spam/Pub'; // Exclure aussi Spam/Pub
-  };
+           triage?.categorie !== 'Publicité' && 
+           triage?.categorie !== 'Spam' &&
+           triage?.categorie !== 'Spam/Pub';  };
 
   const handleAiReply = () => {
     setShowAIModal(true);

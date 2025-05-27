@@ -65,7 +65,7 @@ const mainFeatures = [
     icon: EnvelopeIcon,
     title: 'IA de Tri d\'Emails',
     subtitle: 'Organisation automatique',
-    description: 'Notre intelligence artificielle analyse et classe vos emails par catégories : factures, RH, clients, administration.',
+    description: 'Notre intelligence artificielle analyse et classe vos emails par categories : factures, RH, clients, administration.',
     features: [
       'Classification automatique par IA',
       'Niveau de priorité intelligent',

@@ -251,7 +251,7 @@ export default function MailsPage() {
         spamPub.push(email);
       } 
       // Puis classification IA
-      else if (email.triage?.catégorie === 'Publicité' || email.triage?.catégorie === 'Spam') {
+      else if (email.triage?.categorie === 'Publicité' || email.triage?.categorie === 'Spam') {
         spamPub.push(email);
       } 
       else {

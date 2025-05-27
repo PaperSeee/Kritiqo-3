@@ -63,7 +63,7 @@ export default function PrivacyPage() {
               <li>• Fournir et améliorer nos services de gestion d'avis</li>
               <li>• Analyser intelligemment vos emails via IA pour catégorisation et suggestions</li>
               <li>• Générer automatiquement des réponses personnalisées pour vos emails</li>
-              <li>• Organiser automatiquement vos emails par catégories</li>
+              <li>• Organiser automatiquement vos emails par categories</li>
               <li>• Générer des QR codes et pages d'avis personnalisées</li>
               <li>• Vous envoyer des notifications importantes sur votre compte</li>
               <li>• Assurer la sécurité et prévenir la fraude</li>

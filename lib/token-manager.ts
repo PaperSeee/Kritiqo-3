@@ -179,3 +179,7 @@ export async function refreshAzureToken(userId: string, refreshToken: string): P
 export async function getGmailAccessToken(userId: string): Promise<string | null> {
   return getValidAccessToken(userId, 'google');
 }
+
+export async function getOutlookAccessToken(userId: string): Promise<string | null> {
+  return getValidAccessToken(userId, 'azure-ad');
+}

@@ -2,13 +2,12 @@ export type TriageCategorie =
   | 'Avis client'
   | 'Commande' 
   | 'Juridique'
-  | 'Facture'
   | 'RH'
-  | 'Commercial'
+  | 'Facture'
   | 'Notification automatique'
+  | 'Commercial'
   | 'Publicité'
   | 'Spam'
-  | 'Spam/Pub'  // Nouvelle catégorie combinée pour le filtrage automatique
   | 'Autre';
 
 export type TriagePriorite = 'Urgent' | 'Moyen' | 'Faible';
@@ -16,10 +15,10 @@ export type TriagePriorite = 'Urgent' | 'Moyen' | 'Faible';
 export type TriageAction = 
   | 'Répondre'
   | 'Répondre avec excuse'
-  | 'Transférer à la comptabilité'
   | 'Transférer au support'
-  | 'Examiner manuellement'
-  | 'Ignorer';
+  | 'Transférer à la comptabilité'
+  | 'Ignorer'
+  | 'Examiner manuellement';
 
 export interface TriageResult {
   categorie: TriageCategorie;

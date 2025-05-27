@@ -43,7 +43,7 @@ export function useTriage() {
             .from('email_triage_history')
             .insert({
               email_id: emailId,
-              catégorie: result.catégorie,
+              categorie: result.categorie,
               priorité: result.priorité,
               action: result.action,
               suggestion: result.suggestion,

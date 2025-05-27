@@ -40,7 +40,7 @@ export default function EmailTriageDisplay({ subject, body, emailId, className =
         setError(true);
         // Set fallback triage
         setTriage({
-          catégorie: 'Autre',
+          categorie: 'Autre',
           priorité: 'Moyen',
           action: 'Examiner manuellement',
           suggestion: null
@@ -68,8 +68,8 @@ export default function EmailTriageDisplay({ subject, body, emailId, className =
     }
   };
 
-  const getCategoryColor = (catégorie: string) => {
-    switch (catégorie) {
+  const getCategoryColor = (categorie: string) => {
+    switch (categorie) {
       case 'Avis client':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Commande':
@@ -105,8 +105,8 @@ export default function EmailTriageDisplay({ subject, body, emailId, className =
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex gap-2 flex-wrap">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryColor(triage.catégorie)}`}>
-          {triage.catégorie}
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryColor(triage.categorie)}`}>
+          {triage.categorie}
         </span>
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(triage.priorité)}`}>
           {triage.priorité}

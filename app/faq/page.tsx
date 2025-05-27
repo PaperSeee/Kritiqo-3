@@ -52,7 +52,7 @@ const faqData: FAQItem[] = [
   {
     id: 7,
     question: "Comment fonctionne l'organisation automatique des emails ?",
-    answer: "Notre IA analyse automatiquement vos emails et les classe par catégories (Factures, RH, Clients, Admin). Elle assigne également un niveau de priorité pour vous aider à traiter les plus importants en premier.",
+    answer: "Notre IA analyse automatiquement vos emails et les classe par categories (Factures, RH, Clients, Admin). Elle assigne également un niveau de priorité pour vous aider à traiter les plus importants en premier.",
     category: "Emails"
   },
   {
