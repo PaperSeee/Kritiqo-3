@@ -65,8 +65,8 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
 
   if (hasAvisContent && !lowerSender.includes('noreply')) {
     return {
-      catégorie: 'Avis client',
-      priorité: 'Urgent',
+      categorie: 'Avis client',
+      priorite: 'Urgent',
       action: 'Répondre',
       suggestion: null
     };
@@ -80,8 +80,8 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
 
   if (hasPromoContent) {
     return {
-      catégorie: 'Publicité',
-      priorité: 'Faible',
+      categorie: 'Publicité',
+      priorite: 'Faible',
       action: 'Ignorer',
       suggestion: null
     };

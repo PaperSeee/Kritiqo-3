@@ -22,8 +22,8 @@ export type TriageAction =
   | 'Ignorer';
 
 export interface TriageResult {
-  catégorie: TriageCategorie;
-  priorité: TriagePriorite;
+  categorie: TriageCategorie;
+  priorite: TriagePriorite;
   action: TriageAction;
   suggestion: string | null;
 }
@@ -53,8 +53,8 @@ export function getCategorieColor(categorie: TriageCategorie): string {
 }
 
 // Fonction helper pour obtenir la couleur de la priorité
-export function getPrioriteColor(priorité: TriagePriorite): string {
-  switch (priorité) {
+export function getPrioriteColor(priorite: TriagePriorite): string {
+  switch (priorite) {
     case 'Urgent': return 'bg-red-100 text-red-800';
     case 'Moyen': return 'bg-yellow-100 text-yellow-800';
     case 'Faible': return 'bg-green-100 text-green-800';
