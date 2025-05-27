@@ -1,284 +1,208 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { 
-  PlusIcon, 
-  BuildingStorefrontIcon,
-  QrCodeIcon,
-  LinkIcon,
-  TrashIcon,
-  EyeIcon
+  PlusIcon,
+  MapPinIcon,
+  PhoneIcon,
+  GlobeAltIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  StarIcon,
+  ExclamationCircleIcon
 } from '@heroicons/react/24/outline'
-
-interface Restaurant {
-  id: string
-  name: string
-  slug: string
-  city: string
-  country: string
-  email?: string
-  phone?: string
-  address?: string
-  google_link: string
-  ubereats_link?: string
-  deliveroo_link?: string
-  takeaway_link?: string
-  review_page_url: string
-  created_at: string
-}
+import { useGoogleBusinessData } from '@/lib/hooks/useGoogleBusinessData'
 
 export default function RestaurantsPage() {
-  const { user } = useAuth()
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
+  const { locations, loading, error, refreshing, refresh } = useGoogleBusinessData()
 
-  useEffect(() => {
-    if (user) {
-      fetchRestaurants()
-    }
-  }, [user])
-
-  const fetchRestaurants = async () => {
-    try {
-      setError(null)
-      const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error('Supabase error:', error)
-        throw error
-      }
-      
-      // Transform data to include review_page_url
-      const transformedData = (data || []).map(restaurant => ({
-        ...restaurant,
-        review_page_url: `${window.location.origin}/review/${restaurant.slug}`
-      }))
-      
-      setRestaurants(transformedData)
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error('Erreur lors de la récupération des restaurants:', err.message, err.name)
-        setError(err.message || 'Une erreur est survenue lors du chargement des restaurants')
-      } else {
-        console.error('Erreur inconnue lors de la récupération des restaurants:', JSON.stringify(err))
-        setError('Une erreur est survenue lors du chargement des restaurants')
-      }
-    } finally {
-      setLoading(false)
+  const getStateIcon = (state: string) => {
+    switch (state) {
+      case 'VERIFIED':
+        return <CheckCircleIcon className="h-5 w-5 text-green-500" />
+      case 'UNVERIFIED':
+        return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
+      default:
+        return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
     }
   }
 
-  const deleteRestaurant = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ?')) return
-
-    try {
-      const { error } = await supabase
-        .from('businesses')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
-      await fetchRestaurants()
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error('Erreur lors de la suppression du restaurant:', err.message, err.name)
-        setError(err.message || 'Erreur lors de la suppression')
-      } else {
-        console.error('Erreur inconnue lors de la suppression du restaurant:', JSON.stringify(err))
-        setError('Erreur lors de la suppression')
-      }
+  const getStateText = (state: string) => {
+    switch (state) {
+      case 'VERIFIED':
+        return 'Vérifié'
+      case 'UNVERIFIED':
+        return 'Non vérifié'
+      default:
+        return 'Inconnu'
     }
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h3 className="text-red-800 font-medium">Erreur</h3>
-          <p className="text-red-600 text-sm mt-1">{error}</p>
-          <button 
-            onClick={fetchRestaurants}
-            className="mt-2 text-red-600 hover:text-red-800 text-sm underline"
-          >
-            Réessayer
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-neutral-200 rounded w-1/3"></div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-2xl p-6 h-48 shadow-sm"></div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Mes établissements
-          </h1>
-          <p className="text-neutral-600">
-            Gérez vos établissements et leurs pages d'avis
-          </p>
-        </div>
-        
-        <Link
-          href="/dashboard/restaurants/add"
-          className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
-        >
-          <PlusIcon className="h-5 w-5" />
-          <span>Ajouter un établissement</span>
-        </Link>
-      </div>
-
-      {/* Statistiques */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="bg-white p-6 rounded-xl border border-neutral-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-neutral-800 mb-1">Total établissements</h3>
-              <p className="text-2xl font-bold text-neutral-900">{restaurants.length}</p>
-            </div>
-            <BuildingStorefrontIcon className="h-8 w-8 text-neutral-400" />
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 p-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-4xl font-bold text-neutral-900 mb-2">
+              Mes établissements
+            </h1>
+            <p className="text-xl text-neutral-600">
+              Gérez vos fiches Google Business et collectez des avis
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={refresh}
+              disabled={refreshing || !session?.accessToken}
+              className="inline-flex items-center px-4 py-2 bg-white text-neutral-700 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50"
+            >
+              <ArrowPathIcon className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Actualiser
+            </button>
+            <Link
+              href="/dashboard/restaurants/add"
+              className="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Connecter un établissement
+            </Link>
           </div>
         </div>
-        
-        <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-blue-800 mb-1">Pages actives</h3>
-              <p className="text-2xl font-bold text-blue-600">{restaurants.length}</p>
-            </div>
-            <EyeIcon className="h-8 w-8 text-blue-400" />
-          </div>
-        </div>
-        
-        <div className="bg-green-50 p-6 rounded-xl border border-green-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-green-800 mb-1">QR codes générés</h3>
-              <p className="text-2xl font-bold text-green-600">{restaurants.length}</p>
-            </div>
-            <QrCodeIcon className="h-8 w-8 text-green-400" />
-          </div>
-        </div>
-      </div>
 
-      {/* Liste des restaurants */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="p-6 border-b border-neutral-200">
-          <h2 className="text-xl font-semibold text-neutral-800">
-            Établissements ({restaurants.length})
-          </h2>
-        </div>
+        {/* Error message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+            <div className="flex items-start space-x-3">
+              <ExclamationCircleIcon className="h-6 w-6 text-red-500 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-semibold text-red-900 mb-1">
+                  Erreur de connexion
+                </h3>
+                <p className="text-red-700 mb-4">{error}</p>
+                {error.includes('expiré') && (
+                  <Link
+                    href="/dashboard/restaurants/add"
+                    className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Se reconnecter à Google Business
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
-        {restaurants.length === 0 ? (
-          <div className="p-12 text-center">
-            <BuildingStorefrontIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-              Aucun établissement ajouté
+        {/* Locations grid */}
+        {!error && locations.length === 0 ? (
+          <div className="bg-white rounded-2xl p-12 shadow-sm border border-neutral-200 text-center">
+            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPinIcon className="h-8 w-8 text-neutral-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+              Aucune fiche Google Business trouvée
             </h3>
-            <p className="text-neutral-600 mb-6">
-              Commencez par ajouter votre premier établissement pour générer sa page d'avis.
+            <p className="text-neutral-600 mb-6 max-w-md mx-auto">
+              {session?.accessToken 
+                ? "Aucun établissement n'a été trouvé dans votre compte Google Business. Assurez-vous d'avoir créé au moins une fiche d'établissement."
+                : "Connectez votre compte Google Business pour commencer à gérer vos avis et améliorer votre présence en ligne."
+              }
             </p>
             <Link
               href="/dashboard/restaurants/add"
-              className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 shadow-lg"
             >
-              <PlusIcon className="h-5 w-5" />
-              <span>Ajouter mon premier établissement</span>
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Connecter Google Business
             </Link>
           </div>
-        ) : (
-          <div className="divide-y divide-neutral-200">
-            {restaurants.map((restaurant) => (
-              <div key={restaurant.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-semibold text-neutral-900 mb-1">
-                      {restaurant.name}
-                    </h3>
-                    <p className="text-sm text-neutral-600 mb-1">
-                      {restaurant.address || 'Adresse non renseignée'}
-                    </p>
-                    <p className="text-sm text-neutral-500">
-                      {restaurant.city}, {restaurant.country}
-                    </p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-neutral-500">
-                      {restaurant.email && <span>📧 {restaurant.email}</span>}
-                      {restaurant.phone && <span>📞 {restaurant.phone}</span>}
-                    </div>
-                  </div>
-                  
-                  <button
-                    onClick={() => deleteRestaurant(restaurant.id)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Supprimer"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-neutral-500 mb-1">
-                      Page d'avis Kritiqo
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={restaurant.review_page_url}
-                        readOnly
-                        className="flex-1 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded text-sm"
-                      />
-                      <button
-                        onClick={() => copyToClipboard(restaurant.review_page_url)}
-                        className="p-2 text-neutral-500 hover:bg-neutral-100 rounded"
-                        title="Copier"
-                      >
-                        <LinkIcon className="h-4 w-4" />
-                      </button>
-                      <a
-                        href={restaurant.review_page_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 text-neutral-500 hover:bg-neutral-100 rounded"
-                        title="Voir la page"
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                      </a>
+        ) : !error && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {locations.map((location) => (
+              <div
+                key={location.id}
+                className="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-neutral-900 truncate">
+                        {location.name}
+                      </h3>
+                      <div className="flex items-center space-x-2 mt-1">
+                        {getStateIcon(location.state)}
+                        <span className="text-sm text-neutral-600">
+                          {getStateText(location.state)}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
+                  {/* Address */}
+                  {location.address && (
+                    <div className="flex items-start space-x-3">
+                      <MapPinIcon className="h-4 w-4 text-neutral-400 mt-1 flex-shrink-0" />
+                      <span className="text-sm text-neutral-600 line-clamp-2">
+                        {location.address}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Contact info */}
+                  <div className="space-y-2">
+                    {location.phone && (
+                      <div className="flex items-center space-x-3">
+                        <PhoneIcon className="h-4 w-4 text-neutral-400" />
+                        <span className="text-sm text-neutral-600">
+                          {location.phone}
+                        </span>
+                      </div>
+                    )}
+                    {location.website && (
+                      <div className="flex items-center space-x-3">
+                        <GlobeAltIcon className="h-4 w-4 text-neutral-400" />
+                        <a
+                          href={location.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline truncate"
+                        >
+                          Site web
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action button */}
+                  <div className="pt-4 border-t border-neutral-100">
                     <Link
-                      href={`/dashboard/reviews/qr?restaurant=${restaurant.slug}`}
-                      className="inline-flex items-center space-x-2 bg-neutral-100 text-neutral-700 px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors"
+                      href={`/dashboard/restaurants/${location.id}/reviews`}
+                      className="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 text-sm font-medium"
                     >
-                      <QrCodeIcon className="h-4 w-4" />
-                      <span>Générer QR Code</span>
+                      <StarIcon className="h-4 w-4 mr-2" />
+                      Gérer les avis
                     </Link>
-
-                    <span className="text-xs text-neutral-500">
-                      Créé le {new Date(restaurant.created_at).toLocaleDateString('fr-FR')}
-                    </span>
                   </div>
                 </div>
               </div>

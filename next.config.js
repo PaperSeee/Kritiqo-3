@@ -17,6 +17,10 @@ const nextConfig = {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    NEXTAUTH_DEBUG: process.env.NEXTAUTH_DEBUG,
+    OAUTH_DEBUG: process.env.OAUTH_DEBUG,
+    GOOGLE_BUSINESS_SCOPE: process.env.GOOGLE_BUSINESS_SCOPE,
+    GOOGLE_BUSINESS_API_URL: process.env.GOOGLE_BUSINESS_API_URL || 'https://businessprofile.googleapis.com/v1',
   },
   images: {
     domains: ['api.qrserver.com'],

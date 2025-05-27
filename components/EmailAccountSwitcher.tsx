@@ -47,6 +47,11 @@ export default function EmailAccountSwitcher({
   const handleAddAccount = async (provider: 'google' | 'azure-ad') => {
     setIsLoading(true)
     try {
+      // Log de debug
+      console.log('🔍 OAuth Debug - Connexion provider:', provider)
+      console.log('🔍 OAuth Debug - Current URL:', window.location.href)
+      console.log('🔍 OAuth Debug - Callback URL:', window.location.href)
+      
       // Utiliser les bons provider IDs pour NextAuth
       const providerMap = {
         'google': 'google',
