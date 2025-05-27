@@ -26,6 +26,7 @@ export interface TriageResult {
   priorite: TriagePriorite;
   action: TriageAction;
   suggestion: string | null;
+  fromCache?: boolean;
 }
 
 export interface EmailTriage extends TriageResult {

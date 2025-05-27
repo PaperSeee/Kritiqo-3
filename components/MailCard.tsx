@@ -20,6 +20,7 @@ interface TriageData {
   priorité: 'Urgent' | 'Moyen' | 'Faible';
   action: string;
   suggestion: string | null;
+  fromCache?: boolean;
 }
 
 interface MailCardProps {
