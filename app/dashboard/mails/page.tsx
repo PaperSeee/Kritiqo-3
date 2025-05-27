@@ -179,7 +179,8 @@ export default function MailsPage() {
                     categorie: triageResult.categorie,
                     priorite: triageResult.priorite,
                     action: triageResult.action,
-                    suggestion: triageResult.suggestion
+                    suggestion: triageResult.suggestion,
+                    fromCache: triageResult.fromCache
                   },
                   triageLoading: false,
                   triageError: false
