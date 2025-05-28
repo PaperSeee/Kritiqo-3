@@ -21,7 +21,7 @@ const navigation = [
   { name: 'Établissements', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
   { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
-  { name: 'Veille & Mentions', href: '/dashboard/mentions', icon: MagnifyingGlassIcon },
+  { name: 'Surveillance', href: '/dashboard/monitoring', icon: MagnifyingGlassIcon },
   { name: 'Support', href: '/dashboard/support', icon: QuestionMarkCircleIcon },
 ];
 
