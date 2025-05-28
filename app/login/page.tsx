@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
@@ -56,7 +57,15 @@ export default function LoginPage() {
     <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900">Kritiqo</h1>
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/favicon-512x512.png"
+              alt="Kritiqo"
+              width={80}
+              height={80}
+              className="w-20 h-20"
+            />
+          </div>
           <h2 className="mt-6 text-2xl sm:text-3xl font-bold text-neutral-900">
             Connexion
           </h2>
