@@ -48,9 +48,9 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
   const lowerBody = body.toLowerCase();
 
   // Étape 2: Filtre noreply
-  if (lowerSender.startsWith('noreply@')) {
+  if (lowerSender.startsWith('noreply@') || lowerSender.includes('no-reply')) {
     return {
-      categorie: 'Autre',
+      categorie: 'Spam/Pub',
       priorite: 'Faible',
       action: 'Ignorer',
       suggestion: null
@@ -58,7 +58,7 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
   }
 
   // Nouveau: Détection avis clients (priorité haute)
-  const avisKeywords = ['avis', 'review', 'commentaire', 'expérience', 'service', 'restaurant', 'plat', 'recommande'];
+  const avisKeywords = ['avis', 'review', 'commentaire', 'expérience', 'service', 'restaurant', 'plat', 'recommande', 'témoignage', 'satisfaction'];
   const hasAvisContent = avisKeywords.some(keyword => 
     lowerSubject.includes(keyword) || lowerBody.includes(keyword)
   );
@@ -72,15 +72,28 @@ function prefilterEmail(sender: string, subject: string, body: string): TriageRe
     };
   }
 
-  // Étape 3: Filtre promotionnel
-  const promoKeywords = ['promo', 'réduction', 'offre', 'code promo', 'promotion', 'solde', 'discount', 'black friday', 'cyber monday'];
+  // Étape 3: Filtre promotionnel étendu
+  const promoKeywords = [
+    'promo', 'réduction', 'offre', 'code promo', 'promotion', 'solde', 'discount', 
+    'black friday', 'cyber monday', 'deal', 'flash sale', 'limited time', 'act now',
+    'gratuit', 'cadeau', 'gagnez', 'winner', 'congratulations', 'félicitations',
+    'special offer', 'offre spéciale', 'prix cassé', 'dernière chance', 'exclusif',
+    'vip', 'membre premium', 'cashback', 'économisez', 'save money'
+  ];
   const hasPromoContent = promoKeywords.some(keyword => 
     lowerSubject.includes(keyword) || lowerBody.includes(keyword)
   );
 
-  if (hasPromoContent) {
+  // Domaines suspects étendus
+  const suspiciousDomains = [
+    'mailchimp.com', 'constantcontact.com', 'mailgun.net', 'sendgrid.net',
+    'marketing', 'promo', 'newsletter', 'campaign-archive.com'
+  ];
+  const isSuspiciousDomain = suspiciousDomains.some(domain => lowerSender.includes(domain));
+
+  if (hasPromoContent || isSuspiciousDomain) {
     return {
-      categorie: 'Publicité',
+      categorie: 'Spam/Pub',
       priorite: 'Faible',
       action: 'Ignorer',
       suggestion: null

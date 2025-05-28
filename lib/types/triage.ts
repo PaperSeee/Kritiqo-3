@@ -69,7 +69,11 @@ export function classifyEmailAutomatically(sender: string, subject: string, body
     "promotion", "offre", "newsletter", "vente", "réduction", "remise", 
     "solde", "code promo", "black friday", "cyber monday", "déstockage",
     "liquidation", "gratuit", "cadeau", "gagnez", "tirage au sort",
-    "concours", "publicité", "marketing", "unsubscribe", "désabonnement"
+    "concours", "publicité", "marketing", "unsubscribe", "désabonnement",
+    "deal", "flash sale", "limited time", "act now", "urgent", "winner",
+    "félicitations", "congratulations", "opportunity", "special offer",
+    "discount", "save money", "économisez", "offre spéciale", "prix cassé",
+    "dernière chance", "exclusif", "vip", "membre premium", "cashback"
   ];
   
   const noreplyKeywords = ["noreply", "no-reply", "donotreply", "do-not-reply"];
@@ -89,7 +93,8 @@ export function classifyEmailAutomatically(sender: string, subject: string, body
   // Vérifier les domaines suspects
   const suspiciousDomains = [
     "mailchimp.com", "constantcontact.com", "mailgun.net", 
-    "sendgrid.net", "marketing", "promo", "newsletter"
+    "sendgrid.net", "marketing", "promo", "newsletter",
+    "campaign-archive.com", "e.", "info@", "sales@"
   ];
   const isSuspiciousDomain = suspiciousDomains.some(domain => senderLower.includes(domain));
 

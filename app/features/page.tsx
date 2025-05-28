@@ -22,7 +22,8 @@ import {
   ChatBubbleLeftRightIcon,
   DocumentChartBarIcon,
   CogIcon,
-  PlusIcon
+  PlusIcon,
+  MagnifyingGlassIcon
 } from "@heroicons/react/24/outline";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -91,6 +92,22 @@ const mainFeatures = [
     ],
     demo: '/demo-analytics.mp4',
     color: 'green'
+  },
+  {
+    id: 'surveillance',
+    icon: MagnifyingGlassIcon,
+    title: 'Surveillance par Mots-Clés',
+    subtitle: 'Veille automatique',
+    description: 'Surveillez automatiquement ce que les gens disent de votre établissement sur le web avec notre système de veille par mots-clés.',
+    features: [
+      'Surveillance temps réel multi-plateformes',
+      'Détection automatique des mentions',
+      'Analyse de sentiment des mentions',
+      'Alertes instantanées pour mentions critiques',
+      'Historique complet des mentions trouvées'
+    ],
+    demo: '/demo-surveillance.mp4',
+    color: 'purple'
   }
 ];
 
@@ -124,6 +141,11 @@ const additionalFeatures = [
     icon: GlobeAltIcon,
     title: 'Multi-langues',
     description: 'Interface disponible en français, anglais et autres langues'
+  },
+  {
+    icon: MagnifyingGlassIcon,
+    title: 'Veille par Mots-Clés',
+    description: 'Surveillez automatiquement les mentions de votre marque'
   }
 ];
 
