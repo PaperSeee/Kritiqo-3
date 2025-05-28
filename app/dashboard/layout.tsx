@@ -13,7 +13,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   QuestionMarkCircleIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
   { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
   { name: 'Mentions', href: '/dashboard/mentions', icon: MagnifyingGlassIcon },
+  { name: 'Profil', href: '/dashboard/profile', icon: UserIcon },
   { name: 'Support', href: '/dashboard/support', icon: QuestionMarkCircleIcon },
 ];
 
