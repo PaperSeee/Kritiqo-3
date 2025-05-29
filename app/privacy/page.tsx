@@ -7,7 +7,7 @@ export default function PrivacyPage() {
             Politique de Confidentialité
           </h1>
           <p className="text-lg text-neutral-600">
-            Dernière mise à jour : 15 janvier 2024
+            Dernière mise à jour : 29 mai 2025
           </p>
         </div>
 
@@ -57,7 +57,19 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              3. Comment nous utilisons vos données
+              3. Utilisation des données Google Workspace
+            </h2>
+            <p className="text-neutral-700 leading-relaxed mb-4">
+              <strong>Kritiqo n'utilise pas les données obtenues via les API Google Workspace (telles que Gmail) pour développer, améliorer ou entraîner des modèles d'intelligence artificielle ou de machine learning généralisés.</strong>
+            </p>
+            <p className="text-neutral-700 leading-relaxed">
+              Les données sont uniquement utilisées pour fournir les fonctionnalités du service à l'utilisateur connecté : analyse et tri automatique des emails, génération de suggestions de réponses personnalisées, et organisation par catégories.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
+              4. Comment nous utilisons vos données
             </h2>
             <ul className="space-y-2 text-neutral-700">
               <li>• Fournir et améliorer nos services de gestion d'avis</li>
@@ -72,7 +84,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              4. Partage des données
+              5. Partage des données
             </h2>
             <p className="text-neutral-700 leading-relaxed mb-4">
               <strong>Nous ne vendons, ne louons ni ne partageons vos données personnelles avec des tiers.</strong> Vos données ne sont utilisées que pour fournir le service Kritiqo.
@@ -84,7 +96,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              5. Sécurité des données
+              6. Sécurité des données
             </h2>
             <p className="text-neutral-700 leading-relaxed mb-4">
               Nous mettons en place des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données contre l'accès non autorisé, la perte ou la destruction.
@@ -99,7 +111,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              6. Vos droits
+              7. Vos droits
             </h2>
             <p className="text-neutral-700 leading-relaxed mb-4">
               Conformément au RGPD, vous disposez des droits suivants :
@@ -116,7 +128,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              7. Conservation des données
+              8. Conservation des données
             </h2>
             <p className="text-neutral-700 leading-relaxed">
               Nous conservons vos données personnelles uniquement pendant la durée nécessaire aux finalités pour lesquelles elles ont été collectées, ou selon les exigences légales applicables.
@@ -125,7 +137,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              8. Cookies
+              9. Cookies
             </h2>
             <p className="text-neutral-700 leading-relaxed">
               Nous utilisons des cookies essentiels pour le fonctionnement de notre service (authentification, préférences). Aucun cookie de tracking ou publicitaire n'est utilisé.
@@ -134,7 +146,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-neutral-900 mb-4">
-              9. Contact
+              10. Contact
             </h2>
             <p className="text-neutral-700 leading-relaxed">
               Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, contactez-nous à :
