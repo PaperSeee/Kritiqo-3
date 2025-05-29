@@ -102,8 +102,8 @@ const whyChooseKritiqo = [
   },
   {
     icon: ShieldCheckIcon,
-    title: "Solution française & RGPD",
-    description: "Développé en France avec une protection maximale de vos données personnelles et professionnelles."
+    title: "Solution belge & RGPD",
+    description: "Développé en Belgique avec une protection maximale de vos données personnelles et professionnelles."
   },
   {
     icon: SparklesIcon,
