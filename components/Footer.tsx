@@ -62,8 +62,8 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-neutral-900 mb-4">Légal</h3>
             <ul className="space-y-2 text-sm text-neutral-600">
-              <li><Link href="#" className="hover:text-neutral-900 transition-colors">Confidentialité</Link></li>
-              <li><Link href="#" className="hover:text-neutral-900 transition-colors">CGU</Link></li>
+              <li><Link href="/privacy" className="hover:text-neutral-900 transition-colors">Confidentialité</Link></li>
+              <li><Link href="/terms" className="hover:text-neutral-900 transition-colors">CGU</Link></li>
               <li><Link href="#" className="hover:text-neutral-900 transition-colors">Cookies</Link></li>
               <li><Link href="#" className="hover:text-neutral-900 transition-colors">RGPD</Link></li>
             </ul>
