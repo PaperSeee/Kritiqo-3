@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import QRCode from 'qrcode'
@@ -25,39 +25,12 @@ interface Business {
 }
 
 export default function BusinessesPage() {
-  const { businesses, loading } = useBusinesses()
+  const { businesses, loading, refreshBusinesses } = useBusinesses()
   const { user } = useAuth()
   const [googleMapsUrl, setGoogleMapsUrl] = useState('')
   const [errors, setErrors] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    if (user) {
-      fetchBusinesses()
-    }
-  }, [user])
-
-  const fetchBusinesses = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setBusinesses(data || [])
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error('Erreur lors de la récupération des entreprises:', err.message, err.name)
-      } else {
-        console.error('Erreur inconnue lors de la récupération des entreprises:', JSON.stringify(err))
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const validateGoogleMapsUrl = (url: string) => {
     return isValidGoogleMapsUrl(url)
@@ -160,7 +133,7 @@ export default function BusinessesPage() {
       setGoogleMapsUrl('')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 5000)
-      await fetchBusinesses()
+      await refreshBusinesses()
     } catch (err) {
       if (err instanceof Error) {
         console.error('Erreur lors de l\'ajout de l\'entreprise:', err.message, err.name)
@@ -184,7 +157,7 @@ export default function BusinessesPage() {
         .eq('id', id)
 
       if (error) throw error
-      await fetchBusinesses()
+      await refreshBusinesses()
     } catch (err) {
       if (err instanceof Error) {
         console.error('Erreur lors de la suppression de l\'entreprise:', err.message, err.name)

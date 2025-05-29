@@ -318,7 +318,7 @@ function MailboxStepDetail({ hasMailbox }: { hasMailbox: boolean }) {
 
           {!hasMailbox && (
             <Link
-              href="/api/auth/signin"
+              href="/dashboard/mails"
               className="inline-flex items-center space-x-2 mt-6 bg-[#2563EB] text-white px-6 py-3 rounded-xl hover:bg-[#1D4ED8] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2"
             >
               <EnvelopeIcon className="h-5 w-5" />
