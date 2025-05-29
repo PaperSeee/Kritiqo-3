@@ -5,7 +5,8 @@ import {
   EyeIcon,
   ChatBubbleLeftRightIcon,
   GlobeAltIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline'
 
 const platforms = [
@@ -105,17 +106,21 @@ export default function MentionsPage() {
       </div>
 
       {/* Coming Soon Banner */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
-        <div className="flex items-center space-x-3">
-          <ExclamationTriangleIcon className="h-8 w-8 text-amber-600" />
-          <div>
-            <h2 className="text-xl font-bold text-amber-900 mb-1">
-              Fonctionnalité en cours de développement
-            </h2>
-            <p className="text-amber-800">
-              Notre équipe travaille activement sur cet outil de veille puissant. 
-              Il sera bientôt disponible pour vous aider à surveiller votre e-réputation.
-            </p>
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-8">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ClockIcon className="h-10 w-10 text-amber-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-amber-900 mb-3">
+            Coming Soon 🚀
+          </h2>
+          <p className="text-lg text-amber-800 max-w-2xl mx-auto">
+            Notre équipe développe activement cet outil de veille puissant qui vous permettra 
+            de surveiller automatiquement votre e-réputation sur toutes les plateformes.
+          </p>
+          <div className="mt-6 inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-medium">
+            <span className="mr-2">⏳</span>
+            En cours de développement
           </div>
         </div>
       </div>

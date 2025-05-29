@@ -121,265 +121,126 @@ export default function HomePage() {
 
       <main>
         {/* Hero Section */}
-        <section className="py-20 px-6 text-center bg-gradient-to-b from-neutral-50 to-white">
+        <section className="py-12 sm:py-20 px-4 sm:px-6 text-center bg-gradient-to-b from-neutral-50 to-white">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-              Centralisez vos
-              <span className="block text-green-600">avis clients</span>
-              <span className="block text-lg md:text-2xl font-normal text-neutral-600 mt-2">
-                + triez vos emails par IA
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-neutral-900 mb-4 sm:mb-6">
+              Centralisez tous vos
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 block sm:inline sm:ml-3">
+                avis clients
               </span>
             </h1>
-            
-            <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Collectez et gérez vos avis Google, Facebook, TripAdvisor depuis une plateforme unique. 
-              <span className="font-medium text-neutral-800"> Notre IA organise automatiquement vos emails par categories.</span>
+            <p className="text-lg sm:text-xl text-neutral-600 mb-8 sm:mb-12 max-w-3xl mx-auto px-4">
+              La plateforme tout-en-un qui collecte, centralise et analyse vos avis clients. 
+              QR codes intelligents, tri automatique par IA, analytics avancés.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 sm:mb-12 px-4">
               <Link
                 href="/signup"
-                className="bg-neutral-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-neutral-800 transition-colors flex items-center space-x-2"
+                className="w-full sm:w-auto bg-neutral-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium hover:bg-neutral-800 transition-colors flex items-center justify-center space-x-2"
               >
                 <span>Essai gratuit 14 jours</span>
-                <ArrowRightIcon className="h-5 w-5" />
+                <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </Link>
               <a
                 href="#demo"
-                className="border border-neutral-300 text-neutral-700 px-8 py-4 rounded-lg text-lg font-medium hover:bg-neutral-50 transition-colors"
+                className="w-full sm:w-auto border border-neutral-300 text-neutral-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium hover:bg-neutral-50 transition-colors"
               >
                 Voir la démonstration
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-neutral-500">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-neutral-500 px-4">
               <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
                 Sans engagement
               </span>
               <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                Configuration en 5 min
+                <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
+                Configuration en 5 minutes
               </span>
               <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
                 Support inclus
               </span>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="py-20 px-6 bg-white">
+        {/* Features Preview */}
+        <section className="py-12 sm:py-20 px-4 sm:px-6 bg-white">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Tout ce dont vous avez besoin pour gérer vos avis
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 mb-4 sm:mb-6">
+                Tout ce dont vous avez besoin
               </h2>
-              <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-                Une plateforme complète qui simplifie la gestion de votre réputation en ligne
+              <p className="text-lg sm:text-xl text-neutral-600 max-w-3xl mx-auto">
+                Une solution complète pour gérer votre e-réputation et optimiser vos avis clients
               </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-              {features.map((feature, index) => (
-                <div key={index} className="bg-neutral-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <feature.icon className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-semibold text-neutral-900">
-                          {feature.title}
-                        </h3>
-                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-                          {feature.highlight}
-                        </span>
-                      </div>
-                      <p className="text-neutral-600 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
+            <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="bg-neutral-50 p-6 sm:p-8 rounded-xl">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Benefits Section */}
-        <section id="benefits" className="py-20 px-6 bg-neutral-50">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Pourquoi choisir Kritiqo ?
-              </h2>
-              <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-                Conçu spécialement pour les restaurants, commerces et entreprises de services
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-16">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="text-center p-6">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <benefit.icon className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-neutral-600">
-                    {benefit.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div className="bg-white rounded-xl p-8 shadow-sm">
-              <div className="grid gap-8 md:grid-cols-3 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">+150%</div>
-                  <p className="text-neutral-600">d'avis collectés en moyenne</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">3h</div>
-                  <p className="text-neutral-600">économisées par semaine</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">5 min</div>
-                  <p className="text-neutral-600">pour configurer votre compte</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section className="py-20 px-6 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Comment ça marche ?
-              </h2>
-              <p className="text-xl text-neutral-600">
-                Trois étapes simples pour démarrer
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  1
-                </div>
-                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                  Ajoutez vos établissements
+                <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-2">
+                  QR Codes Intelligents
                 </h3>
-                <p className="text-neutral-600">
-                  Connectez vos restaurants ou magasins en quelques clics. 
-                  Collez simplement vos liens Google Maps.
+                <p className="text-neutral-600 text-sm sm:text-base">
+                  Générez des QR codes qui dirigent automatiquement vers la bonne plateforme d'avis
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  2
+              <div className="bg-neutral-50 p-6 sm:p-8 rounded-xl">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                  Générez vos QR codes
+                <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-2">
+                  Tri Automatique IA
                 </h3>
-                <p className="text-neutral-600">
-                  Créez des QR codes personnalisés pour chaque point de vente. 
-                  Imprimez-les et placez-les stratégiquement.
+                <p className="text-neutral-600 text-sm sm:text-base">
+                  L'IA trie et analyse automatiquement vos emails et messages clients
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  3
+              <div className="bg-neutral-50 p-6 sm:p-8 rounded-xl md:col-span-2 lg:col-span-1">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                  Collectez et gérez
+                <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-2">
+                  Analytics Avancés
                 </h3>
-                <p className="text-neutral-600">
-                  Suivez vos avis en temps réel, répondez rapidement et 
-                  boostez votre réputation en ligne.
+                <p className="text-neutral-600 text-sm sm:text-base">
+                  Tableaux de bord détaillés pour suivre votre e-réputation en temps réel
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section id="faq" className="py-20 px-6 bg-neutral-50">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Questions fréquentes
-              </h2>
-              <p className="text-xl text-neutral-600">
-                Tout ce que vous devez savoir sur Kritiqo
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              {faqItems.map((faq, index) => (
-                <details key={index} className="bg-white rounded-lg p-6 shadow-sm">
-                  <summary className="font-semibold text-neutral-900 cursor-pointer mb-3 text-lg">
-                    {faq.question}
-                  </summary>
-                  <p className="text-neutral-600 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </details>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <p className="text-neutral-600 mb-4">
-                Vous avez d'autres questions ?
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
-              >
-                Contactez notre équipe
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="py-20 px-6 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white">
+        {/* CTA Section */}
+        <section className="py-12 sm:py-20 px-4 sm:px-6 bg-neutral-900 text-white">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Prêt à transformer votre gestion d'avis ?
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+              Prêt à améliorer votre e-réputation ?
             </h2>
-            <p className="text-xl text-neutral-300 mb-8 max-w-2xl mx-auto">
-              Rejoignez les centaines d'entreprises qui font confiance à Kritiqo 
-              pour améliorer leur réputation en ligne.
+            <p className="text-lg sm:text-xl text-neutral-300 mb-8 sm:mb-12">
+              Rejoignez les centaines d'entreprises qui font confiance à Kritiqo
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/signup"
-                className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-green-700 transition-colors"
-              >
-                Commencer l'essai gratuit
-              </Link>
-              <Link
-                href="/contact"
-                className="border border-neutral-400 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-white/10 transition-colors"
-              >
-                Parler à un expert
-              </Link>
-            </div>
-
-            <p className="text-sm text-neutral-400 mt-6">
-              Essai gratuit 14 jours • Sans engagement • Support inclus
-            </p>
+            <Link
+              href="/signup"
+              className="inline-flex items-center bg-white text-neutral-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium hover:bg-neutral-100 transition-colors space-x-2"
+            >
+              <span>Commencer gratuitement</span>
+              <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            </Link>
           </div>
         </section>
       </main>

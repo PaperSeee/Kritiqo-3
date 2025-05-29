@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase'
 import QRCode from 'qrcode'
 import { isValidGoogleMapsUrl } from '@/lib/utils/url-validator'
 import { CheckCircleIcon, PlusIcon, TrashIcon, LinkIcon, QrCodeIcon } from '@heroicons/react/24/outline'
+import { useBusinesses } from '@/contexts/BusinessContext'
+import BusinessesEmptyState from '@/components/EmptyStates/BusinessesEmptyState'
 
 interface Business {
   id: string
@@ -23,13 +25,12 @@ interface Business {
 }
 
 export default function BusinessesPage() {
+  const { businesses, loading } = useBusinesses()
   const { user } = useAuth()
-  const [businesses, setBusinesses] = useState<Business[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
   const [googleMapsUrl, setGoogleMapsUrl] = useState('')
   const [errors, setErrors] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -211,6 +212,24 @@ export default function BusinessesPage() {
       }
       return ''
     }
+  }
+
+  // Show empty state if no businesses
+  if (!loading && businesses.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h1 className="text-2xl font-bold text-gray-900">Sources d'avis</h1>
+          <p className="text-gray-600 mt-1">
+            Gérez vos établissements et plateformes d'avis connectés
+          </p>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <BusinessesEmptyState />
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

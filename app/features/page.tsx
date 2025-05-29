@@ -31,245 +31,128 @@ import Footer from '../../components/Footer';
 const mainFeatures = [
   {
     id: 'qr-codes',
-    icon: QrCodeIcon,
     title: 'QR Codes Intelligents',
-    subtitle: 'Collecte d\'avis simplifiée',
-    description: 'Générez des QR codes personnalisés pour chaque établissement. Vos clients scannent et accèdent directement à une page d\'avis optimisée.',
-    features: [
-      'Génération instantanée et illimitée',
-      'Codes haute résolution pour impression',
-      'Pages d\'atterrissage personnalisées',
-      'Redirection intelligente selon la plateforme',
-      'Analytics de scan en temps réel'
-    ],
-    demo: '/demo-qr.mp4',
-    color: 'blue'
+    description: 'Générez des QR codes qui dirigent automatiquement vos clients vers la bonne plateforme d\'avis selon leurs préférences.',
+    icon: QrCodeIcon,
+    color: 'blue',
+    benefits: [
+      'Génération automatique de QR codes personnalisés',
+      'Redirection intelligente vers Google, Yelp, TripAdvisor...',
+      'Analytics détaillés sur les scans',
+      'Design personnalisable selon votre marque'
+    ]
   },
   {
-    id: 'centralization',
-    icon: StarIcon,
-    title: 'Centralisation Totale',
-    subtitle: 'Tous vos avis en un endroit',
-    description: 'Regroupez automatiquement vos avis Google, Facebook, TripAdvisor, et bien d\'autres dans un tableau de bord unifié.',
-    features: [
-      'Synchronisation automatique multi-plateformes',
-      'Import d\'avis existants',
-      'Notifications en temps réel',
-      'Réponses directes depuis Kritiqo',
-      'Historique complet et recherche avancée'
-    ],
-    demo: '/demo-centralization.mp4',
-    color: 'yellow'
-  },
-  {
-    id: 'email-ai',
-    icon: EnvelopeIcon,
-    title: 'IA de Tri d\'Emails',
-    subtitle: 'Organisation automatique',
-    description: 'Notre intelligence artificielle analyse et classe vos emails par categories : factures, RH, clients, administration.',
-    features: [
-      'Classification automatique par IA',
-      'Niveau de priorité intelligent',
-      'Intégration Gmail et Outlook',
-      'Filtres personnalisables',
-      'Gain de temps de 3h par semaine'
-    ],
-    demo: '/demo-email-ai.mp4',
-    color: 'purple'
+    id: 'ai-triage',
+    title: 'Tri Automatique par IA',
+    description: 'Notre intelligence artificielle analyse et trie automatiquement vos emails et messages clients pour vous faire gagner du temps.',
+    icon: SparklesIcon,
+    color: 'purple',
+    benefits: [
+      'Classification automatique des emails (avis, factures, support...)',
+      'Détection des avis clients dans vos messages',
+      'Priorisation intelligente des messages importants',
+      'Filtrage automatique du spam et de la publicité'
+    ]
   },
   {
     id: 'analytics',
-    icon: ChartBarIcon,
     title: 'Analytics Avancés',
-    subtitle: 'Insights en temps réel',
-    description: 'Suivez l\'évolution de votre réputation, analysez les tendances et optimisez votre stratégie client avec des données précises.',
-    features: [
-      'Tableau de bord temps réel',
-      'Analyse des sentiments',
-      'Comparaison avec la concurrence',
-      'Rapports automatiques',
-      'Alertes personnalisées'
-    ],
-    demo: '/demo-analytics.mp4',
-    color: 'green'
+    description: 'Tableaux de bord complets pour suivre votre e-réputation et optimiser votre stratégie d\'avis clients.',
+    icon: ChartBarIcon,
+    color: 'green',
+    benefits: [
+      'Vue d\'ensemble de tous vos avis en temps réel',
+      'Analyse des tendances et de l\'évolution',
+      'Rapports détaillés par plateforme',
+      'Alertes automatiques pour les avis négatifs'
+    ]
   },
   {
-    id: 'surveillance',
+    id: 'monitoring',
+    title: 'Veille & Mentions',
+    description: 'Surveillez automatiquement ce que l\'on dit de votre établissement sur le web et les réseaux sociaux.',
     icon: MagnifyingGlassIcon,
-    title: 'Surveillance par Mots-Clés',
-    subtitle: 'Veille automatique',
-    description: 'Surveillez automatiquement ce que les gens disent de votre établissement sur le web avec notre système de veille par mots-clés.',
-    features: [
-      'Surveillance temps réel multi-plateformes',
-      'Détection automatique des mentions',
-      'Analyse de sentiment des mentions',
-      'Alertes instantanées pour mentions critiques',
-      'Historique complet des mentions trouvées'
-    ],
-    demo: '/demo-surveillance.mp4',
-    color: 'purple'
+    color: 'yellow',
+    benefits: [
+      'Surveillance de toutes les plateformes',
+      'Alertes en temps réel',
+      'Analyse du sentiment',
+      'Historique complet des mentions'
+    ]
   }
 ];
 
 const additionalFeatures = [
   {
-    icon: BuildingStorefrontIcon,
-    title: 'Multi-établissements',
-    description: 'Gérez tous vos points de vente depuis une interface unique'
+    title: 'Gestion Multi-Établissements',
+    description: 'Gérez tous vos restaurants et points de vente depuis un seul tableau de bord.',
+    icon: '🏢'
   },
   {
-    icon: DevicePhoneMobileIcon,
-    title: 'Mobile-First',
-    description: 'Interface parfaitement optimisée pour smartphone et tablette'
+    title: 'Intégrations Natives',
+    description: 'Connectez-vous facilement avec Google, Yelp, TripAdvisor, UberEats et plus.',
+    icon: '🔗'
   },
   {
-    icon: ClockIcon,
-    title: 'Automatisation',
-    description: 'Workflows automatiques pour réduire les tâches répétitives'
+    title: 'Réponses Automatiques',
+    description: 'Configurez des réponses automatiques pour remercier vos clients rapidement.',
+    icon: '🤖'
   },
   {
-    icon: ShieldCheckIcon,
-    title: 'Sécurité RGPD',
-    description: 'Conformité totale aux réglementations européennes'
+    title: 'Export & Rapports',
+    description: 'Exportez vos données et générez des rapports détaillés pour vos équipes.',
+    icon: '📊'
   },
   {
-    icon: BellAlertIcon,
-    title: 'Notifications Intelligentes',
-    description: 'Alertes personnalisées pour ne rien manquer'
+    title: 'Support 24/7',
+    description: 'Notre équipe est disponible pour vous accompagner dans votre réussite.',
+    icon: '💬'
   },
   {
-    icon: GlobeAltIcon,
-    title: 'Multi-langues',
-    description: 'Interface disponible en français, anglais et autres langues'
-  },
-  {
-    icon: MagnifyingGlassIcon,
-    title: 'Veille par Mots-Clés',
-    description: 'Surveillez automatiquement les mentions de votre marque'
-  }
-];
-
-const useCases = [
-  {
-    icon: "🍽️",
-    title: "Restaurants & Cafés",
-    description: "Collectez plus d'avis positifs avec des QR codes sur vos tables",
-    benefits: ["+ 200% d'avis collectés", "Réponse client 5x plus rapide", "Amélioration note moyenne"]
-  },
-  {
-    icon: "🏪",
-    title: "Commerces de proximité",
-    description: "Centralisez vos avis Google et Facebook pour booster votre visibilité",
-    benefits: ["Gestion simplifiée", "Visibilité locale accrue", "Fidélisation client"]
-  },
-  {
-    icon: "💇",
-    title: "Salons & Spas",
-    description: "Organisez vos emails clients et collectez des témoignages",
-    benefits: ["Organisation parfaite", "Suivi client optimal", "Réputation renforcée"]
-  },
-  {
-    icon: "🏥",
-    title: "Cabinets médicaux",
-    description: "Gérez votre réputation en ligne de manière professionnelle",
-    benefits: ["Conformité RGPD", "Gestion discrète", "Confiance patient"]
-  }
-];
-
-const whyChooseKritiqo = [
-  {
-    icon: "⚡",
-    title: "Mise en place rapide",
-    description: "Configuration complète en moins de 5 minutes",
-    details: ["Interface intuitive", "Import automatique", "Formation incluse"]
-  },
-  {
-    icon: "🔒",
-    title: "Sécurité garantie",
-    description: "Conformité RGPD et sécurité européenne",
-    details: ["Données hébergées en Europe", "Chiffrement bout-en-bout", "Audits réguliers"]
-  },
-  {
-    icon: "🚀",
-    title: "Innovation continue",
-    description: "Nouvelles fonctionnalités chaque mois",
-    details: ["IA en constante évolution", "Intégrations régulières", "Feedback utilisateurs"]
+    title: 'Sécurité Avancée',
+    description: 'Vos données sont protégées avec un chiffrement de niveau bancaire.',
+    icon: '🔒'
   }
 ];
 
 export default function FeaturesPage() {
-  const [activeFeature, setActiveFeature] = useState('qr-codes');
+  const [activeFeature, setActiveFeature] = useState(mainFeatures[0].id);
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
-      <div className="pt-20">
+      <div className="pt-16 sm:pt-20">
         {/* Hero Section */}
-        <section className="py-20 px-6 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-6xl mx-auto text-center">
-            <div className="inline-flex items-center space-x-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <SparklesIcon className="h-4 w-4" />
-              <span>Plateforme tout-en-un</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-              Toutes les fonctionnalités
-              <span className="block text-green-600">pour votre succès</span>
+        <section className="py-12 sm:py-20 px-4 sm:px-6 text-center bg-gradient-to-b from-neutral-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 mb-4 sm:mb-6">
+              Fonctionnalités Puissantes
             </h1>
-            
-            <p className="text-xl text-neutral-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Découvrez comment Kritiqo révolutionne la gestion d'avis clients et l'organisation d'emails 
-              pour des milliers d'entreprises dans le monde.
+            <p className="text-lg sm:text-xl text-neutral-600 mb-8 sm:mb-12 max-w-3xl mx-auto">
+              Découvrez tous les outils dont vous avez besoin pour gérer efficacement 
+              votre e-réputation et optimiser vos avis clients.
             </p>
-
-            <div className="grid gap-6 md:grid-cols-4 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">5+</div>
-                <p className="text-sm text-neutral-600">Plateformes connectées</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">5 min</div>
-                <p className="text-sm text-neutral-600">Configuration moyenne</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">24/7</div>
-                <p className="text-sm text-neutral-600">Disponibilité système</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">RGPD</div>
-                <p className="text-sm text-neutral-600">Conformité garantie</p>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* Main Features Section */}
-        <section className="py-20 px-6">
+        {/* Interactive Features Section */}
+        <section className="py-12 sm:py-20 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Fonctionnalités principales
-              </h2>
-              <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-                Quatre outils puissants pour transformer votre gestion client
-              </p>
-            </div>
-
-            {/* Feature Tabs */}
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {/* Feature Navigation */}
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12 sm:mb-16">
               {mainFeatures.map((feature) => (
                 <button
                   key={feature.id}
                   onClick={() => setActiveFeature(feature.id)}
-                  className={`flex items-center space-x-3 px-6 py-3 rounded-lg font-medium transition-all ${
+                  className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all ${
                     activeFeature === feature.id
                       ? 'bg-neutral-900 text-white shadow-lg'
                       : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                   }`}
                 >
-                  <feature.icon className="h-5 w-5" />
-                  <span>{feature.title}</span>
+                  {feature.title}
                 </button>
               ))}
             </div>
@@ -277,52 +160,57 @@ export default function FeaturesPage() {
             {/* Active Feature Display */}
             {mainFeatures.map((feature) => (
               activeFeature === feature.id && (
-                <div key={feature.id} className="grid gap-12 lg:grid-cols-2 items-center">
+                <div key={feature.id} className="grid gap-8 sm:gap-12 lg:grid-cols-2 items-center">
                   <div>
-                    <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium mb-4 ${
-                      feature.color === 'blue' ? 'bg-blue-100 text-blue-800' :
-                      feature.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
-                      feature.color === 'purple' ? 'bg-purple-100 text-purple-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      <feature.icon className="h-4 w-4" />
-                      <span>{feature.subtitle}</span>
-                    </div>
-                    
-                    <h3 className="text-3xl font-bold text-neutral-900 mb-4">
-                      {feature.title}
-                    </h3>
-                    
-                    <p className="text-xl text-neutral-600 mb-8 leading-relaxed">
-                      {feature.description}
-                    </p>
-
-                    <div className="space-y-4 mb-8">
-                      {feature.features.map((item, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <CheckCircleIcon className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-neutral-700">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <Link
-                      href="/signup"
-                      className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
-                    >
-                      <span>Tester cette fonctionnalité</span>
-                      <ArrowRightIcon className="h-4 w-4" />
-                    </Link>
-                  </div>
-
-                  <div className="bg-neutral-50 rounded-xl p-8 text-center">
-                    <div className={`w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center ${
+                    <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto lg:mx-0 mb-6 rounded-2xl flex items-center justify-center ${
                       feature.color === 'blue' ? 'bg-blue-100' :
                       feature.color === 'yellow' ? 'bg-yellow-100' :
                       feature.color === 'purple' ? 'bg-purple-100' :
                       'bg-green-100'
                     }`}>
-                      <feature.icon className={`h-12 w-12 ${
+                      <feature.icon className={`h-8 w-8 sm:h-10 sm:w-10 ${
+                        feature.color === 'blue' ? 'text-blue-600' :
+                        feature.color === 'yellow' ? 'text-yellow-600' :
+                        feature.color === 'purple' ? 'text-purple-600' :
+                        'text-green-600'
+                      }`} />
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4 text-center lg:text-left">
+                      {feature.title}
+                    </h2>
+                    <p className="text-lg text-neutral-600 mb-6 text-center lg:text-left">
+                      {feature.description}
+                    </p>
+                    <ul className="space-y-3">
+                      {feature.benefits.map((benefit, index) => (
+                        <li key={index} className="flex items-start space-x-3">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 ${
+                            feature.color === 'blue' ? 'bg-blue-100' :
+                            feature.color === 'yellow' ? 'bg-yellow-100' :
+                            feature.color === 'purple' ? 'bg-purple-100' :
+                            'bg-green-100'
+                          }`}>
+                            <div className={`w-2 h-2 rounded-full ${
+                              feature.color === 'blue' ? 'bg-blue-600' :
+                              feature.color === 'yellow' ? 'bg-yellow-600' :
+                              feature.color === 'purple' ? 'bg-purple-600' :
+                              'bg-green-600'
+                            }`} />
+                          </div>
+                          <span className="text-neutral-700">{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-neutral-50 rounded-xl p-6 sm:p-8 text-center">
+                    <div className={`w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-full flex items-center justify-center ${
+                      feature.color === 'blue' ? 'bg-blue-100' :
+                      feature.color === 'yellow' ? 'bg-yellow-100' :
+                      feature.color === 'purple' ? 'bg-purple-100' :
+                      'bg-green-100'
+                    }`}>
+                      <feature.icon className={`h-10 w-10 sm:h-12 sm:w-12 ${
                         feature.color === 'blue' ? 'text-blue-600' :
                         feature.color === 'yellow' ? 'text-yellow-600' :
                         feature.color === 'purple' ? 'text-purple-600' :
@@ -332,7 +220,7 @@ export default function FeaturesPage() {
                     <p className="text-neutral-600 mb-4">
                       Démo interactive disponible
                     </p>
-                    <button className="bg-white border border-neutral-300 text-neutral-700 px-4 py-2 rounded-lg hover:bg-neutral-50 transition-colors">
+                    <button className="bg-white border border-neutral-300 text-neutral-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-neutral-50 transition-colors text-sm sm:text-base">
                       Voir la démonstration
                     </button>
                   </div>
@@ -343,27 +231,25 @@ export default function FeaturesPage() {
         </section>
 
         {/* Additional Features Grid */}
-        <section className="py-20 px-6 bg-neutral-50">
+        <section className="py-12 sm:py-20 px-4 sm:px-6 bg-neutral-50">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Et bien plus encore...
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 mb-4 sm:mb-6">
+                Et bien plus encore
               </h2>
-              <p className="text-xl text-neutral-600">
-                Découvrez toutes les fonctionnalités qui font de Kritiqo la solution #1
+              <p className="text-lg sm:text-xl text-neutral-600 max-w-3xl mx-auto">
+                Kritiqo inclut de nombreuses autres fonctionnalités pour vous simplifier la vie
               </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {additionalFeatures.map((feature, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-neutral-100 rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="h-6 w-6 text-neutral-700" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                <div key={index} className="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div className="text-3xl sm:text-4xl mb-4">{feature.icon}</div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-neutral-600">
+                  <p className="text-neutral-600 text-sm sm:text-base">
                     {feature.description}
                   </p>
                 </div>
@@ -372,177 +258,28 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* Use Cases Section */}
-        <section className="py-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Adapté à votre secteur
-              </h2>
-              <p className="text-xl text-neutral-600">
-                Kritiqo s'adapte parfaitement aux besoins spécifiques de votre activité
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              {useCases.map((useCase, index) => (
-                <div key={index} className="text-center p-6">
-                  <div className="text-4xl mb-4">{useCase.icon}</div>
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                    {useCase.title}
-                  </h3>
-                  <p className="text-neutral-600 mb-6">
-                    {useCase.description}
-                  </p>
-                  <div className="space-y-2">
-                    {useCase.benefits.map((benefit, benefitIndex) => (
-                      <div key={benefitIndex} className="flex items-center justify-center space-x-2">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-neutral-600">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Why Choose Kritiqo Section */}
-        <section className="py-20 px-6 bg-neutral-50">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Pourquoi choisir Kritiqo ?
-              </h2>
-              <p className="text-xl text-neutral-600">
-                Une solution pensée pour vous faire gagner du temps et améliorer votre réputation
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-3 mb-16">
-              {whyChooseKritiqo.map((reason, index) => (
-                <div key={index} className="bg-white rounded-xl p-8 shadow-sm text-center">
-                  <div className="text-4xl mb-4">{reason.icon}</div>
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                    {reason.title}
-                  </h3>
-                  <p className="text-neutral-600 mb-6">
-                    {reason.description}
-                  </p>
-                  <div className="space-y-2">
-                    {reason.details.map((detail, detailIndex) => (
-                      <div key={detailIndex} className="flex items-center justify-center space-x-2">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-neutral-600">{detail}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Stats Section */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-8">
-              <div className="grid gap-6 md:grid-cols-4 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">5 min</div>
-                  <p className="text-sm text-neutral-600">Configuration moyenne</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">24h</div>
-                  <p className="text-sm text-neutral-600">Premier résultat visible</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">3x</div>
-                  <p className="text-sm text-neutral-600">Plus d'avis collectés</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">4h</div>
-                  <p className="text-sm text-neutral-600">Temps gagné par semaine</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Integration Section */}
-        <section className="py-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                Intégrations natives
-              </h2>
-              <p className="text-xl text-neutral-600 mb-8">
-                Kritiqo se connecte avec tous vos outils préférés
-              </p>
-              
-              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-                <div className="text-2xl font-bold">Google</div>
-                <div className="text-2xl font-bold">Facebook</div>
-                <div className="text-2xl font-bold">TripAdvisor</div>
-                <div className="text-2xl font-bold">Gmail</div>
-                <div className="text-2xl font-bold">Outlook</div>
-                <div className="text-2xl font-bold">Zapier</div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-8 text-center">
-              <h3 className="text-2xl font-bold text-neutral-900 mb-4">
-                Une intégration manque ?
-              </h3>
-              <p className="text-neutral-600 mb-6">
-                Notre équipe développe constamment de nouvelles intégrations sur demande
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors"
-              >
-                <PlusIcon className="h-4 w-4" />
-                <span>Demander une intégration</span>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="py-20 px-6 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white">
+        {/* CTA Section */}
+        <section className="py-12 sm:py-20 px-4 sm:px-6 bg-neutral-900 text-white">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Prêt à découvrir toute la puissance de Kritiqo ?
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+              Prêt à essayer Kritiqo ?
             </h2>
-            <p className="text-xl text-neutral-300 mb-8 max-w-2xl mx-auto">
-              Rejoignez les centaines d'entreprises qui transforment leur gestion client avec nos fonctionnalités avancées.
+            <p className="text-lg sm:text-xl text-neutral-300 mb-8 sm:mb-12">
+              Démarrez votre essai gratuit de 14 jours et découvrez la puissance de notre plateforme
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a
                 href="/signup"
-                className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-green-700 transition-colors"
+                className="w-full sm:w-auto bg-white text-neutral-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium hover:bg-neutral-100 transition-colors"
               >
-                Essai gratuit 14 jours
-              </Link>
-              <Link
+                Commencer gratuitement
+              </a>
+              <a
                 href="/contact"
-                className="border border-neutral-400 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-white/10 transition-colors"
+                className="w-full sm:w-auto border border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-medium hover:bg-white hover:text-neutral-900 transition-colors"
               >
-                Démonstration personnalisée
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-neutral-400">
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                Configuration en 5 minutes
-              </span>
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                Support premium inclus
-              </span>
-              <span className="flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                Satisfaction garantie
-              </span>
+                Demander une démo
+              </a>
             </div>
           </div>
         </section>

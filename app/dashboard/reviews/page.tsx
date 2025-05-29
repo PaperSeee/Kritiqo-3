@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { StarIcon } from '@heroicons/react/24/solid'
-import { StarIcon as StarOutlineIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { StarIcon as StarOutlineIcon, ChevronDownIcon, QrCodeIcon, ChatBubbleLeftRightIcon, MessageSquareIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 
@@ -104,198 +104,250 @@ export default function ReviewsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-          Avis Clients
-        </h1>
-        <p className="text-neutral-600">
-          Gérez et répondez à vos avis clients
-        </p>
-      </div>
-
-      {/* Filtre par restaurant */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-800">Filtrer par établissement</h2>
-          
-          <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center space-x-2 bg-neutral-50 border border-neutral-300 rounded-lg px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition-colors"
-              disabled={businesses.length === 0}
-            >
-              <span>{selectedBusinessName}</span>
-              <ChevronDownIcon className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-neutral-200 rounded-lg shadow-lg z-10">
-                {businessOptions.map((business) => (
-                  <button
-                    key={business.id}
-                    onClick={() => {
-                      setSelectedBusiness(business.id)
-                      setIsDropdownOpen(false)
-                    }}
-                    className={`w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                      selectedBusiness === business.id ? 'bg-neutral-100 font-medium' : ''
-                    }`}
-                  >
-                    {business.name}
-                    {selectedBusiness !== 'all' && business.id !== 'all' && (
-                      <span className="text-sm text-neutral-500 ml-2">
-                        ({reviews.filter(r => r.businessId === business.id).length} avis)
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+            Avis Clients
+          </h1>
+          <p className="text-neutral-600">
+            Gérez et répondez à vos avis clients
+          </p>
         </div>
         
-        {businesses.length === 0 && (
-          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-amber-800 text-sm">
-              Aucun établissement enregistré. 
-              <Link href="/dashboard/businesses" className="font-medium underline ml-1">
-                Ajouter un établissement
-              </Link>
-            </p>
-          </div>
+        {businesses.length > 0 && (
+          <Link
+            href="/dashboard/reviews/qr"
+            className="inline-flex items-center space-x-2 bg-neutral-900 text-white px-4 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+          >
+            <QrCodeIcon className="h-4 w-4" />
+            <span>Générer QR Code</span>
+          </Link>
         )}
       </div>
 
-      {/* Statistiques */}
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="bg-white p-6 rounded-xl border border-neutral-200">
-          <h3 className="font-semibold text-neutral-800 mb-2">Total avis</h3>
-          <p className="text-2xl font-bold text-neutral-900">{filteredReviews.length}</p>
-          {selectedBusiness !== 'all' && (
-            <p className="text-xs text-neutral-500 mt-1">pour {selectedBusinessName}</p>
-          )}
-        </div>
-        
-        <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-          <h3 className="font-semibold text-yellow-800 mb-2">Note moyenne</h3>
-          <p className="text-2xl font-bold text-yellow-600">
-            {filteredReviews.length > 0 
-              ? (filteredReviews.reduce((sum, review) => sum + review.rating, 0) / filteredReviews.length).toFixed(1)
-              : '0'}/5
+      {/* Show empty state if no businesses */}
+      {businesses.length === 0 ? (
+        <div className="text-center py-24 px-6 max-w-xl mx-auto">
+          <ChatBubbleLeftRightIcon className="w-12 h-12 text-gray-400 mb-6 mx-auto" />
+          
+          <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+            Aucun établissement connecté
+          </h2>
+          
+          <p className="text-sm text-gray-600 mb-2">
+            Ajoutez une source d'avis pour consulter et répondre à vos retours clients.
           </p>
-        </div>
-        
-        <div className="bg-green-50 p-6 rounded-xl border border-green-200">
-          <h3 className="font-semibold text-green-800 mb-2">Avis 5 étoiles</h3>
-          <p className="text-2xl font-bold text-green-600">
-            {filteredReviews.filter(review => review.rating === 5).length}
+          
+          <p className="text-xs text-gray-400 mb-8">
+            Les avis sont récupérés automatiquement depuis vos pages Google, Facebook, Trustpilot, etc.
           </p>
-        </div>
-        
-        <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
-          <h3 className="font-semibold text-blue-800 mb-2">Réponses données</h3>
-          <p className="text-2xl font-bold text-blue-600">
-            {filteredReviews.filter(review => review.responded).length}
-          </p>
-        </div>
-      </div>
-
-      {/* Liste des avis */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="p-6 border-b border-neutral-200">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-neutral-800">
-              Avis récents
-              {selectedBusiness !== 'all' && (
-                <span className="text-base font-normal text-neutral-600 ml-2">
-                  - {selectedBusinessName}
-                </span>
-              )}
-            </h2>
-            {filteredReviews.length === 0 && businesses.length > 0 && (
-              <span className="text-sm text-neutral-500">Aucun avis trouvé</span>
-            )}
-          </div>
-        </div>
-        
-        {businesses.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="text-neutral-400 mb-4">
-              <StarOutlineIcon className="h-12 w-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun établissement enregistré</h3>
-            <p className="text-neutral-600 mb-4">
-              Vous devez d'abord enregistrer vos établissements pour pouvoir gérer les avis.
-            </p>
+          
+          <div className="space-y-3">
             <Link 
-              href="/dashboard/businesses"
-              className="inline-flex items-center px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+              href="/dashboard/restaurants/add"
+              className="inline-block bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2"
+              aria-label="Ajouter votre premier établissement"
             >
-              Ajouter un établissement
+              Ajouter une source
             </Link>
+            
+            <div>
+              <Link
+                href="/dashboard/restaurants"
+                className="text-sm text-neutral-500 underline hover:text-neutral-700 transition-colors"
+              >
+                Voir toutes les fonctionnalités
+              </Link>
+            </div>
           </div>
-        ) : filteredReviews.length > 0 ? (
-          <div className="divide-y divide-neutral-200">
-            {filteredReviews.map((review) => (
-              <div key={review.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <h3 className="font-medium text-neutral-900">{review.customerName}</h3>
-                      <div className="flex items-center space-x-2 mt-1">
-                        {selectedBusiness === 'all' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
-                            {review.businessName}
+        </div>
+      ) : (
+        <>
+          {/* Filtre par restaurant */}
+          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-neutral-800">Filtrer par établissement</h2>
+              
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 bg-neutral-50 border border-neutral-300 rounded-lg px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition-colors"
+                  disabled={businesses.length === 0}
+                >
+                  <span>{selectedBusinessName}</span>
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-neutral-200 rounded-lg shadow-lg z-10">
+                    {businessOptions.map((business) => (
+                      <button
+                        key={business.id}
+                        onClick={() => {
+                          setSelectedBusiness(business.id)
+                          setIsDropdownOpen(false)
+                        }}
+                        className={`w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                          selectedBusiness === business.id ? 'bg-neutral-100 font-medium' : ''
+                        }`}
+                      >
+                        {business.name}
+                        {selectedBusiness !== 'all' && business.id !== 'all' && (
+                          <span className="text-sm text-neutral-500 ml-2">
+                            ({reviews.filter(r => r.businessId === business.id).length} avis)
                           </span>
                         )}
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          review.platform === 'Google' 
-                            ? 'bg-red-100 text-red-800' 
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {review.platform}
-                        </span>
-                        <span className="text-sm text-neutral-500">
-                          {new Date(review.date).toLocaleDateString('fr-FR')}
-                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {businesses.length === 0 && (
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-amber-800 text-sm">
+                  Aucun établissement enregistré. 
+                  <Link href="/dashboard/businesses" className="font-medium underline ml-1">
+                    Ajouter un établissement
+                  </Link>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Statistiques */}
+          <div className="grid gap-6 md:grid-cols-4">
+            <div className="bg-white p-6 rounded-xl border border-neutral-200">
+              <h3 className="font-semibold text-neutral-800 mb-2">Total avis</h3>
+              <p className="text-2xl font-bold text-neutral-900">{filteredReviews.length}</p>
+              {selectedBusiness !== 'all' && (
+                <p className="text-xs text-neutral-500 mt-1">pour {selectedBusinessName}</p>
+              )}
+            </div>
+            
+            <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+              <h3 className="font-semibold text-yellow-800 mb-2">Note moyenne</h3>
+              <p className="text-2xl font-bold text-yellow-600">
+                {filteredReviews.length > 0 
+                  ? (filteredReviews.reduce((sum, review) => sum + review.rating, 0) / filteredReviews.length).toFixed(1)
+                  : '0'}/5
+              </p>
+            </div>
+            
+            <div className="bg-green-50 p-6 rounded-xl border border-green-200">
+              <h3 className="font-semibold text-green-800 mb-2">Avis 5 étoiles</h3>
+              <p className="text-2xl font-bold text-green-600">
+                {filteredReviews.filter(review => review.rating === 5).length}
+              </p>
+            </div>
+            
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+              <h3 className="font-semibold text-blue-800 mb-2">Réponses données</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {filteredReviews.filter(review => review.responded).length}
+              </p>
+            </div>
+          </div>
+
+          {/* Liste des avis */}
+          <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
+            <div className="p-6 border-b border-neutral-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-neutral-800">
+                  Avis récents
+                  {selectedBusiness !== 'all' && (
+                    <span className="text-base font-normal text-neutral-600 ml-2">
+                      - {selectedBusinessName}
+                    </span>
+                  )}
+                </h2>
+                {filteredReviews.length === 0 && businesses.length > 0 && (
+                  <span className="text-sm text-neutral-500">Aucun avis trouvé</span>
+                )}
+              </div>
+            </div>
+            
+            {businesses.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="text-neutral-400 mb-4">
+                  <StarOutlineIcon className="h-12 w-12 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun établissement enregistré</h3>
+                <p className="text-neutral-600 mb-4">
+                  Vous devez d'abord enregistrer vos établissements pour pouvoir gérer les avis.
+                </p>
+                <Link 
+                  href="/dashboard/businesses"
+                  className="inline-flex items-center px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+                >
+                  Ajouter un établissement
+                </Link>
+              </div>
+            ) : filteredReviews.length > 0 ? (
+              <div className="divide-y divide-neutral-200">
+                {filteredReviews.map((review) => (
+                  <div key={review.id} className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div>
+                          <h3 className="font-medium text-neutral-900">{review.customerName}</h3>
+                          <div className="flex items-center space-x-2 mt-1">
+                            {selectedBusiness === 'all' && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
+                                {review.businessName}
+                              </span>
+                            )}
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              review.platform === 'Google' 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {review.platform}
+                            </span>
+                            <span className="text-sm text-neutral-500">
+                              {new Date(review.date).toLocaleDateString('fr-FR')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4">
+                        <StarRating rating={review.rating} />
+                        <button
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            review.responded
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-neutral-900 text-white hover:bg-neutral-800'
+                          }`}
+                          disabled={review.responded}
+                        >
+                          {review.responded ? 'Répondu' : 'Répondre'}
+                        </button>
                       </div>
                     </div>
+                    
+                    <p className="text-neutral-700 leading-relaxed">{review.comment}</p>
                   </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <StarRating rating={review.rating} />
-                    <button
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        review.responded
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-neutral-900 text-white hover:bg-neutral-800'
-                      }`}
-                      disabled={review.responded}
-                    >
-                      {review.responded ? 'Répondu' : 'Répondre'}
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-neutral-700 leading-relaxed">{review.comment}</p>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="p-12 text-center">
+                <div className="text-neutral-400 mb-4">
+                  <StarOutlineIcon className="h-12 w-12 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun avis trouvé</h3>
+                <p className="text-neutral-600">
+                  {selectedBusiness === 'all' 
+                    ? 'Aucun avis n\'a encore été laissé pour vos établissements.'
+                    : `Aucun avis n'a encore été laissé pour ${selectedBusinessName}.`
+                  }
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="p-12 text-center">
-            <div className="text-neutral-400 mb-4">
-              <StarOutlineIcon className="h-12 w-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun avis trouvé</h3>
-            <p className="text-neutral-600">
-              {selectedBusiness === 'all' 
-                ? 'Aucun avis n\'a encore été laissé pour vos établissements.'
-                : `Aucun avis n'a encore été laissé pour ${selectedBusinessName}.`
-              }
-            </p>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }

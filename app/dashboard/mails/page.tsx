@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import EmailAccountSwitcher from '@/components/EmailAccountSwitcher';
 import MailCard from '@/components/MailCard';
+import EmailsEmptyState from '@/components/EmptyStates/EmailsEmptyState';
 import { type TriageResult } from '@/lib/types/triage';
 
 // Type Email uniforme avec triage
@@ -339,8 +340,8 @@ export default function MailsPage() {
             <h3 className="text-lg font-semibold text-neutral-800">
               Comptes Email
             </h3>
-            <div className="flex space-x-3">
-              {/* Bouton Actualiser existant */}
+            {/* Bouton Actualiser - affiché seulement si des comptes sont connectés */}
+            {allEmails.length > 0 && (
               <button
                 onClick={handleEmailsUpdate}
                 disabled={isLoadingEmails}
@@ -358,7 +359,7 @@ export default function MailsPage() {
                   </>
                 )}
               </button>
-            </div>
+            )}
           </div>
 
           <EmailAccountSwitcher
@@ -398,6 +399,38 @@ export default function MailsPage() {
             >
               Réessayer
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State - No Email Accounts Connected */}
+      {session && !isLoadingEmails && allEmails.length === 0 && !emailError && !selectedEmail && (
+        <div className="bg-white rounded-xl border border-neutral-200 min-h-[600px] flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center text-center py-24 px-6 max-w-lg mx-auto animate-fade-in">
+            <InboxIcon className="w-12 h-12 text-gray-400 mb-6" />
+            <h2 className="text-2xl font-semibold text-gray-800">Connectez un compte email</h2>
+            <p className="text-sm text-gray-600 mt-2 mb-6">
+              L'IA de Kritiqo trie et analyse automatiquement vos messages importants.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+              <button 
+                onClick={() => window.location.href = '/api/auth/signin'}
+                className="bg-neutral-900 text-white px-6 py-3 rounded-lg hover:bg-neutral-800 transition-colors duration-200 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
+                aria-label="Connecter votre compte Gmail"
+              >
+                Connexion Gmail
+              </button>
+              <button 
+                onClick={() => window.location.href = '/api/auth/signin'}
+                className="bg-white border border-neutral-300 text-neutral-800 px-6 py-3 rounded-lg hover:bg-neutral-50 transition-colors duration-200 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2"
+                aria-label="Connecter votre compte Outlook"
+              >
+                Connexion Outlook
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-6">
+              Vous pourrez modifier ou déconnecter votre compte à tout moment.
+            </p>
           </div>
         </div>
       )}
@@ -600,17 +633,35 @@ export default function MailsPage() {
       )}
 
       {/* Show message when no emails and connected */}
-      {session && allEmails.length === 0 && !isLoadingEmails && (
+      {session && allEmails.length === 0 && !isLoadingEmails && selectedEmail && (
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
           <div className="p-12 text-center">
             <InboxIcon className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-neutral-900 mb-2">Aucun email trouvé</h3>
             <p className="text-neutral-500">
-              Connectez vos comptes Gmail ou Outlook pour commencer le tri intelligent
+              Aucun email trouvé pour ce compte. Essayez d'actualiser ou vérifiez vos permissions.
             </p>
           </div>
         </div>
       )}
+
+      {/* Styles pour les animations */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

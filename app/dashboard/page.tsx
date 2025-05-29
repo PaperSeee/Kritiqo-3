@@ -1,441 +1,236 @@
-'use client';
+'use client'
 
-import { useAuth } from '@/hooks/useAuth';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth'
 import { 
-  QrCodeIcon, 
   StarIcon, 
   EnvelopeIcon, 
-  ChartBarIcon, 
-  BuildingStorefrontIcon, 
-  CheckCircleIcon, 
-  SparklesIcon,
-  BoltIcon,
-  EyeIcon,
-  MagnifyingGlassIcon,
-  ExclamationTriangleIcon,
-  ArrowTrendingUpIcon,
-  BellIcon,
-  ArrowRightIcon,
-  PlusIcon,
-  ClockIcon,
-  FireIcon
-} from '@heroicons/react/24/outline';
-import Link from 'next/link';
+  BuildingStorefrontIcon,
+  ChartBarIcon,
+  QrCodeIcon,
+  ArrowUpIcon,
+  ArrowDownIcon
+} from '@heroicons/react/24/outline'
+import Link from 'next/link'
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const searchParams = useSearchParams();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [aiRecommendations, setAiRecommendations] = useState<Array<{
-    id: string;
-    type: 'warning' | 'success' | 'info';
-    message: string;
-    action?: string;
-    link?: string;
-  }>>([]);
-
-  // Check for success parameter
-  const success = searchParams.get('success');
-
-  useEffect(() => {
-    if (success) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 10000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
-
-  // Simulate AI recommendations
-  useEffect(() => {
-    const recommendations = [
-      {
-        id: '1',
-        type: 'warning' as const,
-        message: 'Vous avez 3 avis négatifs en attente de réponse',
-        action: 'Répondre maintenant',
-        link: '/dashboard/reviews'
-      },
-      {
-        id: '2',
-        type: 'info' as const,
-        message: 'Votre taux de réponse est de 68% - objectif : 80%',
-        action: 'Améliorer',
-        link: '/dashboard/reviews'
-      },
-      {
-        id: '3',
-        type: 'success' as const,
-        message: 'Activez la surveillance pour voir ce que les gens disent de vous',
-        action: 'Activer',
-        link: '/dashboard/monitoring'
-      }
-    ];
-    setAiRecommendations(recommendations);
-  }, []);
+  const { user } = useAuth()
 
   const stats = [
     {
-      name: 'Avis reçus',
+      title: 'Établissements',
+      value: '3',
+      change: '+1',
+      changeType: 'increase',
+      icon: BuildingStorefrontIcon,
+      href: '/dashboard/restaurants'
+    },
+    {
+      title: 'Avis ce mois',
       value: '24',
-      trend: '+12%',
+      change: '+12%',
+      changeType: 'increase',
       icon: StarIcon,
-      color: 'bg-yellow-500',
+      href: '/dashboard/reviews'
     },
     {
-      name: 'QR Codes générés',
-      value: '8',
-      trend: '+3',
-      icon: QrCodeIcon,
-      color: 'bg-blue-500',
-    },
-    {
-      name: 'Emails triés',
+      title: 'Emails analysés',
       value: '156',
-      trend: '+45',
+      change: '+8%',
+      changeType: 'increase',
       icon: EnvelopeIcon,
-      color: 'bg-purple-500',
+      href: '/dashboard/mails'
     },
     {
-      name: 'Taux de réponse',
-      value: '68%',
-      trend: '-5%',
-      icon: ChartBarIcon,
-      color: 'bg-green-500',
+      title: 'QR scans',
+      value: '89',
+      change: '+23%',
+      changeType: 'increase',
+      icon: QrCodeIcon,
+      href: '/dashboard/reviews/qr'
+    }
+  ]
+
+  const recentActivity = [
+    {
+      type: 'review',
+      message: 'Nouvel avis 5 étoiles sur Google',
+      time: 'Il y a 2 heures',
+      restaurant: 'Restaurant Central'
     },
-  ];
+    {
+      type: 'email',
+      message: 'Email client analysé par l\'IA',
+      time: 'Il y a 4 heures',
+      restaurant: 'Bistro du Coin'
+    },
+    {
+      type: 'qr',
+      message: 'QR code scanné',
+      time: 'Il y a 6 heures',
+      restaurant: 'Restaurant Central'
+    }
+  ]
 
   const quickActions = [
     {
-      name: 'Ajouter un établissement',
-      description: 'Connectez votre Google Business',
-      icon: BuildingStorefrontIcon,
+      title: 'Ajouter un établissement',
+      description: 'Connecter un nouveau restaurant',
       href: '/dashboard/restaurants/add',
-      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
-      iconColor: 'text-blue-600'
+      icon: BuildingStorefrontIcon,
+      color: 'bg-blue-50 text-blue-600'
     },
     {
-      name: 'Générer un QR Code',
-      description: 'Pour collecter plus d\'avis',
+      title: 'Générer un QR code',
+      description: 'Créer un nouveau QR d\'avis',
+      href: '/dashboard/reviews/qr',
       icon: QrCodeIcon,
-      href: '/dashboard/reviews',
-      color: 'bg-green-50 hover:bg-green-100 border-green-200',
-      iconColor: 'text-green-600'
+      color: 'bg-purple-50 text-purple-600'
     },
     {
-      name: 'Connecter surveillance',
-      description: 'Surveillez votre marque',
-      icon: MagnifyingGlassIcon,
-      href: '/dashboard/monitoring',
-      color: 'bg-orange-50 hover:bg-orange-100 border-orange-200',
-      iconColor: 'text-orange-600'
-    },
-    {
-      name: 'Trier mes emails',
-      description: 'IA automatique',
-      icon: SparklesIcon,
+      title: 'Voir les emails',
+      description: 'Consulter les derniers emails',
       href: '/dashboard/mails',
-      color: 'bg-purple-50 hover:bg-purple-100 border-purple-200',
-      iconColor: 'text-purple-600'
+      icon: EnvelopeIcon,
+      color: 'bg-green-50 text-green-600'
     }
-  ];
-
-  const mockSurveillanceData = [
-    {
-      platform: 'Twitter',
-      mention: 'Super expérience chez @MonRestaurant !',
-      sentiment: 'positive',
-      time: '2h'
-    },
-    {
-      platform: 'Facebook',
-      mention: 'Quelqu\'un connaît un bon restaurant dans le coin ?',
-      sentiment: 'neutral',
-      time: '5h'
-    },
-    {
-      platform: 'Google',
-      mention: 'Service un peu lent mais bon repas',
-      sentiment: 'mixed',
-      time: '1j'
-    }
-  ];
+  ]
 
   return (
-    <div className="space-y-6">
-      {/* Success message */}
-      {showSuccess && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-          <div className="flex items-center">
-            <CheckCircleIcon className="h-6 w-6 text-green-500 mr-3" />
-            <div>
-              <h3 className="text-lg font-medium text-green-800">
-                🎉 Félicitations ! Votre abonnement est actif
-              </h3>
-              <p className="text-green-600 mt-1">
-                Vous pouvez maintenant profiter de toutes les fonctionnalités de Kritiqo. 
-                Commencez par ajouter votre premier établissement !
-              </p>
-            </div>
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="ml-auto text-green-400 hover:text-green-600"
-            >
-              <span className="sr-only">Fermer</span>
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Welcome section */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-              Tableau de bord Kritiqo
-            </h1>
-            <p className="text-neutral-600">
-              Bonjour <span className="font-medium">{user?.email}</span>, voici un aperçu de votre activité
-            </p>
-          </div>
-          <div className="hidden md:flex items-center space-x-2 bg-neutral-50 px-4 py-2 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-neutral-600">Système opérationnel</span>
-          </div>
-        </div>
+    <div className="space-y-6 sm:space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 sm:p-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
+          Bonjour {user?.email?.split('@')[0]} 👋
+        </h1>
+        <p className="text-neutral-600 text-sm sm:text-base">
+          Voici un aperçu de votre activité récente sur Kritiqo
+        </p>
       </div>
 
-      {/* AI Recommendations */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <SparklesIcon className="h-6 w-6 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-blue-900">
-              Ce que vous devriez faire aujourd'hui
-            </h2>
-            <p className="text-blue-700 text-sm">Recommandations basées sur votre activité</p>
-          </div>
-        </div>
-        
-        <div className="space-y-3">
-          {aiRecommendations.map((rec) => (
-            <div
-              key={rec.id}
-              className={`flex items-center justify-between p-4 rounded-lg border ${
-                rec.type === 'warning' 
-                  ? 'bg-amber-50 border-amber-200' 
-                  : rec.type === 'success'
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-blue-50 border-blue-200'
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                {rec.type === 'warning' && (
-                  <ExclamationTriangleIcon className="h-5 w-5 text-amber-600" />
-                )}
-                {rec.type === 'success' && (
-                  <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                )}
-                {rec.type === 'info' && (
-                  <ArrowTrendingUpIcon className="h-5 w-5 text-blue-600" />
-                )}
-                <span className={`text-sm font-medium ${
-                  rec.type === 'warning' 
-                    ? 'text-amber-800' 
-                    : rec.type === 'success'
-                    ? 'text-green-800'
-                    : 'text-blue-800'
-                }`}>
-                  {rec.message}
-                </span>
-              </div>
-              {rec.action && rec.link && (
-                <Link
-                  href={rec.link}
-                  className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                    rec.type === 'warning'
-                      ? 'bg-amber-600 text-white hover:bg-amber-700'
-                      : rec.type === 'success'
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {rec.action}
-                  <ArrowRightIcon className="h-3 w-3 ml-1" />
-                </Link>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div
-            key={stat.name}
-            className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {stats.map((stat, index) => (
+          <Link
+            key={index}
+            href={stat.href}
+            className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className={`${stat.color} p-3 rounded-lg shadow-sm`}>
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-neutral-600">
-                    {stat.name}
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-900">
-                    {stat.value}
-                  </p>
-                </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-neutral-100 rounded-lg flex items-center justify-center">
+                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-neutral-600" />
               </div>
-              <div className={`text-xs font-medium px-2 py-1 rounded-full ${
-                stat.trend.startsWith('+') 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-red-100 text-red-700'
+              <div className={`flex items-center space-x-1 text-xs sm:text-sm ${
+                stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
               }`}>
-                {stat.trend}
+                {stat.changeType === 'increase' ? (
+                  <ArrowUpIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                ) : (
+                  <ArrowDownIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                )}
+                <span>{stat.change}</span>
               </div>
             </div>
-          </div>
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-1">
+                {stat.value}
+              </h3>
+              <p className="text-sm text-neutral-600">{stat.title}</p>
+            </div>
+          </Link>
         ))}
       </div>
 
-      {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick actions - 2/3 width */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-neutral-100 rounded-lg">
-              <BoltIcon className="h-6 w-6 text-neutral-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-neutral-900">
-              Actions rapides
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {quickActions.map((action) => (
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-4 sm:mb-6">
+            Actions rapides
+          </h2>
+          <div className="space-y-4">
+            {quickActions.map((action, index) => (
               <Link
-                key={action.name}
+                key={index}
                 href={action.href}
-                className={`flex items-center space-x-4 p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${action.color}`}
+                className="flex items-center space-x-4 p-3 sm:p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
               >
-                <div className={`p-3 rounded-lg bg-white shadow-sm`}>
-                  <action.icon className={`h-6 w-6 ${action.iconColor}`} />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center ${action.color}`}>
+                  <action.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-neutral-900 mb-1">
-                    {action.name}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-neutral-900 text-sm sm:text-base">
+                    {action.title}
                   </h3>
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-xs sm:text-sm text-neutral-600 truncate">
                     {action.description}
                   </p>
                 </div>
-                <ArrowRightIcon className="h-5 w-5 text-neutral-400" />
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Surveillance preview - 1/3 width */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <EyeIcon className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-neutral-900">
-                Surveillance
-              </h2>
-              <p className="text-xs text-neutral-500">Aperçu des mentions</p>
-            </div>
-          </div>
-
-          <div className="space-y-3 mb-4">
-            {mockSurveillanceData.map((item, index) => (
-              <div key={index} className="p-3 bg-neutral-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-neutral-600">
-                    {item.platform}
-                  </span>
-                  <span className="text-xs text-neutral-500">{item.time}</span>
+        {/* Recent Activity */}
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-4 sm:mb-6">
+            Activité récente
+          </h2>
+          <div className="space-y-4">
+            {recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-start space-x-3 sm:space-x-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  {activity.type === 'review' && <StarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />}
+                  {activity.type === 'email' && <EnvelopeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />}
+                  {activity.type === 'qr' && <QrCodeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />}
                 </div>
-                <p className="text-sm text-neutral-700 line-clamp-2 mb-2">
-                  {item.mention}
-                </p>
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                  item.sentiment === 'positive' 
-                    ? 'bg-green-100 text-green-700'
-                    : item.sentiment === 'negative'
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-blue-100 text-blue-700'
-                }`}>
-                  {item.sentiment === 'positive' ? '😊 Positif' : 
-                   item.sentiment === 'negative' ? '😞 Négatif' : '😐 Neutre'}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm sm:text-base text-neutral-900">{activity.message}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-xs sm:text-sm text-neutral-500">
+                    <span>{activity.time}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span>{activity.restaurant}</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <Link
-            href="/dashboard/monitoring"
-            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <PlusIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">Activer la surveillance</span>
-          </Link>
+          <div className="mt-6 pt-4 border-t border-neutral-200">
+            <Link
+              href="/dashboard/monitoring"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              Voir toute l'activité →
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Recent activity summary */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-neutral-900">
-            Activité récente
-          </h2>
-          <Link
-            href="/dashboard/reviews"
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-          >
-            Voir tout →
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
-            <CheckCircleIcon className="h-8 w-8 text-green-600" />
-            <div>
-              <p className="font-medium text-green-900">Nouvel avis 5⭐</p>
-              <p className="text-sm text-green-700">Restaurant Central - Il y a 2h</p>
-            </div>
+      {/* Getting Started */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 sm:mb-0">
+            <h3 className="text-lg sm:text-xl font-semibold text-blue-900 mb-2">
+              Besoin d'aide pour commencer ?
+            </h3>
+            <p className="text-blue-700 text-sm sm:text-base">
+              Consultez notre guide de démarrage rapide ou contactez notre équipe support.
+            </p>
           </div>
-          
-          <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
-            <EnvelopeIcon className="h-8 w-8 text-blue-600" />
-            <div>
-              <p className="font-medium text-blue-900">45 emails triés</p>
-              <p className="text-sm text-blue-700">Par l'IA - Il y a 3h</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg">
-            <BellIcon className="h-8 w-8 text-orange-600" />
-            <div>
-              <p className="font-medium text-orange-900">Nouvelle mention</p>
-              <p className="text-sm text-orange-700">Twitter - Il y a 4h</p>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/dashboard/support"
+              className="inline-flex items-center justify-center px-4 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium"
+            >
+              Centre d'aide
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            >
+              Contacter le support
+            </Link>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

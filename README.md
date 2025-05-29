@@ -4,13 +4,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-blue)](https://tailwindcss.com)
 
-> **Kritiqo** centralise tous vos avis clients (Google, Facebook, TripAdvisor) et trie automatiquement vos emails par IA. 
+> **Kritiqo** centralise tous vos avis clients (Google, Facebook, TripAdvisor, Trustpilot) et trie automatiquement vos emails par IA. 
 > Maximisez votre réputation en ligne avec des QR codes intelligents qui multiplient vos avis.
 
 ## 🚀 Fonctionnalités Principales
 
 ### 🌟 Centralisation Totale des Avis
-- **Multi-plateformes** - Google, Facebook, TripAdvisor, Yelp en un seul endroit
+- **Multi-plateformes** - Google, Facebook, TripAdvisor, Trustpilot, Yelp en un seul endroit
 - **Synchronisation Automatique** - Vos avis apparaissent en temps réel
 - **Réponses Centralisées** - Répondez à tous vos avis depuis Kritiqo
 - **Analytics Unifié** - Vue d'ensemble de votre réputation
@@ -38,6 +38,7 @@ Notre **GPT-4o** analyse automatiquement vos emails avec :
 - **Intégration OpenAI GPT-4o** pour le tri intelligent
 - **Filtrage automatique hardcodé** pour spam/publicités (performance optimale)
 - **API Gmail & Outlook** synchronisation multi-comptes
+- **Intégrations multi-plateformes** Google, Facebook, Trustpilot
 - NextAuth.js pour l'authentification OAuth
 
 ## 📊 Résultats Garantis

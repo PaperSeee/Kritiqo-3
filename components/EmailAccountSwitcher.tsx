@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession, signIn } from 'next-auth/react'
-import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { ConnectedEmail } from '@/lib/supabase'
 import DisconnectOutlookButton from './DisconnectOutlookButton'
 
@@ -191,27 +191,6 @@ export default function EmailAccountSwitcher({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Boutons d'ajout de comptes */}
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleAddAccount('google')}
-            disabled={isLoading}
-            className="inline-flex items-center space-x-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
-          >
-            <PlusIcon className="h-4 w-4" />
-            <span>Gmail</span>
-          </button>
-          
-          <button
-            onClick={() => handleAddAccount('azure-ad')}
-            disabled={isLoading}
-            className="inline-flex items-center space-x-1 bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 text-sm"
-          >
-            <PlusIcon className="h-4 w-4" />
-            <span>Outlook</span>
-          </button>
         </div>
       </div>
 
