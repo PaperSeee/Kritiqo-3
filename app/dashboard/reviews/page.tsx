@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { StarIcon } from '@heroicons/react/24/solid'
-import { StarIcon as StarOutlineIcon, ChevronDownIcon, QrCodeIcon, ChatBubbleLeftRightIcon, MessageSquareIcon } from '@heroicons/react/24/outline'
+import { StarIcon as StarOutlineIcon, ChevronDownIcon, QrCodeIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 
