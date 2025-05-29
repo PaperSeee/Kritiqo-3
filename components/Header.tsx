@@ -55,7 +55,7 @@ export default function Header() {
                 href="/login"
                 className="text-neutral-600 hover:text-neutral-900 transition-colors"
               >
-                Se connecter
+                Connexion
               </Link>
               <Link
                 href="/signup"

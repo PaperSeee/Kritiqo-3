@@ -75,8 +75,8 @@ export default function Footer() {
             © 2025 Kritiqo. Tous droits réservés.
           </p>
           <div className="flex items-center space-x-6 text-sm text-neutral-500">
-            <span>🇧🇪 Belgique</span>
-            <span>Made with ❤️ in Belgium</span>
+            <span>🇧🇪 Made in Belgium</span>
+            <span>Avec ❤️ pour les professionnels</span>
           </div>
         </div>
       </div>
