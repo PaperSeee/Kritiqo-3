@@ -212,7 +212,7 @@ export default function AddRestaurantPage() {
                       value={restaurantInfo.address}
                       onChange={(e) => setRestaurantInfo(prev => ({ ...prev, address: e.target.value }))}
                       className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="123 Rue de la Paix, 75001 Paris"
+                      placeholder="123 Rue de la Paix, 1000 Bruxelles"
                     />
                   </div>
                 </div>

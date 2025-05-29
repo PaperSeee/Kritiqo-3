@@ -28,16 +28,16 @@ const mockTickets: SupportTicket[] = [
     subject: "Problème de synchronisation des avis Google",
     status: "in-progress",
     priority: "high",
-    createdAt: "2024-01-15",
-    lastUpdate: "2024-01-16"
+    createdAt: "2025-01-15",
+    lastUpdate: "2025-01-16"
   },
   {
     id: "TICK-002", 
     subject: "Question sur l'export des données",
     status: "resolved",
     priority: "medium",
-    createdAt: "2024-01-10",
-    lastUpdate: "2024-01-12"
+    createdAt: "2025-01-10",
+    lastUpdate: "2025-01-12"
   }
 ];
 

@@ -7,7 +7,7 @@ export default function TermsPage() {
             Conditions d'Utilisation
           </h1>
           <p className="text-lg text-neutral-600">
-            Dernière mise à jour : 15 janvier 2024
+            Dernière mise à jour : 15 janvier 2025
           </p>
         </div>
 

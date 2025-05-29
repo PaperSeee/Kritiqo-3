@@ -72,11 +72,11 @@ export default function Footer() {
 
         <div className="border-t border-neutral-300 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-sm text-neutral-500 mb-4 sm:mb-0">
-            © 2024 Kritiqo. Tous droits réservés.
+            © 2025 Kritiqo. Tous droits réservés.
           </p>
           <div className="flex items-center space-x-6 text-sm text-neutral-500">
-            <span>🇫🇷 France</span>
-            <span>Made with ❤️ in Paris</span>
+            <span>🇧🇪 Belgique</span>
+            <span>Made with ❤️ in Belgium</span>
           </div>
         </div>
       </div>
