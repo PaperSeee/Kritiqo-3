@@ -31,18 +31,11 @@ CREATE TABLE connected_emails (
 CREATE INDEX IF NOT EXISTS idx_connected_emails_user_id ON connected_emails(user_id);
 CREATE INDEX IF NOT EXISTS idx_connected_emails_provider ON connected_emails(provider);
 
--- Table pour les CVs - Corriger user_id pour être UUID
-ALTER TABLE cvs ALTER COLUMN user_id TYPE UUID USING user_id::uuid;
-ALTER TABLE cvs ADD CONSTRAINT fk_cvs_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
--- Table pour les emails - Corriger user_id pour être UUID  
-ALTER TABLE emails ALTER COLUMN user_id TYPE UUID USING user_id::uuid;
-ALTER TABLE emails ADD CONSTRAINT fk_emails_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
--- Table pour les CVs
+-- Table pour les CVs (corrected)
+DROP TABLE IF EXISTS cvs CASCADE;
 CREATE TABLE IF NOT EXISTS cvs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL,
+  user_id UUID NOT NULL,
   filename VARCHAR(255) NOT NULL,
   original_name VARCHAR(255) NOT NULL,
   file_path VARCHAR(500) NOT NULL,
@@ -51,7 +44,8 @@ CREATE TABLE IF NOT EXISTS cvs (
   is_primary BOOLEAN DEFAULT FALSE,
   upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_cvs_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Index pour optimiser les requêtes sur les CVs
@@ -59,10 +53,11 @@ CREATE INDEX IF NOT EXISTS idx_cvs_user_id ON cvs(user_id);
 CREATE INDEX IF NOT EXISTS idx_cvs_is_primary ON cvs(is_primary);
 CREATE INDEX IF NOT EXISTS idx_cvs_user_primary ON cvs(user_id, is_primary);
 
--- Table pour les emails et leur triage IA
+-- Table pour les emails (corrected)
+DROP TABLE IF EXISTS emails CASCADE;
 CREATE TABLE IF NOT EXISTS emails (
   id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
+  user_id UUID NOT NULL,
   subject TEXT NOT NULL,
   sender TEXT NOT NULL,
   body TEXT,
@@ -77,7 +72,8 @@ CREATE TABLE IF NOT EXISTS emails (
   gpt_suggestion TEXT,
   analyzed_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_emails_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Index pour optimiser les requêtes sur les emails

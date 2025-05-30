@@ -214,21 +214,61 @@ function extractSenderName(fromHeader: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📧 IMAP extraction request received')
+    
     const session = await getServerSession(authOptions)
     
     if (!session?.userId) {
+      console.log('❌ No session or user ID in session')
       return NextResponse.json(
         { error: 'Non autorisé' },
         { status: 401 }
       )
     }
 
-    const userId = validateUserId(session.userId)
-    const { email, appPassword } = await request.json()
+    // Parse request body and log received data
+    let body;
+    try {
+      body = await request.json()
+      console.log('📩 Request body received:', { 
+        email: body.email, 
+        userId: body.userId?.substring(0, 8) + '***',
+        hasAppPassword: !!body.appPassword 
+      })
+    } catch (parseError) {
+      console.error('❌ JSON parse error:', parseError)
+      return NextResponse.json(
+        { error: 'Format de requête invalide' },
+        { status: 400 }
+      )
+    }
+
+    const { email, appPassword, userId: bodyUserId } = body
+
+    // Use userId from body if provided, otherwise fall back to session
+    const userIdToValidate = bodyUserId || session.userId
+    console.log('🔍 userId to validate:', userIdToValidate?.substring(0, 8) + '***')
 
     if (!email || !appPassword) {
+      console.log('❌ Missing email or appPassword')
       return NextResponse.json(
         { error: 'Email et mot de passe requis' },
+        { status: 400 }
+      )
+    }
+
+    // Validate userId with detailed error logging
+    let userId: string;
+    try {
+      userId = validateUserId(userIdToValidate)
+      console.log('✅ userId validation passed')
+    } catch (validationError) {
+      console.error('❌ userId validation failed:', {
+        received: userIdToValidate,
+        error: validationError instanceof Error ? validationError.message : 'Unknown error'
+      })
+      return NextResponse.json(
+        { error: `Invalid user ID format: ${validationError instanceof Error ? validationError.message : 'UUID format required'}` },
         { status: 400 }
       )
     }
