@@ -20,7 +20,7 @@ interface FolderInfo {
   messageCount: number
 }
 
-// Comprehensive IMAP extraction function that explores all folders
+// Comprehensive IMAP eeextraction function that explores all folders
 async function extractEmailsFromAllFolders(email: string, appPassword: string): Promise<EmailData[]> {
   console.log(`📧 Starting comprehensive IMAP extraction for ${email}`)
   
