@@ -163,7 +163,7 @@ export const authOptions: NextAuthOptions = {
           if (!existingUser.user) {
             // Get avatar URL based on provider
             let avatarUrl = user.image
-            if (!avatarUrl && profile) {
+            if (!avatarUrl && profile && account) {
               if (account.provider === 'google' && 'picture' in profile) {
                 avatarUrl = profile.picture as string
               } else if (account.provider === 'azure-ad' && 'picture' in profile) {
