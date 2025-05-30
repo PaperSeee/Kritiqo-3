@@ -13,14 +13,26 @@ export function isValidUUID(uuid: string): boolean {
 }
 
 /**
+ * Vérifie si une chaîne est un UUID valide (v4 ou autre)
+ */
+export function isUUID(str: string): boolean {
+  if (!str || typeof str !== 'string') return false;
+  return UUID_REGEX.test(str);
+}
+
+/**
  * Valide et retourne un UUID, lance une erreur si invalide
  */
-export function validateUserId(userId: string): string {
+export function validateUserId(userId: string | undefined): string {
   if (!userId) {
     throw new Error('User ID manquant')
   }
   
-  if (!isValidUUID(userId)) {
+  if (typeof userId !== 'string' || userId.trim().length === 0) {
+    throw new Error('User ID must be a non-empty string');
+  }
+  
+  if (!isUUID(userId)) {
     throw new Error(`User ID invalide: ${userId}`)
   }
   

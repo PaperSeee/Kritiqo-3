@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { validateUserId } from '@/lib/utils/validation'
+import { validateUserId, isUUID } from '@/lib/utils/uuid-validator'
 import { ensureUserExists } from '@/lib/utils/user-validator'
 
 export async function POST(request: NextRequest) {
@@ -16,6 +16,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Non autorisé - veuillez vous connecter' },
         { status: 401 }
+      )
+    }
+
+    // ✅ Log the received user_id for debugging
+    console.log("🧪 user_id reçu:", session.userId)
+
+    // ✅ Early UUID validation check
+    if (!isUUID(session.userId)) {
+      console.error('❌ Invalid UUID format received:', session.userId)
+      return NextResponse.json(
+        { error: 'Invalid user ID format - must be a valid UUID' },
+        { status: 400 }
       )
     }
 
