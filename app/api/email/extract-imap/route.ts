@@ -158,7 +158,7 @@ async function extractEmailsFromAllFolders(email: string, appPassword: string): 
 
   } catch (error) {
     console.error('❌ IMAP extraction error:', error)
-    if (error.message?.includes('self signed certificate')) {
+    if (error instanceof Error && error.message?.includes('self signed certificate')) {
       console.error('💡 TLS Certificate issue - try adjusting tlsOptions')
     }
     throw error
