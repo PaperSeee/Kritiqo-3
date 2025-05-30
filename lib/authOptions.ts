@@ -4,6 +4,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import AzureADProvider from 'next-auth/providers/azure-ad'
 import { supabase } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { createUserIfNotExists } from '@/lib/utils/user-validator'
 
 export const authOptions: NextAuthOptions = {
   // ✅ Retirer l'adaptateur pour éviter le conflit de schéma
@@ -97,8 +98,16 @@ export const authOptions: NextAuthOptions = {
         token.expiresAt = account.expires_at
         
         // Sauvegarder en base pour les providers OAuth
-        if (account.provider !== 'credentials' && user?.id) {
+        if (account.provider !== 'credentials' && user?.id && user?.email) {
           try {
+            // ✅ Ensure user exists before inserting into connected_emails
+            const userCreated = await createUserIfNotExists(user.id, user.email, user.name || undefined);
+            
+            if (!userCreated.success) {
+              console.error('❌ Failed to create user:', userCreated.error);
+              return token;
+            }
+
             await supabaseAdmin
               .from('connected_emails')
               .upsert({

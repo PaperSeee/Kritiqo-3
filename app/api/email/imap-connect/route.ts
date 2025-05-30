@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { validateUserId } from '@/lib/utils/validation'
+import { ensureUserExists } from '@/lib/utils/user-validator'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,15 @@ export async function POST(request: NextRequest) {
 
     // Validate and sanitize user ID
     const userId = validateUserId(session.userId)
+
+    // ✅ Check if user exists before proceeding
+    const userValidation = await ensureUserExists(userId);
+    if (!userValidation.exists) {
+      return NextResponse.json(
+        { error: userValidation.error || 'User does not exist in users table. Please sign in again.' },
+        { status: 400 }
+      );
+    }
 
     const { email, appPassword } = await request.json()
 

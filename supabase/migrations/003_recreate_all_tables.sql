@@ -63,7 +63,7 @@ CREATE TABLE reviews (
 -- 4. Connected emails table - Email provider integrations
 CREATE TABLE connected_emails (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL,
   email TEXT NOT NULL,
   provider VARCHAR(50) NOT NULL CHECK (provider IN ('google', 'azure-ad', 'microsoft', 'imap')),
   access_token TEXT,
@@ -74,6 +74,8 @@ CREATE TABLE connected_emails (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
+  -- Enforce foreign key constraint
+  CONSTRAINT fk_connected_emails_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT unique_user_email UNIQUE (user_id, email)
 );
 

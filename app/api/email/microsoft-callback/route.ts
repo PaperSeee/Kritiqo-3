@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { validateUserId } from '@/lib/utils/validation'
+import { ensureUserExists } from '@/lib/utils/user-validator'
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,6 +20,13 @@ export async function GET(request: NextRequest) {
 
     // Validate the user ID from state
     const userId = validateUserId(state)
+
+    // ✅ Check if user exists before proceeding
+    const userValidation = await ensureUserExists(userId);
+    if (!userValidation.exists) {
+      console.error('User validation failed:', userValidation.error);
+      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard/mails?error=user_not_found`)
+    }
 
     // Échanger le code pour un token
     const tokenResponse = await fetch(`https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/oauth2/v2.0/token`, {
