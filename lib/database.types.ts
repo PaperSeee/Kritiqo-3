@@ -9,23 +9,49 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string
+          email: string
+          name: string | null
+          image: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          name?: string | null
+          image?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          name?: string | null
+          image?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       businesses: {
         Row: {
           id: string
           user_id: string
           name: string
           slug: string
-          city: string
-          country: string
-          email?: string
-          phone?: string
-          address?: string
-          google_link: string
-          ubereats_link?: string
-          deliveroo_link?: string
-          takeaway_link?: string
-          place_id?: string
-          review_page_url?: string
+          email: string | null
+          phone: string | null
+          address: string | null
+          city: string | null
+          country: string | null
+          place_id: string | null
+          google_link: string | null
+          ubereats_link: string | null
+          deliveroo_link: string | null
+          takeaway_link: string | null
+          review_page_url: string | null
           created_at: string
           updated_at: string
         }
@@ -34,17 +60,17 @@ export interface Database {
           user_id: string
           name: string
           slug: string
-          city: string
-          country: string
-          email?: string
-          phone?: string
-          address?: string
-          google_link: string
-          ubereats_link?: string
-          deliveroo_link?: string
-          takeaway_link?: string
-          place_id?: string
-          review_page_url?: string
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          place_id?: string | null
+          google_link?: string | null
+          ubereats_link?: string | null
+          deliveroo_link?: string | null
+          takeaway_link?: string | null
+          review_page_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -53,17 +79,17 @@ export interface Database {
           user_id?: string
           name?: string
           slug?: string
-          city?: string
-          country?: string
-          email?: string
-          phone?: string
-          address?: string
-          google_link?: string
-          ubereats_link?: string
-          deliveroo_link?: string
-          takeaway_link?: string
-          place_id?: string
-          review_page_url?: string
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          place_id?: string | null
+          google_link?: string | null
+          ubereats_link?: string | null
+          deliveroo_link?: string | null
+          takeaway_link?: string | null
+          review_page_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -73,7 +99,7 @@ export interface Database {
           id: string
           business_id: string
           customer_name: string
-          customer_email?: string
+          customer_email: string | null
           rating: number
           comment: string
           platform: string
@@ -85,10 +111,10 @@ export interface Database {
           id?: string
           business_id: string
           customer_name: string
-          customer_email?: string
+          customer_email?: string | null
           rating: number
           comment: string
-          platform: string
+          platform?: string
           responded?: boolean
           created_at?: string
           updated_at?: string
@@ -97,11 +123,52 @@ export interface Database {
           id?: string
           business_id?: string
           customer_name?: string
-          customer_email?: string
+          customer_email?: string | null
           rating?: number
           comment?: string
           platform?: string
           responded?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      connected_emails: {
+        Row: {
+          id: string
+          user_id: string
+          email: string
+          provider: string
+          access_token: string | null
+          refresh_token: string | null
+          expires_at: number | null
+          token_type: string
+          scope: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          email: string
+          provider: string
+          access_token?: string | null
+          refresh_token?: string | null
+          expires_at?: number | null
+          token_type?: string
+          scope?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          email?: string
+          provider?: string
+          access_token?: string | null
+          refresh_token?: string | null
+          expires_at?: number | null
+          token_type?: string
+          scope?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -161,6 +228,47 @@ export interface Database {
           gpt_action?: string | null
           gpt_suggestion?: string | null
           analyzed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      cvs: {
+        Row: {
+          id: string
+          user_id: string
+          filename: string
+          original_name: string
+          file_path: string
+          file_size: number
+          mime_type: string
+          is_primary: boolean
+          upload_date: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          filename: string
+          original_name: string
+          file_path: string
+          file_size: number
+          mime_type: string
+          is_primary?: boolean
+          upload_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          filename?: string
+          original_name?: string
+          file_path?: string
+          file_size?: number
+          mime_type?: string
+          is_primary?: boolean
+          upload_date?: string
           created_at?: string
           updated_at?: string
         }

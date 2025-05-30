@@ -30,8 +30,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      // Remove duplicate router.push - signIn already handles navigation
-      router.push('/dashboard');
+      // Redirection gérée dans useAuth.signIn
     } catch (err) {
       if (err instanceof Error) {
         console.error('Erreur lors de la connexion:', err.message, err.name)

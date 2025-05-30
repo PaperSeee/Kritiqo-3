@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getGmailAccessToken } from '@/lib/token-manager';
+import { validateUserId } from '@/lib/utils/uuid-validator';
 
 interface GmailMessage {
   id: string;
@@ -72,17 +73,21 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.userId) {
+    // ✅ Validation stricte de la session et de l'UUID
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Non autorisé - Session manquante' },
         { status: 401 }
       );
     }
 
-    console.log(`🚀 Démarrage import Gmail pour l'utilisateur ${session.userId}`);
+    // ✅ Valider que l'ID utilisateur est un UUID valide
+    const userId = validateUserId(session.user.id);
+
+    console.log(`🚀 Démarrage import Gmail pour l'utilisateur ${userId}`);
 
     // Étape 1: Récupérer le token Gmail valide
-    const accessToken = await getGmailAccessToken(session.userId);
+    const accessToken = await getGmailAccessToken(userId);
     
     if (!accessToken) {
       return NextResponse.json(
@@ -170,7 +175,7 @@ export async function POST(request: NextRequest) {
 
         emailsToProcess.push({
           id: `gmail_${message.id}`,
-          user_id: session.userId,
+          user_id: userId, // ✅ Utiliser l'UUID validé
           subject,
           sender,
           body,

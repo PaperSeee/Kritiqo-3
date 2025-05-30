@@ -7,102 +7,143 @@ import {
   useState,
   ReactNode,
 } from 'react';
+import { useSession, signIn as nextAuthSignIn, signOut as nextAuthSignOut } from 'next-auth/react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import type { User, Session } from '@supabase/supabase-js';
 
-interface AuthUser extends User {
-  name?: string;
-  displayName?: string;
+interface User {
+  id: string;
+  email: string | null;
+  name?: string | null;
+  image?: string | null;
+  user_metadata?: any;
 }
 
 interface AuthContextType {
-  user: AuthUser | null;
-  session: Session | null;
+  user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  oauthSignIn: (provider: 'google' | 'azure-ad') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const getInitialSession = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error('Erreur lors de la récupération de la session:', err.message, err.name)
-        } else {
-          console.error('Erreur inconnue lors de la récupération de la session:', JSON.stringify(err))
-        }
-      } finally {
-        setLoading(false);
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
+    if (session?.user) {
+      setUser({
+        id: session.userId || session.user.id!,
+        email: session.user.email,
+        name: session.user.name,
+        image: session.user.image,
+      });
+    } else {
+      setUser(null);
+    }
+    
+    setLoading(false);
+  }, [session, status]);
+
+  const signIn = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const result = await nextAuthSignIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error('Email ou mot de passe incorrect');
       }
-    };
 
-    getInitialSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      router.push('/dashboard');
+    } catch (error) {
       setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signUp = async (email: string, password: string): Promise<void> => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+      throw error;
+    }
   };
 
-  const signIn = async (email: string, password: string): Promise<void> => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+  const signUp = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login?verified=true`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user && !data.user.email_confirmed_at) {
+        router.push('/login?message=check-email');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
-  const signOut = async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    router.push('/login');
+  const signOut = async () => {
+    setLoading(true);
+    try {
+      await nextAuthSignOut({ redirect: false });
+      await supabase.auth.signOut();
+      setUser(null);
+      router.push('/');
+    } catch (error) {
+      console.error('Erreur déconnexion:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const value: AuthContextType = {
-    user,
-    session,
-    loading,
-    signUp,
-    signIn,
-    signOut,
+  const oauthSignIn = async (provider: 'google' | 'azure-ad') => {
+    setLoading(true);
+    try {
+      await nextAuthSignIn(provider, { 
+        callbackUrl: '/dashboard' 
+      });
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      oauthSignIn
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth(): AuthContextType {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
-
-export { AuthContext };

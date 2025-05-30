@@ -3,9 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { getValidAccessToken } from '@/lib/token-manager'
-import { decodeJwt } from 'jose'
 import { getMicrosoftEmails } from '@/lib/microsoft-emails'
 import { classifyEmailAutomatically } from '@/lib/types/triage'
+import { validateUserId } from '@/lib/utils/uuid-validator'
 
 // Cache pour éviter les logs redondants
 const errorLogCache = new Map<string, number>();
@@ -201,24 +201,28 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.userId) {
+    // ✅ Validation stricte de la session et de l'UUID
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Non autorisé - Session manquante' },
         { status: 401 }
       );
     }
+
+    // ✅ Valider que l'ID utilisateur est un UUID valide
+    const userId = validateUserId(session.user.id);
 
     const { searchParams } = new URL(request.url);
     const selectedEmail = searchParams.get('email');
     const isRefresh = searchParams.get('refresh') === 'true';
 
-    console.log(`🔍 Récupération emails pour user ${session.userId}${selectedEmail ? ` (email: ${selectedEmail})` : ''}${isRefresh ? ' (refresh forcé)' : ''}`);
+    console.log(`🔍 Récupération emails pour user ${userId}${selectedEmail ? ` (email: ${selectedEmail})` : ''}${isRefresh ? ' (refresh forcé)' : ''}`);
 
     // Récupérer les comptes connectés
     let query = supabaseAdmin
       .from('connected_emails')
       .select('*')
-      .eq('user_id', session.userId);
+      .eq('user_id', userId);
 
     if (selectedEmail) {
       query = query.eq('email', selectedEmail);
@@ -226,7 +230,10 @@ export async function GET(request: NextRequest) {
 
     const { data: connectedEmails, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Erreur Supabase:', error);
+      throw error;
+    }
 
     if (!connectedEmails || connectedEmails.length === 0) {
       console.log('📭 Aucun compte email connecté');
@@ -241,9 +248,9 @@ export async function GET(request: NextRequest) {
       try {
         let emails = [];
         if (account.provider === 'google') {
-          emails = await fetchGmailEmails(session.userId, account.email);
+          emails = await fetchGmailEmails(userId, account.email);
         } else if (account.provider === 'azure-ad') {
-          emails = await fetchMicrosoftEmails(session.userId, account.email);
+          emails = await fetchMicrosoftEmails(userId, account.email);
         }
 
         // Ajouter l'info du compte à chaque email

@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { 
   HomeIcon,
   StarIcon,
-  EnvelopeIcon,
   BuildingStorefrontIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -16,12 +15,13 @@ import {
   MagnifyingGlassIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
+import { Mail } from 'lucide-react';
 
 const navigation = [
   { name: 'Accueil', href: '/dashboard', icon: HomeIcon },
   { name: 'Établissements', href: '/dashboard/restaurants', icon: BuildingStorefrontIcon },
   { name: 'Avis & QR', href: '/dashboard/reviews', icon: StarIcon },
-  { name: 'Mails', href: '/dashboard/mails', icon: EnvelopeIcon },
+  { name: 'Mails', href: '/dashboard/mails', icon: Mail, isLucide: true },
   { name: 'Mentions', href: '/dashboard/mentions', icon: MagnifyingGlassIcon },
   { name: 'Profil', href: '/dashboard/profile', icon: UserIcon },
   { name: 'Support', href: '/dashboard/support', icon: QuestionMarkCircleIcon },
@@ -90,6 +90,7 @@ export default function DashboardLayout({
         <nav className="flex-1 p-4 space-y-2">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
+            const IconComponent = item.icon;
             return (
               <Link
                 key={item.name}
@@ -103,7 +104,11 @@ export default function DashboardLayout({
                   }
                 `}
               >
-                <item.icon className="h-5 w-5" />
+                {item.isLucide ? (
+                  <IconComponent className="h-5 w-5" />
+                ) : (
+                  <IconComponent className="h-5 w-5" />
+                )}
                 <span>{item.name}</span>
               </Link>
             );

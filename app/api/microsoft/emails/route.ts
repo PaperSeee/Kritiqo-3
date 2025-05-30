@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
+import { validateUserId } from '@/lib/utils/uuid-validator'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,7 +9,8 @@ export async function GET(request: NextRequest) {
     
     const session = await getServerSession(authOptions)
     
-    if (!session) {
+    // ✅ Validation stricte de la session et de l'UUID
+    if (!session?.user?.id) {
       console.error('❌ Aucune session trouvée')
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
@@ -16,10 +18,30 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    if (!session?.accessToken) {
-      console.error('❌ Token d\'accès manquant dans la session')
+    // ✅ Valider que l'ID utilisateur est un UUID valide
+    const userId = validateUserId(session.user.id)
+    
+    // ✅ Récupérer le token depuis connected_emails au lieu de la session
+    const { data: connectedAccount, error: tokenError } = await supabaseAdmin
+      .from('connected_emails')
+      .select('access_token, expires_at')
+      .eq('user_id', userId)
+      .eq('provider', 'azure-ad')
+      .single()
+
+    if (tokenError || !connectedAccount?.access_token) {
+      console.error('❌ Token d\'accès Microsoft manquant ou expiré')
       return NextResponse.json(
         { error: 'Non autorisé - Token d\'accès manquant. Veuillez vous reconnecter.' },
+        { status: 401 }
+      )
+    }
+
+    // Vérifier l'expiration du token
+    if (connectedAccount.expires_at && connectedAccount.expires_at < Date.now()) {
+      console.error('❌ Token Microsoft expiré')
+      return NextResponse.json(
+        { error: 'Token d\'accès Microsoft expiré. Veuillez vous reconnecter.' },
         { status: 401 }
       )
     }
@@ -32,7 +54,7 @@ export async function GET(request: NextRequest) {
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${connectedAccount.access_token}`,
         'Content-Type': 'application/json',
       },
     })

@@ -22,14 +22,15 @@ import {
 } from '@heroicons/react/24/outline'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import GettingStarted from '@/components/GettingStarted'
 
 export const metadata: Metadata = {
-  title: 'Kritiqo - Centralisez vos avis clients & emails en un seul endroit',
-  description: 'Kritiqo trie vos messages, vous aide à répondre et surveille votre réputation en ligne. Solution IA pour restaurateurs, indépendants et professionnels.',
-  keywords: 'avis clients, gestion emails, IA, réputation en ligne, QR codes, Google Reviews, tri automatique emails',
+  title: 'Kritiqo - Centralisez vos avis clients en un seul endroit',
+  description: 'Kritiqo vous aide à gérer vos avis clients et surveiller votre réputation en ligne. Solution IA pour restaurateurs, indépendants et professionnels.',
+  keywords: 'avis clients, réputation en ligne, QR codes, Google Reviews, gestion avis clients',
   openGraph: {
-    title: 'Kritiqo - Centralisez vos avis clients & emails',
-    description: 'Kritiqo trie vos messages, vous aide à répondre et surveille votre réputation en ligne',
+    title: 'Kritiqo - Centralisez vos avis clients',
+    description: 'Kritiqo vous aide à gérer vos avis clients et surveiller votre réputation en ligne',
     url: 'https://kritiqo.com',
     siteName: 'Kritiqo',
     type: 'website',
@@ -38,48 +39,46 @@ export const metadata: Metadata = {
 
 const keyBenefits = [
   {
-    icon: InboxIcon,
-    title: 'Tri intelligent des emails',
-    description: 'Notre IA classe automatiquement vos emails : factures, RH, clients, urgents...'
+    icon: QrCodeIcon,
+    title: "QR Codes personnalisés",
+    description: "Générez des QR codes pour collecter facilement des avis clients.",
+    comingSoon: false
   },
   {
-    icon: SparklesIcon,
-    title: 'Réponses assistées par IA',
-    description: 'Suggestions de réponses personnalisées pour vos avis et messages clients'
+    icon: ChartBarIcon,
+    title: "Centralisation multi-plateformes",
+    description: "Gérez tous vos avis depuis Google, Facebook, TripAdvisor en un seul endroit.",
+    comingSoon: false
   },
   {
-    icon: StarIcon,
-    title: 'Centralisation des avis',
-    description: 'Google, Facebook, Trustpilot... tous vos avis dans un seul tableau de bord'
+    icon: ChatBubbleLeftRightIcon,
+    title: "Réponses automatiques",
+    description: "Répondez aux avis clients avec l'aide de l'IA pour maintenir votre réputation.",
+    comingSoon: true
   },
   {
-    icon: EyeIcon,
-    title: 'Système de veille',
-    description: 'Surveillance automatique des mentions sur le web',
+    icon: MagnifyingGlassIcon,
+    title: "Surveillance des mentions",
+    description: "Suivez ce que les gens disent de votre marque en ligne.",
     comingSoon: true
   }
 ]
 
 const detailedFeatures = [
   {
-    icon: ShieldCheckIcon,
-    title: 'Connexion sécurisée Gmail/Outlook',
-    description: 'OAuth vérifié, conforme RGPD'
+    icon: QrCodeIcon,
+    title: 'QR codes de collecte',
+    description: 'Générez des codes pour booster vos avis'
   },
   {
-    icon: SparklesIcon,
-    title: 'Classification IA avancée',
-    description: 'Factures, juridiques, urgents, spam...'
+    icon: ChartBarIcon,
+    title: 'Analytics détaillés',
+    description: 'Suivez votre réputation en temps réel'
   },
   {
     icon: ChatBubbleLeftRightIcon,
     title: 'Réponses pré-remplies',
     description: 'Templates intelligents pour avis clients'
-  },
-  {
-    icon: QrCodeIcon,
-    title: 'QR codes de collecte',
-    description: 'Générez des codes pour booster vos avis'
   },
   {
     icon: MagnifyingGlassIcon,
@@ -88,17 +87,22 @@ const detailedFeatures = [
     comingSoon: true
   },
   {
-    icon: ChartBarIcon,
-    title: 'Analytics détaillés',
-    description: 'Suivez votre réputation en temps réel'
+    icon: ShieldCheckIcon,
+    title: 'Sécurité maximale',
+    description: 'Conforme RGPD, données protégées'
+  },
+  {
+    icon: SparklesIcon,
+    title: 'IA spécialisée',
+    description: 'Algorithmes adaptés aux professionnels'
   }
 ]
 
 const whyChooseKritiqo = [
   {
     icon: ClockIcon,
-    title: "Économisez 2h par jour",
-    description: "Notre IA trie automatiquement vos emails et centralise tous vos avis clients en un seul endroit."
+    title: "Économisez du temps",
+    description: "Centralisez tous vos avis clients et générez des QR codes personnalisés en quelques clics."
   },
   {
     icon: ShieldCheckIcon,
@@ -131,13 +135,13 @@ export default function HomePage() {
         <section className="py-16 sm:py-24 px-4 sm:px-6 text-center bg-gradient-to-br from-neutral-50 via-white to-blue-50">
           <div className="max-w-5xl mx-auto">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-              Centralisez vos avis clients & emails
+              Centralisez vos avis clients
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 block mt-2">
                 en un seul endroit
               </span>
             </h1>
             <p className="text-xl sm:text-2xl text-neutral-600 mb-10 max-w-4xl mx-auto leading-relaxed">
-              Kritiqo trie vos messages, vous aide à répondre et surveille votre réputation en ligne.
+              Kritiqo vous aide à gérer vos avis clients et surveiller votre réputation en ligne.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -219,12 +223,7 @@ export default function HomePage() {
             </p>
             
             <div className="bg-white rounded-2xl shadow-2xl p-8 border">
-              <div className="bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-xl h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <ComputerDesktopIcon className="h-20 w-20 text-neutral-400 mx-auto mb-4" />
-                  <p className="text-neutral-500 font-medium">Interface du dashboard à venir</p>
-                </div>
-              </div>
+              <GettingStarted hasBusiness={false} />
             </div>
           </div>
         </section>
@@ -304,7 +303,7 @@ export default function HomePage() {
               <ul className="space-y-3 mb-8 text-left">
                 <li className="flex items-center">
                   <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>3 connexions emails/avis</span>
+                  <span>3 connexions avis</span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />

@@ -21,12 +21,45 @@ export type ConnectedEmail = {
   id: string
   user_id: string
   email: string
-  provider: 'google' | 'azure-ad'
+  provider: 'google' | 'azure-ad' | 'microsoft' | 'imap'
   access_token: string | null
   refresh_token: string | null
   expires_at: number | null
   token_type: string
   scope: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type Business = {
+  id: string
+  user_id: string
+  name: string
+  slug: string
+  email: string | null
+  phone: string | null
+  address: string | null
+  city: string | null
+  country: string | null
+  place_id: string | null
+  google_link: string | null
+  ubereats_link: string | null
+  deliveroo_link: string | null
+  takeaway_link: string | null
+  review_page_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type Review = {
+  id: string
+  business_id: string
+  customer_name: string
+  customer_email: string | null
+  rating: number
+  comment: string
+  platform: string
+  responded: boolean
   created_at: string
   updated_at: string
 }

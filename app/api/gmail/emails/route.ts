@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { getValidAccessToken } from '@/lib/token-manager'
+import { validateUserId } from '@/lib/utils/uuid-validator'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +10,8 @@ export async function GET(request: NextRequest) {
     
     const session = await getServerSession(authOptions)
     
-    if (!session?.userId) {
+    // ✅ Validation stricte de la session et de l'UUID
+    if (!session?.user?.id) {
       console.error('❌ Aucune session trouvée')
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
@@ -17,8 +19,11 @@ export async function GET(request: NextRequest) {
       )
     }
     
+    // ✅ Valider que l'ID utilisateur est un UUID valide
+    const userId = validateUserId(session.user.id)
+    
     // Utiliser getValidAccessToken pour obtenir un token Gmail valide
-    const accessToken = await getValidAccessToken(session.userId, 'google')
+    const accessToken = await getValidAccessToken(userId, 'google')
     
     if (!accessToken) {
       console.error('❌ Token Gmail invalide ou expiré')
