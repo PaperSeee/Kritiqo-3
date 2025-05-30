@@ -177,7 +177,7 @@ export const authOptions: NextAuthOptions = {
               user_metadata: {
                 full_name: user.name || profile?.name,
                 avatar_url: avatarUrl,
-                provider: account.provider
+                provider: account?.provider
               },
               email_confirm: true // ✅ Confirmer automatiquement l'email pour OAuth
             })
