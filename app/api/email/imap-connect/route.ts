@@ -163,6 +163,8 @@ export async function POST(request: NextRequest) {
 
 // Fonction de test IMAP (à implémenter avec une vraie lib IMAP)
 async function testImapConnection(email: string, appPassword: string): Promise<void> {
+  const isDev = process.env.NODE_ENV !== "production";
+  
   // Clean the app password
   const cleanAppPassword = appPassword.replace(/\s/g, '')
   
@@ -170,9 +172,35 @@ async function testImapConnection(email: string, appPassword: string): Promise<v
     throw new Error('Mot de passe d\'application invalide - doit contenir au moins 16 caractères')
   }
   
-  // Simulation d'un délai de connexion
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  // Pour l'instant, on accepte tous les mots de passe avec le bon format
-  return Promise.resolve()
+  // Test real IMAP connection
+  const config = {
+    imap: {
+      user: email,
+      password: cleanAppPassword,
+      host: 'imap.gmail.com',
+      port: 993,
+      tls: true,
+      tlsOptions: isDev ? { rejectUnauthorized: false } : undefined,
+      authTimeout: 5000,
+      connTimeout: 10000
+    }
+  };
+
+  try {
+    console.log(`🔒 Testing IMAP connection - TLS: ${config.imap.tls}, Dev mode: ${isDev}`)
+    const imaps = require('imap-simple');
+    const connection = await imaps.connect(config);
+    await connection.openBox('INBOX');
+    await connection.end();
+    console.log('✅ IMAP connection test successful')
+  } catch (error) {
+    console.error('❌ IMAP connection test failed:', error)
+    if (error.message?.includes('Invalid credentials')) {
+      throw new Error('Identifiants invalides - vérifiez votre mot de passe d\'application')
+    } else if (error.message?.includes('self signed certificate')) {
+      throw new Error('Erreur de certificat TLS - contactez le support')
+    } else {
+      throw new Error('Impossible de se connecter - vérifiez vos identifiants')
+    }
+  }
 }

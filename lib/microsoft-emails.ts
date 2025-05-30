@@ -61,15 +61,22 @@ export async function getMicrosoftEmails(accessToken: string) {
     console.log(`✅ ${messages.length} emails Microsoft récupérés avec succès`);
     
     // Formater les emails pour correspondre au format attendu
-    return messages.map((message: any) => ({
-      id: `microsoft_${message.id}`,
-      subject: message.subject || 'Sans sujet',
-      sender: message.sender?.emailAddress?.address || 'Expéditeur inconnu',
-      preview: message.bodyPreview || 'Aucun aperçu disponible',
-      body: message.body?.content || message.bodyPreview || 'Aucun contenu disponible',
-      date: new Date(message.receivedDateTime).toISOString(),
-      source: 'microsoft'
-    }));
+    return messages.map((message: any) => {
+      // Extract sender email properly
+      const senderEmail = message.sender?.emailAddress?.address || 'Expéditeur inconnu';
+      const senderName = message.sender?.emailAddress?.name || senderEmail.split('@')[0];
+      
+      return {
+        id: `microsoft_${message.id}`,
+        subject: message.subject || 'Sans sujet',
+        sender: senderEmail,
+        senderName: senderName,
+        preview: message.bodyPreview || 'Aucun aperçu disponible',
+        body: message.body?.content || message.bodyPreview || 'Aucun contenu disponible',
+        date: new Date(message.receivedDateTime).toISOString(),
+        source: 'microsoft'
+      }
+    });
     
   } catch (err) {
     console.error("❌ Erreur lors de la récupération des emails Microsoft:", err);

@@ -52,9 +52,12 @@ export default function EmailConnectionModal({
     setLoading(true)
 
     try {
-      console.log('Attempting Gmail connection...', { email: trimmedEmail.substring(0, 5) + '***' })
+      console.log('Attempting Gmail IMAP connection...', { 
+        email: trimmedEmail.substring(0, 5) + '***',
+        isDev: process.env.NODE_ENV !== 'production'
+      })
       
-      // ✅ Keep it simple - NextAuth session handles authentication
+      // ✅ Updated API call with better error handling
       const response = await fetch('/api/email/imap-connect', {
         method: 'POST',
         headers: { 
@@ -67,10 +70,10 @@ export default function EmailConnectionModal({
       })
 
       const data = await response.json()
-      console.log('Response:', { status: response.status, success: response.ok })
+      console.log('IMAP Connection Response:', { status: response.status, success: response.ok })
 
       if (response.ok) {
-        console.log('Connexion Gmail réussie:', data)
+        console.log('Connexion Gmail IMAP réussie:', data)
         onEmailConnected()
         resetForm()
         onClose()
@@ -79,12 +82,16 @@ export default function EmailConnectionModal({
         // ✅ Show more specific error messages
         if (data?.error?.includes('User validation failed')) {
           setError('Session expirée. Veuillez vous reconnecter à votre compte Kritiqo.')
+        } else if (data?.error?.includes('Identifiants invalides')) {
+          setError('Mot de passe d\'application Gmail invalide. Vérifiez qu\'il contient bien 16 caractères.')
+        } else if (data?.error?.includes('certificat TLS')) {
+          setError('Erreur de sécurité TLS. Contactez le support technique.')
         } else {
           setError(data.error || `Erreur ${response.status}: Impossible de se connecter à Gmail`)
         }
       }
     } catch (error) {
-      console.error('Erreur lors de la connexion Gmail:', error)
+      console.error('Erreur lors de la connexion Gmail IMAP:', error)
       setError('Erreur réseau lors de la connexion. Vérifiez votre connexion internet.')
     } finally {
       setLoading(false)

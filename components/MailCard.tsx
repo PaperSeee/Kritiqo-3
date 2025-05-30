@@ -26,6 +26,8 @@ interface MailCardProps {
   triage?: TriageResult;
   loading?: boolean;
   error?: boolean;
+  accountEmail?: string; // New field for account identification
+  autoCategory?: any; // New field for automatic classification
 }
 
 export default function MailCard({
@@ -38,7 +40,9 @@ export default function MailCard({
   source,
   triage,
   loading = false,
-  error = false
+  error = false,
+  accountEmail,
+  autoCategory
 }: MailCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
@@ -102,6 +106,16 @@ export default function MailCard({
     setShowAIModal(true);
   };
 
+  // Update source display to include account info
+  const getSourceDisplay = () => {
+    if (source === 'imap' && accountEmail) {
+      return `IMAP (${accountEmail})`;
+    }
+    return source === 'gmail' ? 'Gmail' : 
+           source === 'microsoft' ? 'Outlook' : 
+           source || 'Email';
+  };
+
   return (
     <>
       <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg border border-neutral-200 p-6 transition-all duration-300 hover:border-neutral-300">
@@ -148,12 +162,10 @@ export default function MailCard({
               </span>
               <span className="text-xs text-neutral-400">•</span>
               <span className="text-xs text-neutral-400">{date}</span>
-              {source && (
-                <>
-                  <span className="text-xs text-neutral-400">•</span>
-                  <span className="text-xs text-neutral-400 capitalize">{source}</span>
-                </>
-              )}
+              <span className="text-xs text-neutral-400">•</span>
+              <span className="text-xs text-neutral-400 capitalize">
+                {getSourceDisplay()}
+              </span>
             </div>
 
             {/* Badges catégorie et priorité */}

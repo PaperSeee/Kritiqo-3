@@ -26,6 +26,7 @@ interface ImportedEmail {
   received_at: string;
   source: string;
   thread_id?: string;
+  folder?: string; // Add folder information
   created_at: string;
   updated_at: string;
 }

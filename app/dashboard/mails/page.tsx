@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Mail, Plus, AlertCircle, Trash2, Filter, Search, Inbox, RefreshCw } from 'lucide-react'
 import EmailConnectionModal from '@/components/EmailConnectionModal'
+import MailCard from '@/components/MailCard'
+import { useEmails } from '@/hooks/useEmails'
 
 interface ConnectedEmail {
   id: string
@@ -32,11 +34,10 @@ interface EmailStats {
 export default function MailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [connectedEmails, setConnectedEmails] = useState<ConnectedEmail[]>([])
-  const [emails, setEmails] = useState<EmailData[]>([])
+  const { emails, loading: loadingEmails, error: emailsError, refetch } = useEmails()
   const [filteredEmails, setFilteredEmails] = useState<EmailData[]>([])
   const [emailStats, setEmailStats] = useState<EmailStats>({})
   const [loading, setLoading] = useState(true)
-  const [loadingEmails, setLoadingEmails] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   
   // Filtres
@@ -61,46 +62,46 @@ export default function MailsPage() {
     }
   }
 
-  const fetchEmails = async () => {
-    try {
-      setLoadingEmails(true)
-      const params = new URLSearchParams()
-      if (selectedCategory !== 'Tous') params.set('category', selectedCategory)
-      if (selectedAccount) params.set('account', selectedAccount)
-      
-      const response = await fetch(`/api/email/load?${params}`)
-      if (response.ok) {
-        const data = await response.json()
-        setEmails(data.emails)
-        setEmailStats(data.stats)
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des emails:', error)
-    } finally {
-      setLoadingEmails(false)
-    }
-  }
-
   const refreshEmails = async () => {
     setRefreshing(true)
-    await fetchEmails()
+    await refetch()
     setRefreshing(false)
   }
 
-  // Filtrer les emails par recherche
+  // Update filtered emails when emails change
   useEffect(() => {
     let filtered = emails
     
     if (searchTerm) {
       filtered = emails.filter(email => 
         email.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        email.from_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        email.snippet.toLowerCase().includes(searchTerm.toLowerCase())
+        email.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        email.preview.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    
+    if (selectedCategory !== 'Tous') {
+      filtered = filtered.filter(email => 
+        email.autoCategory?.category === selectedCategory
+      )
+    }
+
+    if (selectedAccount) {
+      filtered = filtered.filter(email => 
+        email.accountEmail === selectedAccount
       )
     }
     
     setFilteredEmails(filtered)
-  }, [emails, searchTerm])
+
+    // Calculate stats
+    const stats: EmailStats = {}
+    emails.forEach(email => {
+      const category = email.autoCategory?.category || 'Autre'
+      stats[category] = (stats[category] || 0) + 1
+    })
+    setEmailStats(stats)
+  }, [emails, searchTerm, selectedCategory, selectedAccount])
 
   useEffect(() => {
     fetchConnectedEmails()
@@ -108,7 +109,7 @@ export default function MailsPage() {
 
   useEffect(() => {
     if (connectedEmails.length > 0) {
-      fetchEmails()
+      refreshEmails()
     }
   }, [connectedEmails, selectedCategory, selectedAccount])
 
@@ -334,54 +335,45 @@ export default function MailsPage() {
             </div>
           </div>
 
-          {/* Liste des emails */}
-          <div className="divide-y divide-gray-200">
+          {/* Email Cards Grid */}
+          <div className="p-6">
             {loadingEmails ? (
-              <div className="p-8 text-center">
+              <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
                 <p className="text-gray-500 mt-2">Chargement des emails...</p>
               </div>
+            ) : emailsError ? (
+              <div className="text-center py-8">
+                <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Erreur de chargement
+                </h3>
+                <p className="text-gray-500 mb-4">{emailsError}</p>
+                <button
+                  onClick={refreshEmails}
+                  className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+                >
+                  Réessayer
+                </button>
+              </div>
             ) : filteredEmails.length > 0 ? (
-              filteredEmails.map((email) => (
-                <div key={email.id} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5 text-gray-600" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {email.subject}
-                        </h3>
-                        <span className="text-lg">{getPriorityIcon(email.priority)}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(email.category)}`}>
-                          {email.category}
-                        </span>
-                        {email.is_spam && (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
-                            Spam
-                          </span>
-                        )}
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                        {email.snippet}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>De: {email.sender_name || email.from_email}</span>
-                        <span>•</span>
-                        <span>{formatDate(email.date)}</span>
-                        <span>•</span>
-                        <span>{email.account_email}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
+              <div className="grid gap-4">
+                {filteredEmails.map((email) => (
+                  <MailCard
+                    key={email.id}
+                    id={email.id}
+                    subject={email.subject}
+                    from={email.sender}
+                    date={formatDate(email.date)}
+                    preview={email.preview}
+                    source={email.source}
+                    accountEmail={email.accountEmail}
+                    autoCategory={email.autoCategory}
+                  />
+                ))}
+              </div>
             ) : (
-              <div className="p-8 text-center">
+              <div className="text-center py-8">
                 <Inbox className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   {searchTerm || selectedCategory !== 'Tous' ? 'Aucun email trouvé' : 'Aucun email extrait'}
