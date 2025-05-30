@@ -195,9 +195,10 @@ async function testImapConnection(email: string, appPassword: string): Promise<v
     console.log('✅ IMAP connection test successful')
   } catch (error) {
     console.error('❌ IMAP connection test failed:', error)
-    if (error.message?.includes('Invalid credentials')) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    if (errorMessage?.includes('Invalid credentials')) {
       throw new Error('Identifiants invalides - vérifiez votre mot de passe d\'application')
-    } else if (error.message?.includes('self signed certificate')) {
+    } else if (errorMessage?.includes('self signed certificate')) {
       throw new Error('Erreur de certificat TLS - contactez le support')
     } else {
       throw new Error('Impossible de se connecter - vérifiez vos identifiants')
