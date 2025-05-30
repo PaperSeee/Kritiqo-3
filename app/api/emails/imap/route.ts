@@ -6,7 +6,9 @@ import { authOptions } from '@/lib/authOptions';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { validateUserId } from '@/lib/utils/uuid-validator';
 import { classifyEmailAutomatically } from '@/lib/types/triage';
-const imaps = require('imap-simple');
+
+// Use require for imap-simple to avoid build issues
+const imaps = eval('require')('imap-simple');
 
 interface EmailData {
   id: string;

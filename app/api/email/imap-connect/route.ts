@@ -188,7 +188,8 @@ async function testImapConnection(email: string, appPassword: string): Promise<v
 
   try {
     console.log(`🔒 Testing IMAP connection - TLS: ${config.imap.tls}, Dev mode: ${isDev}`)
-    const imaps = require('imap-simple');
+    // Use require to avoid build issues
+    const imaps = eval('require')('imap-simple');
     const connection = await imaps.connect(config);
     await connection.openBox('INBOX');
     await connection.end();

@@ -7,7 +7,9 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-const imaps = require("imap-simple");
+
+// Use require for imap-simple to avoid build issues
+const imaps = eval('require')('imap-simple');
 
 // TypeScript interfaces for IMAP message structure
 interface ImapHeaders {

@@ -23,8 +23,8 @@ interface FolderInfo {
 async function extractEmailsFromAllFolders(email: string, appPassword: string): Promise<EmailData[]> {
   console.log(`📧 Starting comprehensive IMAP extraction for ${email}`)
   
-  // Dynamic import to avoid build issues
-  const imaps = await import('imap-simple');
+  // Use require to avoid build issues
+  const imaps = eval('require')('imap-simple');
   
   const isDev = process.env.NODE_ENV !== "production";
   
