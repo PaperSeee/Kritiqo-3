@@ -52,7 +52,7 @@ export default function ContactPage() {
             Contactez-nous
           </h1>
           <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
-            Une question sur Kritiqo ? Besoin d'aide pour configurer votre compte ?
+            Une question sur Kritiqo ? Besoin d'aide pour automatiser la gestion de vos avis et emails ?
             Notre équipe est là pour vous accompagner.
           </p>
         </div>

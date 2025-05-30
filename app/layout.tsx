@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kritiqo - Centralisez et gérez tous vos avis clients",
+  title: "Kritiqo - Faites grandir votre PME sans lever le petit doigt",
   description:
-    "La plateforme tout-en-un pour collecter, centraliser et gérer vos avis clients. QR codes personnalisés, tri intelligent des emails par IA, analytics avancés.",
+    "Kritiqo automatise les réponses aux avis, trie vos emails par IA, et surveille votre e-réputation pour que vous restiez concentré sur l'essentiel : faire croître votre business.",
   keywords:
     "avis clients, gestion avis, QR code avis, Google Reviews, centralisation avis, tri emails IA",
   authors: [{ name: "Kritiqo" }],
@@ -50,9 +50,9 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   openGraph: {
-    title: "Kritiqo - Centralisez tous vos avis clients",
+    title: "Kritiqo - Faites grandir votre PME sans lever le petit doigt",
     description:
-      "La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne",
+      "Kritiqo automatise les réponses aux avis, trie vos emails par IA, et surveille votre e-réputation pour faire croître votre business",
     url: "https://kritiqo.com",
     siteName: "Kritiqo",
     type: "website",
@@ -60,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kritiqo - Centralisez tous vos avis clients",
+    title: "Kritiqo - Faites grandir votre PME sans lever le petit doigt",
     description:
-      "La plateforme tout-en-un pour gérer vos avis clients et booster votre réputation en ligne",
+      "Kritiqo automatise les réponses aux avis, trie vos emails par IA, et surveille votre e-réputation pour faire croître votre business",
     creator: "@kritiqo_app",
   },
   robots: {

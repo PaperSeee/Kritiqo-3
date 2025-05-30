@@ -1,4 +1,4 @@
-# Kritiqo - Centralisez vos avis clients + Triez vos emails par IA
+# Kritiqo - Faites grandir votre PME sans lever le petit doigt
 
 [![Next.js](https://img.shields.io/badge/Next.js-13-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://typescriptlang.org)

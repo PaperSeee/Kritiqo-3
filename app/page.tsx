@@ -134,14 +134,11 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="py-16 sm:py-24 px-4 sm:px-6 text-center bg-gradient-to-br from-neutral-50 via-white to-blue-50">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-              Centralisez vos avis clients
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 block mt-2">
-                en un seul endroit
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
+              Faites grandir votre PME sans lever le petit doigt.
             </h1>
-            <p className="text-xl sm:text-2xl text-neutral-600 mb-10 max-w-4xl mx-auto leading-relaxed">
-              Kritiqo vous aide à gérer vos avis clients et surveiller votre réputation en ligne.
+            <p className="text-xl md:text-2xl text-neutral-600 max-w-4xl mx-auto mb-8 leading-relaxed">
+              Kritiqo automatise les réponses aux avis, trie vos emails, et surveille votre e-réputation pour que vous restiez concentré sur l'essentiel : faire croître votre business.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">

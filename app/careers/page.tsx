@@ -84,8 +84,8 @@ export default function CareersPage() {
             Rejoignez l'aventure Kritiqo
           </h1>
           <p className="text-xl text-neutral-600 max-w-3xl mx-auto mb-8">
-            Nous construisons l'avenir de la gestion d'avis clients. 
-            Rejoignez une équipe passionnée qui révolutionne l'expérience client pour des milliers de commerces.
+            Nous automatisons la gestion d'avis clients et le tri d'emails par IA. 
+            Rejoignez une équipe passionnée qui révolutionne la croissance des PME.
           </p>
           <div className="flex justify-center gap-8 text-sm text-neutral-500">
             <span className="flex items-center gap-2">

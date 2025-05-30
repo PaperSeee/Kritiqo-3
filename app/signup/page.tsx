@@ -77,7 +77,7 @@ export default function SignupPage() {
             Créer un compte
           </h2>
           <p className="mt-2 text-sm text-neutral-600">
-            Centralisez vos avis + Triez vos emails par IA + Maximisez avec les QR codes
+            Automatisez vos avis + Triez vos emails par IA + Surveillez votre e-réputation
           </p>
         </div>
 
