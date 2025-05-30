@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.userId) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Non autorisé' },
         { status: 401 }
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate and sanitize user ID
-    const userId = validateUserId(session.userId)
+    const userId = validateUserId(session.user.id)
 
     // ✅ Check if user exists before proceeding
     const userValidation = await ensureUserExists(userId);
@@ -75,6 +75,21 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error('Supabase error:', error)
         throw new Error(`Database error: ${error.message}`)
+      }
+
+      // 🚀 Déclencher l'extraction des emails immédiatement
+      try {
+        await fetch('/api/email/extract-imap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId, 
+            email: data.email, 
+            appPassword 
+          })
+        })
+      } catch (extractError) {
+        console.warn('⚠️ Extraction IMAP échouée mais connexion sauvegardée:', extractError)
       }
 
       return NextResponse.json({ 
