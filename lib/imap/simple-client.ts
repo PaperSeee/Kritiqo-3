@@ -22,10 +22,12 @@ export interface ImapMessage {
 }
 
 export class SimpleImapClient {
-  private imap: Imap;
+  private imap: any;
 
   constructor(config: ImapConfig) {
-    this.imap = new Imap({
+    // Use the default export from node-imap
+    const ImapConstructor = (Imap as any).default || Imap;
+    this.imap = new ImapConstructor({
       user: config.user,
       password: config.password,
       host: config.host,
