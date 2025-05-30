@@ -19,12 +19,16 @@ if (!supabaseServiceKey.startsWith('eyJ')) {
 }
 
 // Client Supabase pour utilisation côté serveur (API routes, actions privilégiées)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+export const supabaseAdmin = createClient(
+  'https://atduymjkrjtbblnxawuj.supabase.co',
+  supabaseServiceKey,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
   }
-})
+)
 
 // Helper function to test the connection
 export async function testSupabaseAdminConnection() {

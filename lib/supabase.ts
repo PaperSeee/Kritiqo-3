@@ -75,6 +75,17 @@ export type EmailTriage = {
   created_at: string
 }
 
+export type CV = {
+  id: string
+  user_id: string
+  title: string
+  content: string | null
+  file_url: string | null
+  file_name: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Fonctions pour générer les QR codes pour maximiser les avis
 export function generateQRCodeUrl(url: string, size = 300): string {
   const baseUrl = 'https://api.qrserver.com/v1/create-qr-code/'

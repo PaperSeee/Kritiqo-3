@@ -61,6 +61,18 @@ CREATE TABLE IF NOT EXISTS emails (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 5. CVS table - CV/Resume management
+CREATE TABLE IF NOT EXISTS cvs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT,
+  file_url TEXT,
+  file_name TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Index pour optimiser les requêtes sur les emails
 CREATE INDEX IF NOT EXISTS idx_emails_user_id ON emails(user_id);
 CREATE INDEX IF NOT EXISTS idx_emails_date ON emails(date);
@@ -69,11 +81,15 @@ CREATE INDEX IF NOT EXISTS idx_emails_user_analyzed ON emails(user_id, analyzed_
 CREATE INDEX IF NOT EXISTS idx_emails_category ON emails(category);
 CREATE INDEX IF NOT EXISTS idx_emails_account ON emails(account_email);
 
+-- Index pour optimiser les requêtes sur les CVs
+CREATE INDEX IF NOT EXISTS idx_cvs_user_id ON cvs(user_id);
+
 -- RLS policies
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE connected_emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cvs ENABLE ROW LEVEL SECURITY;
 
 -- Policies pour users
 DROP POLICY IF EXISTS "Users can read own data" ON users;
@@ -101,4 +117,9 @@ CREATE POLICY "Users can update own emails" ON emails
 -- Policies pour reviews
 DROP POLICY IF EXISTS "Users can manage own reviews" ON reviews;
 CREATE POLICY "Users can manage own reviews" ON reviews
+  FOR ALL USING (auth.uid()::text = user_id::text);
+
+-- Policies pour cvs
+DROP POLICY IF EXISTS "Users can manage own cvs" ON cvs;
+CREATE POLICY "Users can manage own cvs" ON cvs
   FOR ALL USING (auth.uid()::text = user_id::text);
