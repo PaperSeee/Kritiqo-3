@@ -28,14 +28,20 @@ export function extractBusinessNameFromGoogleMapsUrl(url: string): string | null
     // Extract from /maps/place/ URLs
     const placeMatch = urlObj.pathname.match(/\/maps\/place\/([^\/]+)/)
     if (placeMatch) {
-      return decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ')
+      return decodeURIComponent(placeMatch[1])
+        .replace(/\+/g, ' ')
+        .replace(/['"]/g, '')
+        .trim()
     }
     
     // Extract from search query
     const searchParams = urlObj.searchParams
     const query = searchParams.get('q')
     if (query) {
-      return decodeURIComponent(query).replace(/\+/g, ' ')
+      return decodeURIComponent(query)
+        .replace(/\+/g, ' ')
+        .replace(/['"]/g, '')
+        .trim()
     }
     
     return null

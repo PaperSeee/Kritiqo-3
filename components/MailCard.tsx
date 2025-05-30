@@ -43,10 +43,17 @@ export default function MailCard({
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
 
-  // Extraire le nom de l'expéditeur depuis l'email
+  // Extract sender name from email header
   const extractSenderName = (email: string) => {
-    const match = email.match(/^(.+?)\s*<.*>$/);
-    return match ? match[1].replace(/['"]/g, '') : email.split('@')[0];
+    // Handle "Name <email@domain.com>" format
+    const match = email.match(/^(.+?)\s*<.*>$/)
+    if (match) {
+      return match[1].replace(/['"]/g, '').trim()
+    }
+    
+    // Handle plain email format
+    const emailMatch = email.match(/([^@]+)@/)
+    return emailMatch ? emailMatch[1].replace(/[._]/g, ' ').trim() : email
   };
 
   // Icônes de catégorie

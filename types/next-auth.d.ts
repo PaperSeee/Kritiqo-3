@@ -9,6 +9,10 @@ declare module "next-auth" {
     userId?: string
     expiresAt?: number
   }
+
+  interface User {
+    id: string
+  }
 }
 
 declare module "next-auth/jwt" {

@@ -32,28 +32,53 @@ interface ImportedEmail {
 
 function extractEmailBody(message: GmailMessage): string {
   try {
-    // Essayer d'abord le body principal
+    // Try main body first
     if (message.payload?.body?.data) {
-      return Buffer.from(message.payload.body.data, 'base64').toString('utf-8');
+      const decoded = Buffer.from(message.payload.body.data, 'base64').toString('utf-8')
+      return cleanEmailContent(decoded)
     }
 
-    // Sinon chercher dans les parts
+    // Search in parts for text content
     if (message.payload?.parts) {
+      // Prefer plain text over HTML
       const textPart = message.payload.parts.find(part => 
-        part.mimeType === 'text/plain' || part.mimeType === 'text/html'
-      );
+        part.mimeType === 'text/plain'
+      )
       
       if (textPart?.body?.data) {
-        return Buffer.from(textPart.body.data, 'base64').toString('utf-8');
+        const decoded = Buffer.from(textPart.body.data, 'base64').toString('utf-8')
+        return cleanEmailContent(decoded)
+      }
+      
+      // Fallback to HTML if no plain text
+      const htmlPart = message.payload.parts.find(part => 
+        part.mimeType === 'text/html'
+      )
+      
+      if (htmlPart?.body?.data) {
+        const decoded = Buffer.from(htmlPart.body.data, 'base64').toString('utf-8')
+        return cleanEmailContent(decoded)
       }
     }
 
-    // Fallback sur le snippet
-    return message.snippet || 'Aucun contenu disponible';
+    // Final fallback to snippet
+    return message.snippet || 'Aucun contenu disponible'
   } catch (error) {
-    console.error('Erreur extraction body:', error);
-    return message.snippet || 'Erreur lecture contenu';
+    console.error('Erreur extraction body:', error)
+    return message.snippet || 'Erreur lecture contenu'
   }
+}
+
+function cleanEmailContent(content: string): string {
+  // Remove HTML tags and clean up content
+  return content
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&lt;/g, '<')   // Decode HTML entities
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')    // Normalize whitespace
+    .trim()
 }
 
 function extractHeaderValue(headers: Array<{ name: string; value: string }>, headerName: string): string {

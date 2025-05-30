@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { validateUserId } from '@/lib/utils/uuid-validator'
+import Imap from 'node-imap'
+import { simpleParser } from 'mailparser'
 
 interface EmailData {
   id: string
@@ -13,59 +15,230 @@ interface EmailData {
   fullText?: string
 }
 
-// Simulation d'extraction IMAP améliorée
+// Real IMAP extraction function
 async function extractEmailsViaIMAP(email: string, appPassword: string): Promise<EmailData[]> {
-  console.log(`📧 Extraction IMAP pour ${email}`)
+  console.log(`📧 Starting IMAP extraction for ${email}`)
   
-  // Simuler un délai d'extraction réaliste
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  // Générer des emails de test plus réalistes
-  const now = Date.now()
-  const testEmails: EmailData[] = [
-    {
-      id: `imap_${now}_1`,
-      subject: 'Merci pour votre excellent service !',
-      from: 'marie.dupont@client.com',
-      date: new Date(now - 2 * 3600000), // 2h ago
-      snippet: 'Bonjour, je tenais à vous remercier pour le repas d\'hier soir...',
-      fullText: 'Bonjour, je tenais à vous remercier pour le repas d\'hier soir. Le service était parfait et les plats délicieux. Je recommande vivement !'
-    },
-    {
-      id: `imap_${now}_2`,
-      subject: 'Avis Google - Nouvelle évaluation',
-      from: 'noreply@google.com',
-      date: new Date(now - 4 * 3600000), // 4h ago
-      snippet: 'Vous avez reçu un nouvel avis sur Google Business...',
-      fullText: 'Bonjour, vous avez reçu un nouvel avis 5 étoiles sur votre établissement Google Business Profile.'
-    },
-    {
-      id: `imap_${now}_3`,
-      subject: 'Facture #2024-001 - Livraison du 15/01',
-      from: 'comptabilite@fournisseur-pro.com',
-      date: new Date(now - 6 * 3600000), // 6h ago
-      snippet: 'Veuillez trouver ci-joint la facture pour votre commande...',
-      fullText: 'Bonjour, veuillez trouver ci-joint la facture #2024-001 pour votre commande du 15 janvier 2024. Montant total : 1,456.78€'
-    },
-    {
-      id: `imap_${now}_4`,
-      subject: 'URGENT - Problème avec ma commande',
-      from: 'client.mecontent@email.com',
-      date: new Date(now - 8 * 3600000), // 8h ago
-      snippet: 'Ma commande n\'est toujours pas arrivée et je suis très déçu...',
-      fullText: 'Bonjour, ma commande passée il y a 3 jours n\'est toujours pas arrivée. Je suis très déçu du service. Pouvez-vous me donner des explications ?'
-    },
-    {
-      id: `imap_${now}_5`,
-      subject: '🎉 PROMOTION EXCEPTIONNELLE - 70% de réduction !',
-      from: 'promo@marketing-spam.com',
-      date: new Date(now - 12 * 3600000), // 12h ago
-      snippet: 'Ne ratez pas cette offre limitée ! Cliquez maintenant...',
-      fullText: 'PROMOTION LIMITÉE ! 70% de réduction sur TOUT ! Cliquez ici immédiatement pour en profiter. Offre valable 24h seulement !'
+  return new Promise((resolve, reject) => {
+    const emails: EmailData[] = []
+    let isResolved = false
+    
+    // Add timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!isResolved) {
+        console.error('⏰ IMAP operation timeout')
+        isResolved = true
+        reject(new Error('IMAP operation timeout'))
+      }
+    }, 30000) // 30 seconds timeout
+    
+    // IMAP configuration for Gmail
+    const imap = new Imap({
+      user: email,
+      password: appPassword,
+      host: 'imap.gmail.com',
+      port: 993,
+      tls: true,
+      tlsOptions: {
+        rejectUnauthorized: false
+      },
+      connTimeout: 10000, // 10 seconds connection timeout
+      authTimeout: 5000   // 5 seconds auth timeout
+    })
+
+    function cleanupAndResolve(result: EmailData[]) {
+      if (!isResolved) {
+        isResolved = true
+        clearTimeout(timeout)
+        console.log(`🏁 Cleanup: resolving with ${result.length} emails`)
+        resolve(result)
+      }
     }
-  ]
-  
-  return testEmails
+
+    function cleanupAndReject(error: Error) {
+      if (!isResolved) {
+        isResolved = true
+        clearTimeout(timeout)
+        console.error('🏁 Cleanup: rejecting with error:', error.message)
+        reject(error)
+      }
+    }
+
+    imap.once('ready', function() {
+      console.log('✅ IMAP connection ready')
+      
+      // Étape 1: Ouvrir la boîte INBOX
+      console.log('📥 Opening INBOX...')
+      imap.openBox('INBOX', true, function(err, box) {
+        if (err) {
+          console.error('❌ Error opening inbox:', err.message)
+          cleanupAndReject(err)
+          return
+        }
+        
+        console.log(`✅ INBOX opened successfully - ${box.messages.total} total messages`)
+        
+        if (box.messages.total === 0) {
+          console.log('📭 No messages in inbox')
+          imap.end()
+          return
+        }
+        
+        // Étape 2: Rechercher TOUS les emails avec search(['ALL'])
+        console.log('🔍 Searching for ALL emails...')
+        imap.search(['ALL'], function(searchErr, results) {
+          if (searchErr) {
+            console.error('❌ Search error:', searchErr.message)
+            cleanupAndReject(searchErr)
+            return
+          }
+          
+          if (!results || results.length === 0) {
+            console.log('📭 No messages found in search')
+            imap.end()
+            return
+          }
+          
+          console.log(`🔍 Found ${results.length} messages via search`)
+          
+          // Étape 3: Prendre les 10 derniers messages (UIDs)
+          const lastMessageUIDs = results.slice(-10)
+          console.log(`📨 Last 10 message UIDs:`, lastMessageUIDs)
+          
+          // Convertir les UIDs en numéros de séquence pour seq.fetch
+          const totalMessages = box.messages.total
+          const startSeq = Math.max(1, totalMessages - lastMessageUIDs.length + 1)
+          const endSeq = totalMessages
+          
+          console.log(`📨 Fetching sequence ${startSeq}:${endSeq} (last ${lastMessageUIDs.length} messages)`)
+          
+          // Étape 4: Utiliser imap.seq.fetch() pour extraire les emails
+          const fetch = imap.seq.fetch(`${startSeq}:${endSeq}`, {
+            bodies: '', // Récupérer le corps complet
+            struct: true
+          })
+          
+          let messageCount = 0
+          const expectedMessages = endSeq - startSeq + 1
+          
+          fetch.on('message', function(msg, seqno) {
+            console.log(`📨 Processing message sequence ${seqno}`)
+            
+            let buffer = ''
+            let attributes: any = null
+            
+            msg.on('body', function(stream, info) {
+              console.log(`📄 Receiving body for sequence ${seqno}`)
+              stream.on('data', function(chunk) {
+                buffer += chunk.toString('utf8')
+              })
+              
+              stream.once('error', function(streamErr) {
+                console.error(`❌ Stream error for sequence ${seqno}:`, streamErr.message)
+              })
+            })
+            
+            msg.once('attributes', function(attrs) {
+              console.log(`📋 Attributes received for sequence ${seqno}`)
+              attributes = attrs
+            })
+            
+            msg.once('end', function() {
+              console.log(`✅ Message sequence ${seqno} received, parsing...`)
+              
+              if (!buffer) {
+                console.warn(`⚠️ Empty buffer for sequence ${seqno}`)
+                messageCount++
+                checkCompletion()
+                return
+              }
+              
+              // Étape 5: Parser le contenu avec mailparser
+              simpleParser(buffer, (parseErr, parsed) => {
+                if (parseErr) {
+                  console.error(`❌ Error parsing sequence ${seqno}:`, parseErr.message)
+                  messageCount++
+                  checkCompletion()
+                  return
+                }
+                
+                try {
+                  // Extraire les champs requis : subject, from, date, snippet
+                  const fromHeader = parsed.from?.value[0]
+                  const senderName = fromHeader?.name || fromHeader?.address?.split('@')[0] || 'Unknown'
+                  const senderEmail = fromHeader?.address || 'unknown@unknown.com'
+                  
+                  // Créer l'objet email pour l'interface Kritiqo
+                  const emailData: EmailData = {
+                    id: `imap_${email}_${attributes?.uid || seqno}`,
+                    subject: parsed.subject || 'No Subject',
+                    from: `${senderName} <${senderEmail}>`,
+                    date: parsed.date || new Date(),
+                    snippet: parsed.text?.substring(0, 200) || 'Aucun aperçu disponible',
+                    fullText: parsed.text || parsed.html || ''
+                  }
+                  
+                  emails.push(emailData)
+                  messageCount++
+                  
+                  console.log(`📧 Parsed sequence ${seqno}: "${emailData.subject}" from ${senderName}`)
+                  checkCompletion()
+                  
+                } catch (parseError) {
+                  console.error(`❌ Error processing sequence ${seqno}:`, parseError)
+                  messageCount++
+                  checkCompletion()
+                }
+              })
+            })
+            
+            msg.once('error', function(msgErr) {
+              console.error(`❌ Message error for sequence ${seqno}:`, msgErr.message)
+              messageCount++
+              checkCompletion()
+            })
+          })
+          
+          function checkCompletion() {
+            console.log(`📊 Progress: ${messageCount}/${expectedMessages} messages processed`)
+            if (messageCount >= expectedMessages) {
+              console.log(`✅ All ${messageCount} messages processed, ending connection`)
+              // Étape 6: Fermer proprement la connexion
+              imap.end()
+            }
+          }
+          
+          fetch.once('error', function(fetchErr) {
+            console.error('❌ Fetch error:', fetchErr.message)
+            cleanupAndReject(fetchErr)
+          })
+          
+          fetch.once('end', function() {
+            console.log('📬 Fetch completed')
+            // La completion est gérée par checkCompletion()
+          })
+        })
+      })
+    })
+
+    imap.once('error', function(err) {
+      console.error('❌ IMAP connection error:', err.message)
+      cleanupAndReject(err)
+    })
+
+    imap.once('end', function() {
+      console.log('📪 IMAP connection ended')
+      cleanupAndResolve(emails)
+    })
+
+    console.log('🔌 Connecting to IMAP...')
+    try {
+      imap.connect()
+    } catch (connectErr) {
+      console.error('❌ IMAP connect error:', connectErr)
+      cleanupAndReject(connectErr as Error)
+    }
+  })
 }
 
 function classifyEmail(subject: string, from: string, content: string) {
@@ -73,7 +246,7 @@ function classifyEmail(subject: string, from: string, content: string) {
   const fromLower = from.toLowerCase()
   const contentLower = content.toLowerCase()
   
-  // Détecter les spams/publicités
+  // Detect spam/advertising
   if (fromLower.includes('noreply') || 
       subjectLower.includes('promotion') || 
       subjectLower.includes('réduction') ||
@@ -81,7 +254,7 @@ function classifyEmail(subject: string, from: string, content: string) {
     return { category: 'Spam/Pub', priority: 'Faible', isSpam: true }
   }
   
-  // Détecter les avis clients
+  // Detect customer reviews
   if (subjectLower.includes('avis') || 
       contentLower.includes('restaurant') ||
       contentLower.includes('service') ||
@@ -89,7 +262,7 @@ function classifyEmail(subject: string, from: string, content: string) {
     return { category: 'Avis client', priority: 'Urgent', isSpam: false }
   }
   
-  // Détecter les factures
+  // Detect invoices
   if (subjectLower.includes('facture') || 
       subjectLower.includes('commande') ||
       contentLower.includes('montant')) {
@@ -97,6 +270,12 @@ function classifyEmail(subject: string, from: string, content: string) {
   }
   
   return { category: 'Autre', priority: 'Moyen', isSpam: false }
+}
+
+// Extract sender name from email header like "John Doe <john@example.com>"
+function extractSenderName(fromHeader: string): string {
+  const match = fromHeader.match(/^(.+?)\s*<.*>$/)
+  return match ? match[1].replace(/['"]/g, '').trim() : fromHeader.split('@')[0]
 }
 
 export async function POST(request: NextRequest) {
@@ -120,9 +299,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`🚀 Début extraction emails pour ${email}`)
+    console.log(`🚀 Starting email extraction for ${email}`)
 
-    // Extraire les emails via IMAP
+    // Extract emails via IMAP
     const emailsData = await extractEmailsViaIMAP(email, appPassword)
     
     if (emailsData.length === 0) {
@@ -133,17 +312,20 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Préparer les emails pour Supabase avec des UUIDs
+    console.log(`📧 Successfully extracted ${emailsData.length} emails`)
+
+    // Prepare emails for Supabase
     const emailsToSave = emailsData.map(emailData => {
       const classification = classifyEmail(emailData.subject, emailData.from, emailData.fullText || emailData.snippet)
+      const senderName = extractSenderName(emailData.from)
       
       return {
-        id: emailData.id, // Garder l'ID original pour éviter les doublons
+        id: emailData.id,
         user_id: userId,
         account_email: email,
         subject: emailData.subject,
         from_email: emailData.from,
-        sender_name: emailData.from.split('@')[0], // Extraire le nom avant @
+        sender_name: senderName,
         date: emailData.date.toISOString(),
         snippet: emailData.snippet,
         full_text: emailData.fullText || emailData.snippet,
@@ -156,7 +338,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Sauvegarder en base avec upsert pour éviter les doublons
+    // Save to database with upsert to avoid duplicates
     const { data, error } = await supabaseAdmin
       .from('emails')
       .upsert(emailsToSave, { 
@@ -166,12 +348,12 @@ export async function POST(request: NextRequest) {
       .select('id')
 
     if (error) {
-      console.error('❌ Erreur Supabase:', error)
+      console.error('❌ Supabase error:', error)
       throw error
     }
 
     const extracted = data?.length || 0
-    console.log(`✅ ${extracted} emails extraits et sauvegardés pour ${email}`)
+    console.log(`✅ ${extracted} emails saved to database for ${email}`)
 
     return NextResponse.json({
       success: true,
@@ -182,7 +364,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Erreur extraction IMAP:', error)
+    console.error('❌ IMAP extraction error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Erreur extraction emails' },
       { status: 500 }

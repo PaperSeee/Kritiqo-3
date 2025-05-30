@@ -89,9 +89,17 @@ export async function getPlaceDetails(placeId: string): Promise<PlaceDetails> {
 }
 
 function extractCity(address: string): string {
-  // Simple extraction - peut être amélioré
-  const parts = address.split(',');
-  return parts.length > 1 ? parts[parts.length - 2].trim() : '';
+  // Improved city extraction
+  const parts = address.split(',').map(part => part.trim())
+  
+  // For most addresses, city is the second-to-last part
+  if (parts.length >= 2) {
+    const cityPart = parts[parts.length - 2]
+    // Remove postal codes and numbers
+    return cityPart.replace(/^\d+\s*/, '').trim()
+  }
+  
+  return parts[0] || ''
 }
 
 function extractCountry(address: string): string {
