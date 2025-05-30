@@ -35,23 +35,34 @@ interface Platform {
   description?: string;
 }
 
-export default function ReviewPage({ params }: { params: { slug: string } }) {
+export default function ReviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const [business, setBusiness] = useState<Business | null>(null);
   const [review, setReview] = useState('');
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const [reviewWritten, setReviewWritten] = useState(false);
+  const [slug, setSlug] = useState<string>('');
 
   useEffect(() => {
-    fetchBusiness();
-  }, [params.slug]);
+    async function resolveParams() {
+      const resolvedParams = await params;
+      setSlug(resolvedParams.slug);
+    }
+    resolveParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (slug) {
+      fetchBusiness();
+    }
+  }, [slug]);
 
   const fetchBusiness = async () => {
     try {
       const { data, error } = await supabase
         .from('businesses')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('slug', slug)
         .single();
 
       if (error) throw error;
