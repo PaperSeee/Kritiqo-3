@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   name TEXT,
+  full_name TEXT, -- Keep both for compatibility
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -72,6 +73,7 @@ CREATE INDEX IF NOT EXISTS idx_emails_account ON emails(account_email);
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE connected_emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
 -- Policies pour users
 DROP POLICY IF EXISTS "Users can read own data" ON users;
@@ -95,3 +97,8 @@ CREATE POLICY "Users can insert own emails" ON emails
 DROP POLICY IF EXISTS "Users can update own emails" ON emails;
 CREATE POLICY "Users can update own emails" ON emails
   FOR UPDATE USING (auth.uid()::text = user_id::text);
+
+-- Policies pour reviews
+DROP POLICY IF EXISTS "Users can manage own reviews" ON reviews;
+CREATE POLICY "Users can manage own reviews" ON reviews
+  FOR ALL USING (auth.uid()::text = user_id::text);

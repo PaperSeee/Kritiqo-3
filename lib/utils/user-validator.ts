@@ -9,6 +9,11 @@ interface UserValidationResult {
 
 export async function ensureUserExists(userId: string): Promise<{ exists: boolean; error?: string }> {
   try {
+    // First validate the userId format
+    if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+      return { exists: false, error: 'Invalid user ID format' };
+    }
+
     const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('id')
@@ -16,14 +21,16 @@ export async function ensureUserExists(userId: string): Promise<{ exists: boolea
       .single();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = not found
-      return { exists: false, error: error.message };
+      console.error('Database error in ensureUserExists:', error);
+      return { exists: false, error: `Database validation failed: ${error.message}` };
     }
 
     return { exists: !!user };
   } catch (error) {
+    console.error('Exception in ensureUserExists:', error);
     return { 
       exists: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+      error: error instanceof Error ? error.message : 'Unknown error during user validation' 
     };
   }
 }

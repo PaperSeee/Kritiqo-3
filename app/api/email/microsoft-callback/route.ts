@@ -24,8 +24,11 @@ export async function GET(request: NextRequest) {
     // ✅ Check if user exists before proceeding
     const userValidation = await ensureUserExists(userId);
     if (!userValidation.exists) {
-      console.error('User validation failed:', userValidation.error);
-      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard/mails?error=user_not_found`)
+      console.error('❌ User validation failed for Microsoft callback:', {
+        userId: userId.substring(0, 8) + '***',
+        error: userValidation.error
+      });
+      return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard/mails?error=user_validation_failed`)
     }
 
     // Échanger le code pour un token

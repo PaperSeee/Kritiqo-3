@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, Plus, AlertCircle, Trash2, Filter, Search, Inbox } from 'lucide-react'
+import { Mail, Plus, AlertCircle, Trash2, Filter, Search, Inbox, RefreshCw } from 'lucide-react'
 import EmailConnectionModal from '@/components/EmailConnectionModal'
 
 interface ConnectedEmail {
@@ -37,6 +37,7 @@ export default function MailsPage() {
   const [emailStats, setEmailStats] = useState<EmailStats>({})
   const [loading, setLoading] = useState(true)
   const [loadingEmails, setLoadingEmails] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   
   // Filtres
   const [selectedCategory, setSelectedCategory] = useState('Tous')
@@ -78,6 +79,12 @@ export default function MailsPage() {
     } finally {
       setLoadingEmails(false)
     }
+  }
+
+  const refreshEmails = async () => {
+    setRefreshing(true)
+    await fetchEmails()
+    setRefreshing(false)
   }
 
   // Filtrer les emails par recherche
@@ -136,22 +143,27 @@ export default function MailsPage() {
     const now = new Date()
     const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
     
-    if (diffHours < 24) {
+    if (diffHours < 1) {
+      return 'À l\'instant'
+    } else if (diffHours < 24) {
       return `Il y a ${diffHours}h`
     } else if (diffHours < 168) {
       return `Il y a ${Math.floor(diffHours / 24)}j`
     } else {
-      return date.toLocaleDateString('fr-FR')
+      return date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short'
+      })
     }
   }
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Avis client': return 'bg-green-100 text-green-800'
-      case 'Facture': return 'bg-blue-100 text-blue-800'
-      case 'Spam/Pub': return 'bg-red-100 text-red-800'
-      case 'Autre': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'Avis client': return 'bg-green-50 text-green-700 border-green-200'
+      case 'Facture': return 'bg-blue-50 text-blue-700 border-blue-200'
+      case 'Spam/Pub': return 'bg-red-50 text-red-700 border-red-200'
+      case 'Autre': return 'bg-gray-50 text-gray-700 border-gray-200'
+      default: return 'bg-gray-50 text-gray-700 border-gray-200'
     }
   }
 
@@ -263,9 +275,19 @@ export default function MailsPage() {
           {/* Filtres et recherche */}
           <div className="p-6 border-b border-gray-200">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Emails extraits ({filteredEmails.length})
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Emails extraits ({filteredEmails.length})
+                </h2>
+                <button
+                  onClick={refreshEmails}
+                  disabled={refreshing}
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                  title="Actualiser"
+                >
+                  <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
               
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 {/* Recherche */}
@@ -333,11 +355,11 @@ export default function MailsPage() {
                           {email.subject}
                         </h3>
                         <span className="text-lg">{getPriorityIcon(email.priority)}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(email.category)}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(email.category)}`}>
                           {email.category}
                         </span>
                         {email.is_spam && (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                             Spam
                           </span>
                         )}
@@ -375,28 +397,6 @@ export default function MailsPage() {
           </div>
         </div>
       )}
-
-      {/* Features Preview */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="font-medium text-gray-900 mb-2">Tri automatique par IA</h3>
-          <p className="text-sm text-gray-600">
-            Classification intelligente des emails par catégorie et priorité
-          </p>
-        </div>
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="font-medium text-gray-900 mb-2">Filtrage des spams</h3>
-          <p className="text-sm text-gray-600">
-            Élimination automatique des emails publicitaires et indésirables
-          </p>
-        </div>
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="font-medium text-gray-900 mb-2">Actions suggérées</h3>
-          <p className="text-sm text-gray-600">
-            Recommandations personnalisées pour traiter vos emails efficacement
-          </p>
-        </div>
-      </div>
 
       {/* Modal */}
       <EmailConnectionModal

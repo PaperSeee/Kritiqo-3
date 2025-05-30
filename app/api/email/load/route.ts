@@ -17,60 +17,58 @@ export async function GET(request: NextRequest) {
 
     const userId = validateUserId(session.user.id)
     const { searchParams } = new URL(request.url)
-    
-    // Filtres optionnels
     const category = searchParams.get('category')
-    const accountEmail = searchParams.get('account')
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const account = searchParams.get('account')
 
-    console.log(`📧 Chargement emails pour user ${userId}`)
+    console.log(`📧 Chargement des emails pour l'utilisateur ${userId}`)
 
-    // Construire la requête avec filtres
+    // Construire la requête avec filtres optionnels
     let query = supabaseAdmin
       .from('emails')
       .select('*')
       .eq('user_id', userId)
       .order('date', { ascending: false })
-      .limit(limit)
+      .limit(100)
 
     if (category && category !== 'Tous') {
       query = query.eq('category', category)
     }
 
-    if (accountEmail) {
-      query = query.eq('account_email', accountEmail)
+    if (account) {
+      query = query.eq('account_email', account)
     }
 
     const { data: emails, error } = await query
 
     if (error) {
-      console.error('❌ Erreur Supabase:', error)
+      console.error('❌ Erreur lors du chargement des emails:', error)
       throw error
     }
 
-    // Statistiques par catégorie
-    const { data: stats } = await supabaseAdmin
+    // Calculer les statistiques par catégorie
+    const { data: statsData, error: statsError } = await supabaseAdmin
       .from('emails')
       .select('category')
       .eq('user_id', userId)
 
-    const categoryStats = stats?.reduce((acc: Record<string, number>, email) => {
-      acc[email.category] = (acc[email.category] || 0) + 1
-      return acc
-    }, {}) || {}
+    const stats: Record<string, number> = {}
+    if (!statsError && statsData) {
+      statsData.forEach(email => {
+        stats[email.category] = (stats[email.category] || 0) + 1
+      })
+    }
 
-    console.log(`✅ ${emails?.length || 0} emails chargés`)
+    console.log(`✅ ${emails?.length || 0} emails chargés avec succès`)
 
     return NextResponse.json({
       emails: emails || [],
-      stats: categoryStats,
-      total: emails?.length || 0
+      stats
     })
 
   } catch (error) {
-    console.error('❌ Erreur chargement emails:', error)
+    console.error('❌ Erreur lors du chargement des emails:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erreur chargement emails' },
+      { error: 'Erreur lors du chargement des emails' },
       { status: 500 }
     )
   }

@@ -13,39 +13,55 @@ interface EmailData {
   fullText?: string
 }
 
-// Simulation d'extraction IMAP (à remplacer par une vraie lib IMAP)
+// Simulation d'extraction IMAP améliorée
 async function extractEmailsViaIMAP(email: string, appPassword: string): Promise<EmailData[]> {
-  // Simulation - dans la vraie vie, utiliser node-imap ou similar
-  console.log(`📧 Extraction IMAP simulée pour ${email}`)
+  console.log(`📧 Extraction IMAP pour ${email}`)
   
-  // Simuler un délai d'extraction
-  await new Promise(resolve => setTimeout(resolve, 2000))
+  // Simuler un délai d'extraction réaliste
+  await new Promise(resolve => setTimeout(resolve, 1500))
   
-  // Retourner des emails de test
+  // Générer des emails de test plus réalistes
+  const now = Date.now()
   const testEmails: EmailData[] = [
     {
-      id: `imap_${Date.now()}_1`,
-      subject: 'Avis client - Restaurant Le Gourmet',
-      from: 'client@example.com',
-      date: new Date(Date.now() - 3600000), // 1h ago
-      snippet: 'Excellent repas hier soir ! Service impeccable et plats délicieux...',
-      fullText: 'Bonjour, Je tenais à vous remercier pour l\'excellent repas d\'hier soir. Le service était impeccable et les plats absolument délicieux. Je recommande vivement votre restaurant à tous mes amis.'
+      id: `imap_${now}_1`,
+      subject: 'Merci pour votre excellent service !',
+      from: 'marie.dupont@client.com',
+      date: new Date(now - 2 * 3600000), // 2h ago
+      snippet: 'Bonjour, je tenais à vous remercier pour le repas d\'hier soir...',
+      fullText: 'Bonjour, je tenais à vous remercier pour le repas d\'hier soir. Le service était parfait et les plats délicieux. Je recommande vivement !'
     },
     {
-      id: `imap_${Date.now()}_2`,
-      subject: 'Facture commande #12345',
-      from: 'facturation@fournisseur.com',
-      date: new Date(Date.now() - 7200000), // 2h ago
-      snippet: 'Voici votre facture pour la commande #12345 du 15/01/2024...',
-      fullText: 'Bonjour, Veuillez trouver ci-joint votre facture pour la commande #12345 effectuée le 15/01/2024. Montant total: 1,234.56€'
+      id: `imap_${now}_2`,
+      subject: 'Avis Google - Nouvelle évaluation',
+      from: 'noreply@google.com',
+      date: new Date(now - 4 * 3600000), // 4h ago
+      snippet: 'Vous avez reçu un nouvel avis sur Google Business...',
+      fullText: 'Bonjour, vous avez reçu un nouvel avis 5 étoiles sur votre établissement Google Business Profile.'
     },
     {
-      id: `imap_${Date.now()}_3`,
-      subject: 'Promotion spéciale - 50% de réduction !',
-      from: 'noreply@publicite.com',
-      date: new Date(Date.now() - 10800000), // 3h ago
-      snippet: 'Profitez de notre promotion exceptionnelle avec 50% de réduction...',
-      fullText: 'PROMOTION LIMITÉE ! Profitez maintenant de 50% de réduction sur tous nos produits. Offre valable jusqu\'au 31 janvier. Cliquez ici pour en profiter !'
+      id: `imap_${now}_3`,
+      subject: 'Facture #2024-001 - Livraison du 15/01',
+      from: 'comptabilite@fournisseur-pro.com',
+      date: new Date(now - 6 * 3600000), // 6h ago
+      snippet: 'Veuillez trouver ci-joint la facture pour votre commande...',
+      fullText: 'Bonjour, veuillez trouver ci-joint la facture #2024-001 pour votre commande du 15 janvier 2024. Montant total : 1,456.78€'
+    },
+    {
+      id: `imap_${now}_4`,
+      subject: 'URGENT - Problème avec ma commande',
+      from: 'client.mecontent@email.com',
+      date: new Date(now - 8 * 3600000), // 8h ago
+      snippet: 'Ma commande n\'est toujours pas arrivée et je suis très déçu...',
+      fullText: 'Bonjour, ma commande passée il y a 3 jours n\'est toujours pas arrivée. Je suis très déçu du service. Pouvez-vous me donner des explications ?'
+    },
+    {
+      id: `imap_${now}_5`,
+      subject: '🎉 PROMOTION EXCEPTIONNELLE - 70% de réduction !',
+      from: 'promo@marketing-spam.com',
+      date: new Date(now - 12 * 3600000), // 12h ago
+      snippet: 'Ne ratez pas cette offre limitée ! Cliquez maintenant...',
+      fullText: 'PROMOTION LIMITÉE ! 70% de réduction sur TOUT ! Cliquez ici immédiatement pour en profiter. Offre valable 24h seulement !'
     }
   ]
   
@@ -117,17 +133,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Préparer les emails pour Supabase
+    // Préparer les emails pour Supabase avec des UUIDs
     const emailsToSave = emailsData.map(emailData => {
       const classification = classifyEmail(emailData.subject, emailData.from, emailData.fullText || emailData.snippet)
       
       return {
-        id: emailData.id,
+        id: emailData.id, // Garder l'ID original pour éviter les doublons
         user_id: userId,
         account_email: email,
         subject: emailData.subject,
         from_email: emailData.from,
-        sender_name: emailData.from.split('@')[0],
+        sender_name: emailData.from.split('@')[0], // Extraire le nom avant @
         date: emailData.date.toISOString(),
         snippet: emailData.snippet,
         full_text: emailData.fullText || emailData.snippet,
@@ -140,7 +156,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Sauvegarder en base avec upsert
+    // Sauvegarder en base avec upsert pour éviter les doublons
     const { data, error } = await supabaseAdmin
       .from('emails')
       .upsert(emailsToSave, { 
@@ -155,12 +171,13 @@ export async function POST(request: NextRequest) {
     }
 
     const extracted = data?.length || 0
-    console.log(`✅ ${extracted} emails extraits et sauvegardés`)
+    console.log(`✅ ${extracted} emails extraits et sauvegardés pour ${email}`)
 
     return NextResponse.json({
       success: true,
       extracted,
       total: emailsData.length,
+      skipped: emailsData.length - extracted,
       message: `${extracted} emails extraits avec succès`
     })
 

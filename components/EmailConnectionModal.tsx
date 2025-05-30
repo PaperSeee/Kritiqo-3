@@ -26,31 +26,66 @@ export default function EmailConnectionModal({
   if (!isOpen) return null
 
   const handleGmailConnect = async () => {
+    // Clear previous errors
+    setError('')
+
+    // Validate required fields
     if (!email || !appPassword) {
       setError('Veuillez remplir tous les champs')
       return
     }
 
+    // Validate email format
+    const trimmedEmail = email.trim().toLowerCase()
+    if (!trimmedEmail.includes('@gmail.com')) {
+      setError('Veuillez utiliser une adresse Gmail valide')
+      return
+    }
+
+    // Clean and validate app password
+    const cleanAppPassword = appPassword.replace(/\s/g, '')
+    if (cleanAppPassword.length < 16) {
+      setError('Le mot de passe d\'application doit contenir au moins 16 caractères')
+      return
+    }
+
     setLoading(true)
-    setError('')
 
     try {
+      console.log('Attempting Gmail connection...', { email: trimmedEmail.substring(0, 5) + '***' })
+      
+      // ✅ Keep it simple - NextAuth session handles authentication
       const response = await fetch('/api/email/imap-connect', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, appPassword })
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: trimmedEmail, 
+          appPassword: cleanAppPassword 
+        })
       })
 
       const data = await response.json()
+      console.log('Response:', { status: response.status, success: response.ok })
 
       if (response.ok) {
+        console.log('Connexion Gmail réussie:', data)
         onEmailConnected()
         resetForm()
+        onClose()
       } else {
-        setError(data.error || 'Erreur lors de la connexion')
+        console.error('Erreur IMAP:', data?.error || data)
+        // ✅ Show more specific error messages
+        if (data?.error?.includes('User validation failed')) {
+          setError('Session expirée. Veuillez vous reconnecter à votre compte Kritiqo.')
+        } else {
+          setError(data.error || `Erreur ${response.status}: Impossible de se connecter à Gmail`)
+        }
       }
     } catch (error) {
-      setError('Erreur réseau lors de la connexion')
+      console.error('Erreur lors de la connexion Gmail:', error)
+      setError('Erreur réseau lors de la connexion. Vérifiez votre connexion internet.')
     } finally {
       setLoading(false)
     }
