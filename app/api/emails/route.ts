@@ -202,7 +202,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     // ✅ Validation stricte de la session et de l'UUID
-    if (!session?.user?.id) {
+    if (!session?.userId) {
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
         { status: 401 }
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
     }
 
     // ✅ Valider que l'ID utilisateur est un UUID valide
-    const userId = validateUserId(session.user.id);
+    const userId = validateUserId(session.userId);
 
     const { searchParams } = new URL(request.url);
     const selectedEmail = searchParams.get('email');

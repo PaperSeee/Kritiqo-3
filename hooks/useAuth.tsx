@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (session?.user) {
       setUser({
-        id: session.userId || session.user.id!,
+        id: session.user.id || session.userId!,
         email: session.user.email,
         name: session.user.name,
         image: session.user.image,

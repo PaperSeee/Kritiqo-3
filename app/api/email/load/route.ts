@@ -8,14 +8,14 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.userId) {
       return NextResponse.json(
         { error: 'Non autorisé' },
         { status: 401 }
       )
     }
 
-    const userId = validateUserId(session.user.id)
+    const userId = validateUserId(session.userId)
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
     const account = searchParams.get('account')

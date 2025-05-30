@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.userId) {
       console.log('No session or user ID')
       return NextResponse.json(
         { error: 'Non autorisé - veuillez vous connecter' },
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate and sanitize user ID
-    const userId = validateUserId(session.user.id)
+    const userId = validateUserId(session.userId)
     console.log('User ID validated:', userId.substring(0, 8) + '***')
 
     // ✅ Check if user exists before proceeding

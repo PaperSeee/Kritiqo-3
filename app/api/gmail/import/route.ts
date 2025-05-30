@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     // ✅ Validation stricte de la session et de l'UUID
-    if (!session?.user?.id) {
+    if (!session?.userId) {
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
         { status: 401 }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ✅ Valider que l'ID utilisateur est un UUID valide
-    const userId = validateUserId(session.user.id);
+    const userId = validateUserId(session.userId);
 
     console.log(`🚀 Démarrage import Gmail pour l'utilisateur ${userId}`);
 

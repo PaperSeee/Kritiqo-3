@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions)
     
     // ✅ Validation stricte de la session et de l'UUID
-    if (!session?.user?.id) {
+    if (!session?.userId) {
       console.error('❌ Aucune session trouvée')
       return NextResponse.json(
         { error: 'Non autorisé - Session manquante' },
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
     
     // ✅ Valider que l'ID utilisateur est un UUID valide
-    const userId = validateUserId(session.user.id)
+    const userId = validateUserId(session.userId)
     
     // ✅ Récupérer le token depuis connected_emails au lieu de la session
     const { data: connectedAccount, error: tokenError } = await supabaseAdmin
