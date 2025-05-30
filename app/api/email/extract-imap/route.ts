@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { validateUserId } from '@/lib/utils/uuid-validator'
-const imaps = require('imap-simple')
 
 interface EmailData {
   id: string
@@ -20,9 +19,12 @@ interface FolderInfo {
   messageCount: number
 }
 
-// Comprehensive IMAP eeextraction function that explores all folders
+// Comprehensive IMAP extraction function that explores all folders
 async function extractEmailsFromAllFolders(email: string, appPassword: string): Promise<EmailData[]> {
   console.log(`📧 Starting comprehensive IMAP extraction for ${email}`)
+  
+  // Dynamic import to avoid build issues
+  const imaps = await import('imap-simple');
   
   const isDev = process.env.NODE_ENV !== "production";
   

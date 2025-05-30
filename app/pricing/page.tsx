@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { handleCheckout } from '@/lib/stripe';
@@ -20,7 +20,7 @@ import Link from "next/link";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-export default function PricingPage() {
+function PricingContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -320,5 +320,17 @@ export default function PricingPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-neutral-900"></div>
+      </div>
+    }>
+      <PricingContent />
+    </Suspense>
   );
 }
