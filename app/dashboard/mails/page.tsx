@@ -14,19 +14,6 @@ interface ConnectedEmail {
   status: 'active' | 'error'
 }
 
-interface EmailData {
-  id: string
-  subject: string
-  from_email: string
-  sender_name: string
-  date: string
-  snippet: string
-  category: string
-  priority: string
-  is_spam: boolean
-  account_email: string
-}
-
 interface EmailStats {
   [category: string]: number
 }
@@ -35,7 +22,7 @@ export default function MailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [connectedEmails, setConnectedEmails] = useState<ConnectedEmail[]>([])
   const { emails, loading: loadingEmails, error: emailsError, refetch } = useEmails()
-  const [filteredEmails, setFilteredEmails] = useState<EmailData[]>([])
+  const [filteredEmails, setFilteredEmails] = useState<typeof emails>([])
   const [emailStats, setEmailStats] = useState<EmailStats>({})
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
