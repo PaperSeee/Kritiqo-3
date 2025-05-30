@@ -42,14 +42,14 @@ export class SimpleImapClient {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.imap.once('ready', () => resolve());
-      this.imap.once('error', reject);
+      this.imap.once('error', (err: Error) => reject(err));
       this.imap.connect();
     });
   }
 
   openBox(boxName: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.imap.openBox(boxName, false, (err, box) => {
+      this.imap.openBox(boxName, false, (err: Error | null, box: any) => {
         if (err) reject(err);
         else resolve(box);
       });
@@ -58,7 +58,7 @@ export class SimpleImapClient {
 
   search(criteria: string[]): Promise<number[]> {
     return new Promise((resolve, reject) => {
-      this.imap.search(criteria, (err, results) => {
+      this.imap.search(criteria, (err: Error | null, results: number[]) => {
         if (err) reject(err);
         else resolve(results || []);
       });

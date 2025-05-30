@@ -1,3 +1,4 @@
+import 'es6-promise/auto';
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'

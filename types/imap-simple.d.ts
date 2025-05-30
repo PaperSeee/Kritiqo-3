@@ -29,7 +29,7 @@ declare module 'imap-simple' {
 
   export interface ImapConnection {
     openBox(boxName: string): Promise<any>;
-    search(criteria: string[], options: any): Promise<ImapMessage[]>;
+    search(criteria: string[], options?: any): Promise<ImapMessage[]>;
     getBoxes(): Promise<any>;
     end(): Promise<void>;
   }
