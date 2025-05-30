@@ -101,6 +101,13 @@ export default function PricingPage() {
     
     try {
       const userEmail = user?.email;
+      
+      // Handle null email case
+      if (!userEmail) {
+        alert('Veuillez vous connecter pour continuer.');
+        return;
+      }
+      
       console.log('Starting checkout for launch offer:', { priceId: launchPriceId, userEmail });
       
       await handleCheckout(launchPriceId, userEmail);
