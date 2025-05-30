@@ -6,7 +6,7 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 interface DisconnectOutlookButtonProps {
   emailId: string;
   email: string;
-  provider: 'google' | 'azure-ad';
+  provider: 'google' | 'azure-ad' | 'microsoft' | 'imap';
   onDisconnected?: () => void;
   className?: string;
 }
@@ -57,8 +57,36 @@ export default function DisconnectOutlookButton({
     }
   };
 
-  const providerName = provider === 'google' ? 'Gmail' : 'Outlook';
-  const providerColor = provider === 'google' ? 'text-red-600' : 'text-orange-600';
+  const getProviderName = (provider: string) => {
+    switch (provider) {
+      case 'google':
+        return 'Gmail';
+      case 'azure-ad':
+      case 'microsoft':
+        return 'Outlook';
+      case 'imap':
+        return 'IMAP';
+      default:
+        return provider;
+    }
+  };
+
+  const getProviderColor = (provider: string) => {
+    switch (provider) {
+      case 'google':
+        return 'text-red-600';
+      case 'azure-ad':
+      case 'microsoft':
+        return 'text-orange-600';
+      case 'imap':
+        return 'text-blue-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const providerName = getProviderName(provider);
+  const providerColor = getProviderColor(provider);
 
   return (
     <button

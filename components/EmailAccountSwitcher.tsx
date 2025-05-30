@@ -107,6 +107,34 @@ export default function EmailAccountSwitcher({
     onEmailsUpdate()
   }
 
+  const getProviderDisplayName = (provider: string) => {
+    switch (provider) {
+      case 'google':
+        return 'Gmail';
+      case 'azure-ad':
+      case 'microsoft':
+        return 'Outlook';
+      case 'imap':
+        return 'IMAP';
+      default:
+        return provider;
+    }
+  };
+
+  const getProviderColor = (provider: string) => {
+    switch (provider) {
+      case 'google':
+        return 'bg-red-500';
+      case 'azure-ad':
+      case 'microsoft':
+        return 'bg-orange-500';
+      case 'imap':
+        return 'bg-blue-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
   const selectedEmailData = connectedEmails.find(e => e.email === selectedEmail)
 
   return (
@@ -121,12 +149,10 @@ export default function EmailAccountSwitcher({
             <div className="flex items-center space-x-2">
               {selectedEmailData ? (
                 <>
-                  <div className={`w-3 h-3 rounded-full ${
-                    selectedEmailData.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
-                  }`}></div>
+                  <div className={`w-3 h-3 rounded-full ${getProviderColor(selectedEmailData.provider)}`}></div>
                   <span className="text-sm font-medium">{selectedEmailData.email}</span>
                   <span className="text-xs text-neutral-500">
-                    ({selectedEmailData.provider === 'google' ? 'Gmail' : 'Outlook'})
+                    ({getProviderDisplayName(selectedEmailData.provider)})
                   </span>
                 </>
               ) : (
@@ -167,12 +193,10 @@ export default function EmailAccountSwitcher({
                       }`}
                     >
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          email.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
-                        }`}></div>
+                        <div className={`w-2 h-2 rounded-full ${getProviderColor(email.provider)}`}></div>
                         <span>{email.email}</span>
                         <span className="text-xs text-neutral-500">
-                          ({email.provider === 'google' ? 'Gmail' : 'Outlook'})
+                          ({getProviderDisplayName(email.provider)})
                         </span>
                       </div>
                     </button>
@@ -206,12 +230,10 @@ export default function EmailAccountSwitcher({
             {connectedEmails.map((email) => (
               <div key={email.id} className="flex items-center justify-between bg-neutral-50 rounded-lg p-3">
                 <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    email.provider === 'google' ? 'bg-red-500' : 'bg-orange-500'
-                  }`}></div>
+                  <div className={`w-2 h-2 rounded-full ${getProviderColor(email.provider)}`}></div>
                   <span className="text-sm font-medium">{email.email}</span>
                   <span className="text-xs text-neutral-500">
-                    ({email.provider === 'google' ? 'Gmail' : 'Outlook'})
+                    ({getProviderDisplayName(email.provider)})
                   </span>
                 </div>
                 <DisconnectOutlookButton
