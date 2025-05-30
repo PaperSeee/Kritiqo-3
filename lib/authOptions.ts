@@ -150,13 +150,18 @@ export const authOptions: NextAuthOptions = {
 
     async signIn({ user, account, profile }) {
       try {
+        // Pour les connexions par credentials, pas besoin de vérification email
+        if (account?.provider === 'credentials') {
+          return true
+        }
+        
         // Pour les connexions OAuth, vérifier/créer l'utilisateur
         if (account?.provider !== 'credentials') {
           // Vérifier si l'utilisateur existe déjà
           const { data: existingUser } = await supabaseAdmin.auth.admin.getUserById(user.id!)
           
           if (!existingUser.user) {
-            // Créer l'utilisateur via Supabase Auth
+            // Créer l'utilisateur via Supabase Auth avec email confirmé
             const { error } = await supabaseAdmin.auth.admin.createUser({
               email: user.email!,
               user_metadata: {
@@ -164,11 +169,11 @@ export const authOptions: NextAuthOptions = {
                 avatar_url: user.image || profile?.picture,
                 provider: account.provider
               },
-              email_confirm: true
+              email_confirm: true // ✅ Confirmer automatiquement l'email pour OAuth
             })
             
             if (error) {
-              console.error('❌ Erreur création utilisateur:', error)
+              console.error('❌ Erreur création utilisateur OAuth:', error)
               return false
             }
           }

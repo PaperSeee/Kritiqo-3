@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
@@ -15,6 +15,8 @@ export default function LoginPage() {
 
   const { signIn, user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams.get('message');
 
   // Redirect if already logged in
   useEffect(() => {
@@ -22,6 +24,13 @@ export default function LoginPage() {
       router.push('/dashboard');
     }
   }, [user, authLoading, router]);
+
+  // Gérer le message de vérification email (si jamais il apparaît)
+  useEffect(() => {
+    if (message === 'check-email') {
+      setError('Un problème est survenu lors de l\'inscription. Veuillez réessayer ou vous connecter si vous avez déjà un compte.');
+    }
+  }, [message]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

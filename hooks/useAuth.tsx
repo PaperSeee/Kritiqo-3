@@ -79,21 +79,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string) => {
     setLoading(true);
     try {
+      // ✅ Create user with Supabase Auth with email already confirmed
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login?verified=true`,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            email_confirmed: true
+          }
         },
       });
 
-      if (error) throw error;
-
-      if (data.user && !data.user.email_confirmed_at) {
-        router.push('/login?message=check-email');
-      } else {
-        router.push('/dashboard');
+      if (error) {
+        console.error('❌ Supabase signup error:', error);
+        throw new Error(error.message);
       }
+
+      if (!data.user) {
+        throw new Error('Erreur lors de la création du compte');
+      }
+
+      console.log('✅ Utilisateur créé dans Supabase Auth:', data.user.id);
+
+      // ✅ Auto-confirm email via admin API if needed
+      if (!data.user.email_confirmed_at && data.user.id) {
+        try {
+          const response = await fetch('/api/auth/confirm-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: data.user.id, email })
+          });
+          
+          if (!response.ok) {
+            console.warn('⚠️ Could not auto-confirm email');
+          }
+        } catch (confirmError) {
+          console.warn('⚠️ Auto-confirmation failed:', confirmError);
+        }
+      }
+
+      // ✅ Sign in automatically with NextAuth
+      console.log('✅ Connexion automatique après inscription...');
+      
+      const result = await nextAuthSignIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error('❌ Erreur connexion après inscription:', result.error);
+        throw new Error('Compte créé mais erreur de connexion. Essayez de vous connecter manuellement.');
+      }
+
+      // ✅ Redirect to dashboard
+      router.push('/dashboard');
+      
     } catch (error) {
       setLoading(false);
       throw error;

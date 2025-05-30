@@ -1,59 +1,85 @@
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { validateUserId } from '@/lib/utils/uuid-validator';
 
+interface UserValidationResult {
+  success: boolean;
+  error?: string;
+  userExists?: boolean;
+}
+
 export async function ensureUserExists(userId: string): Promise<{ exists: boolean; error?: string }> {
   try {
-    // First validate the UUID format
-    const validUserId = validateUserId(userId);
-    
-    // Check if user exists in users table
-    const { data: userExists, error: userCheckError } = await supabaseAdmin
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('id')
-      .eq('id', validUserId)
+      .eq('id', userId)
       .single();
 
-    if (userCheckError) {
-      if (userCheckError.code === 'PGRST116') {
-        // No rows returned - user doesn't exist
-        return { exists: false, error: 'User does not exist in users table' };
-      }
-      // Other database error
-      return { exists: false, error: `Database error: ${userCheckError.message}` };
+    if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+      return { exists: false, error: error.message };
     }
 
-    return { exists: !!userExists };
+    return { exists: !!user };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return { exists: false, error: `Validation error: ${errorMessage}` };
+    return { 
+      exists: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
   }
 }
 
-export async function createUserIfNotExists(userId: string, email: string, name?: string): Promise<{ success: boolean; error?: string }> {
+export async function createUserIfNotExists(
+  userId: string, 
+  email: string, 
+  name?: string
+): Promise<UserValidationResult> {
   try {
-    const validUserId = validateUserId(userId);
-    
-    // Try to upsert the user
-    const { error: upsertError } = await supabaseAdmin
+    // Check if user exists in our users table
+    const { data: existingUser, error: fetchError } = await supabaseAdmin
       .from('users')
-      .upsert({
-        id: validUserId,
-        email: email,
-        name: name || email.split('@')[0],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'id',
-        ignoreDuplicates: false
-      });
+      .select('id')
+      .eq('id', userId)
+      .single();
 
-    if (upsertError) {
-      return { success: false, error: `Failed to create/update user: ${upsertError.message}` };
+    if (existingUser && !fetchError) {
+      return { success: true, userExists: true };
     }
 
-    return { success: true };
+    // Only proceed if the error is "not found", otherwise return the error
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      return { 
+        success: false, 
+        error: `Fetch error: ${fetchError.message}` 
+      };
+    }
+
+    // Create user in our users table
+    const { error: insertError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        id: userId,
+        email,
+        full_name: name,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+    if (insertError) {
+      console.error('❌ Failed to create user in users table:', insertError);
+      return { 
+        success: false, 
+        error: `Database error: ${insertError.message}` 
+      };
+    }
+
+    console.log('✅ User created in users table:', userId);
+    return { success: true, userExists: false };
+
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return { success: false, error: `User creation error: ${errorMessage}` };
+    console.error('❌ Error in createUserIfNotExists:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
   }
 }
