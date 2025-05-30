@@ -161,12 +161,22 @@ export const authOptions: NextAuthOptions = {
           const { data: existingUser } = await supabaseAdmin.auth.admin.getUserById(user.id!)
           
           if (!existingUser.user) {
+            // Get avatar URL based on provider
+            let avatarUrl = user.image
+            if (!avatarUrl && profile) {
+              if (account.provider === 'google' && 'picture' in profile) {
+                avatarUrl = profile.picture as string
+              } else if (account.provider === 'azure-ad' && 'picture' in profile) {
+                avatarUrl = profile.picture as string
+              }
+            }
+
             // Créer l'utilisateur via Supabase Auth avec email confirmé
             const { error } = await supabaseAdmin.auth.admin.createUser({
               email: user.email!,
               user_metadata: {
                 full_name: user.name || profile?.name,
-                avatar_url: user.image || profile?.picture,
+                avatar_url: avatarUrl,
                 provider: account.provider
               },
               email_confirm: true // ✅ Confirmer automatiquement l'email pour OAuth
